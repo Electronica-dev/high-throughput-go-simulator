@@ -1,7 +1,7 @@
 # Consuma — High-Throughput Inference System: Design
 
 Date: 2026-10-13
-Status: draft for builder check
+Status: reviewed (builder check passed), pending owner approval
 Source: `consuma ai project.pdf` (Consuma Technologies assignment)
 
 ## Intent and why
@@ -28,8 +28,8 @@ allowed by the assignment).
   (stretch benchmark).
 - Honest "completed" semantics: every request traverses admission (rate
   limiting) → simulated provider latency → final success/failure state.
-- Track every request to a terminal accounting state (completed, waiting,
-  expired, or rejected) — the system never loses a request.
+- Track every request to a terminal accounting state — the system never
+  loses a request.
 - Respect configured per-model RPM and TPM at all times; support changing
   limits live (no restart).
 - End-of-run report: submitted, completed, successful, failed; achieved
@@ -76,7 +76,7 @@ A "provider call" is a **state machine**, not a network call. Per request:
    estimated tokens).
 2. `admitted` — the per-model rate limiter checks a sliding RPM window and
    TPM token accounting; on success the request is scheduled, otherwise it
-   is queued or rejected per policy (never dropped silently).
+   enters the wait queue per the overload policy below.
 3. `in-flight` — the provider simulator schedules a completion event after
    the model's configured latency (timer-wheel entry; no sleeps, no sockets
    in the hot path).
@@ -85,6 +85,28 @@ A "provider call" is a **state machine**, not a network call. Per request:
 
 At 1M req/sec with 50 ms simulated latency, ~50,000 requests are in flight
 at any instant — a timer-wheel workload, not a goroutine-per-timer workload.
+
+### Overload policy (owner-decided)
+
+When demand exceeds a model's capacity, unadmitted requests enter a **bounded
+wait queue with expiry**: they wait for capacity up to a configurable max
+wait time, then end as `expired`. Only when the wait queue itself is full is
+a request rejected immediately as `rejected`. Every submitted request ends in
+exactly one terminal state — `completed`, `expired`, or `rejected` — and the
+report accounts for all of them. (`waiting` is an in-run phase, never a
+terminal state, because runs always drain; see benchmark accounting below.)
+
+### Benchmark accounting (owner-decided)
+
+- Headline number = **steady-state completed requests/second**: warm-up ramp
+  and final drain are excluded from the headline; the whole-run average is
+  reported alongside it, labeled separately.
+- Runs always **drain fully**: the load generator stops submitting, all
+  in-flight and queued requests reach a terminal state before the report is
+  produced, and drain time is reported separately. No request is ever left
+  unaccounted at end of run.
+- The spike's whole-run average of 289,543/sec (below) includes ramp;
+  steady-state per-second peaks reached ~299K/sec in the same run.
 
 ### Benchmark topology (the key decision)
 
@@ -115,16 +137,45 @@ timer wheel (4 ms tick, per-bucket mutex), atomic counters, batched
 completion. Model limits set high (allowed for benchmarks); 50 ms simulated
 latency; 2% permanent-failure mix; laptop on AC power.
 
-| Target rate | Measured completed/sec | In-flight est. | Notes |
-|---|---|---|---|
-| 300,000/sec | **289,543/sec** (10 s run) | ~15,000 | 2,895,431 of 2,913,691 submitted completed |
-| 1,000,000/sec | **988,723/sec** (10 s run) | ~50,000 | 9,887,234 of 9,939,574 submitted completed |
+| Target rate | Whole-run avg completed/sec | Steady-state peak/sec | In-flight est. | Notes |
+|---|---|---|---|---|
+| 300,000/sec | **289,543/sec** (10 s run) | ~299,000/sec | ~15,000 | 2,895,431 of 2,913,691 submitted completed |
+| 1,000,000/sec | **988,723/sec** (10 s run) | ~996,000/sec | ~50,000 | 9,887,234 of 9,939,574 submitted completed |
 
 Latency readouts were inflated to ~67 ms (configured 50 ms) by the spike's
 coarse tick and wheel contention — both are artifacts the real
 implementation removes (sharded wheels, per-core sharding, batched pops).
-These figures are floors, not ceilings; the required bar is met with
-spike-grade code and the stretch is met within 1%.
+The required bar was brushed with spike-grade code; the real implementation
+targets ≥1.3x steady-state headroom above it.
+
+## Policy decisions settled during review (builder's default, owner may override)
+
+These were flagged by the builder check and settled as sensible defaults;
+each is a call to be confirmed while reading, not an owner decision:
+
+- **Two enforcement layers.** The simulator behaves like a real provider: it
+  enforces its own configured RPM/TPM and can reject with a 429-equivalent.
+  The system's admission limiter is the primary mechanism for staying within
+  limits; provider-side rejection is the backstop and makes "observed
+  RPM/TPM" a provider-side measurement in the report.
+- **TPM accounting.** Tokens are reserved on *estimated* counts at admission;
+  on completion the simulator draws actual tokens from a configurable
+  distribution and the difference is reconciled (unused reservation
+  refunded). Failed calls consume their tokens. The report distinguishes
+  admitted-TPM from observed-TPM.
+- **Retries.** Transient provider failures are retried with capped
+  exponential backoff (default 3 attempts); each retry counts against RPM
+  and TPM like a fresh call. The report gives both per-attempt and
+  per-request success/failure counts.
+- **Latency definition.** Headline p50/p95/p99 are end-to-end
+  (submission → final state), which includes queue wait under overload.
+  Provider-call latency is reported separately so simulation drift is
+  visible.
+- **Live limit reduction.** A reduced limit applies to *new admissions*
+  immediately; already in-flight requests complete normally, so observed
+  throughput may transiently exceed the new limit until the current window
+  drains (documented in the report). Queued requests are throttled by the
+  new limit, not aborted.
 
 ## What's left to the builder
 
@@ -138,8 +189,8 @@ spike-grade code and the stretch is met within 1%.
 - Timer-wheel design (sharded per core, batched expiry), object pooling to
   keep GC pressure low at 1M/sec.
 - Latency histogram (streaming quantile or bucketed) for p50/p95/p99.
-- Request state ledger and terminal accounting (completed/waiting/expired/
-  rejected) with exactly-once accounting.
+- Request state ledger with exactly-once terminal accounting
+  (completed/expired/rejected) and the bounded wait queue with expiry.
 - Report writer (console + JSON) separating measured vs projected numbers.
 - Structure the code so the later HTTP API, batch/callback machinery, and
   validation scenarios bolt on without reworking the hot path.
@@ -148,5 +199,6 @@ spike-grade code and the stretch is met within 1%.
 
 ## Open questions for the owner
 
-None at write time. The owner may review the calls made above; anything not
-listed under "Decided" is the builder's call.
+None remaining. Overload policy and benchmark accounting were answered by
+the owner (bounded wait queue with expiry; steady-state headline with full
+drain). All other review findings were settled as the calls listed above.

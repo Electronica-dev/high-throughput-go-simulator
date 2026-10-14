@@ -75,18 +75,18 @@ func TestRequestLifecycle(t *testing.T) {
 
 func TestRequestsNeedingRecoveryStatesOnly(t *testing.T) {
 	s := openTest(t)
-	states := map[string]string{"r-q": "queued", "r-f": "in_flight", "r-c": "completed", "r-e": "expired"}
+	states := map[string]string{"r-q": "queued", "r-f": "in_flight", "r-c": "completed", "r-e": "expired", "r-s": "submitted"}
 	for id, st := range states {
 		if err := s.InsertRequest(RequestRow{ID: id, BatchID: "b", Model: "m", State: st}); err != nil {
 			t.Fatal(err)
 		}
 	}
 	need, _ := s.RequestsNeedingRecovery()
-	if len(need) != 2 {
-		t.Fatalf("want exactly queued+in_flight for recovery, got %d: %+v", len(need), need)
+	if len(need) != 3 {
+		t.Fatalf("want submitted+queued+in_flight for recovery, got %d: %+v", len(need), need)
 	}
 	for _, r := range need {
-		if r.State != "queued" && r.State != "in_flight" {
+		if r.State != "queued" && r.State != "in_flight" && r.State != "submitted" {
 			t.Fatalf("recovery set contains %s in state %s", r.ID, r.State)
 		}
 	}

@@ -50,6 +50,7 @@ type Request struct {
 	ActualCharged  atomic.Int64 // cumulative tokens charged across attempts
 	AdmittedSec    int64        // unix second of the (first) admission; set once
 	ExternalID     string       // real-mode UUID (set by the batch manager); empty in benchmark mode
+	BatchExtID     string       // real-mode batch UUID this request belongs to; empty in benchmark mode
 }
 
 // Ledger aggregates per-state counts with atomic counters.

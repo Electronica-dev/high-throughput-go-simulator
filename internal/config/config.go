@@ -79,6 +79,7 @@ type Config struct {
 	WheelBuckets int           `yaml:"wheel_buckets"`
 	WheelTickMS  int64         `yaml:"wheel_tick_ms"`
 	MaxRetries   int           `yaml:"max_retries"`
+	Workers      int           `yaml:"workers"`
 }
 
 // Load reads and unmarshals a YAML config file.

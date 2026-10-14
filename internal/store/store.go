@@ -53,22 +53,19 @@ type Store struct {
 	db *sql.DB
 }
 
-// Open creates/opens the database file with WAL pragmas.
+// Open creates/opens the database file with WAL pragmas. Pragmas ride in the
+// DSN so EVERY pooled connection gets them (a bare Exec would configure one
+// connection; concurrent writers on others would hit SQLITE_BUSY with no
+// busy timeout).
 func Open(path string) (*Store, error) {
-	db, err := sql.Open("sqlite", path)
+	dsn := path + "?_pragma=busy_timeout(5000)&_pragma=journal_mode(WAL)&_pragma=synchronous(NORMAL)&_pragma=foreign_keys(ON)"
+	db, err := sql.Open("sqlite", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("store: open %s: %w", path, err)
 	}
-	for _, pragma := range []string{
-		"PRAGMA journal_mode=WAL",
-		"PRAGMA foreign_keys=ON",
-		"PRAGMA busy_timeout=5000",
-		"PRAGMA synchronous=NORMAL",
-	} {
-		if _, err := db.Exec(pragma); err != nil {
-			db.Close()
-			return nil, fmt.Errorf("store: pragma %q: %w", pragma, err)
-		}
+	if _, err := db.Exec("PRAGMA journal_mode=WAL"); err != nil {
+		db.Close()
+		return nil, fmt.Errorf("store: wal: %w", err)
 	}
 	if err := migrate(db); err != nil {
 		db.Close()
@@ -193,10 +190,11 @@ func (s *Store) UpdateRequestTerminal(id, outcome string, tokens int64) error {
 	return nil
 }
 
-// RequestsNeedingRecovery returns rows in queued/in_flight state.
+// RequestsNeedingRecovery returns rows in submitted/queued/in_flight state
+// (everything accepted but not yet terminal — crash-recovery candidates).
 func (s *Store) RequestsNeedingRecovery() ([]RequestRow, error) {
 	rows, err := s.db.Query(`SELECT id, batch_id, model, state, outcome, tokens, admitted_sec
-		FROM requests WHERE state IN ('queued', 'in_flight')`)
+		FROM requests WHERE state IN ('submitted', 'queued', 'in_flight')`)
 	if err != nil {
 		return nil, fmt.Errorf("store: RequestsNeedingRecovery: %w", err)
 	}
@@ -217,6 +215,40 @@ func (s *Store) MarkRequestQueued(id string) error {
 	_, err := s.db.Exec(`UPDATE requests SET state='queued' WHERE id=?`, id)
 	if err != nil {
 		return fmt.Errorf("store: MarkRequestQueued %s: %w", id, err)
+	}
+	return nil
+}
+
+// GetRequest loads one request row.
+func (s *Store) GetRequest(id string) (RequestRow, bool, error) {
+	row := s.db.QueryRow(`SELECT batch_id, model, state, outcome, tokens, admitted_sec FROM requests WHERE id=?`, id)
+	var r RequestRow
+	err := row.Scan(&r.BatchID, &r.Model, &r.State, &r.Outcome, &r.Tokens, &r.AdmittedSec)
+	switch {
+	case err == sql.ErrNoRows:
+		return RequestRow{}, false, nil
+	case err != nil:
+		return RequestRow{}, false, fmt.Errorf("store: GetRequest %s: %w", id, err)
+	}
+	r.ID = id
+	return r, true, nil
+}
+
+// SetRequestState updates a request's lifecycle state.
+func (s *Store) SetRequestState(id, state string) error {
+	_, err := s.db.Exec(`UPDATE requests SET state=? WHERE id=?`, state, id)
+	if err != nil {
+		return fmt.Errorf("store: SetRequestState %s: %w", id, err)
+	}
+	return nil
+}
+
+// SetRequestFinal records a request's terminal state, outcome, and charged
+// tokens (state: completed|expired|rejected).
+func (s *Store) SetRequestFinal(id, state, outcome string, tokens int64) error {
+	_, err := s.db.Exec(`UPDATE requests SET state=?, outcome=?, tokens=? WHERE id=?`, state, outcome, tokens, id)
+	if err != nil {
+		return fmt.Errorf("store: SetRequestFinal %s: %w", id, err)
 	}
 	return nil
 }

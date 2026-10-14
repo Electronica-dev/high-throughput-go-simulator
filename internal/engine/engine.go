@@ -17,6 +17,7 @@ import (
 	"consuma/internal/metrics"
 	"consuma/internal/provider"
 	"consuma/internal/queue"
+	"consuma/internal/store"
 	"consuma/internal/wheel"
 )
 
@@ -54,6 +55,19 @@ type Engine struct {
 	pipes   map[string]*modelPipeline
 	caller  Caller
 	startNS int64
+
+	// real mode only (benchmark mode leaves these zero)
+	mode        engineMode
+	st          *store.Store
+	workerCh    chan *ledger.Request
+	workersWg   sync.WaitGroup
+	shutdown    chan struct{}
+	shutdownDo  sync.Once
+	OnTerminal  func(r *ledger.Request, outcome string, tokens int64)
+	doneMu      sync.Mutex
+	doneChans   map[string]chan terminalResult
+	recMu       sync.Mutex
+	recovering  map[string]bool
 
 	// pre-registered counters: no map/RWMutex cost on the hot path
 	cSubmitted, cAdmitted, cRejected, cOK, cFailed, cCompleted,
@@ -117,12 +131,14 @@ func NewWithCaller(cfg *config.Config, c Caller) (*Engine, error) {
 	reg := metrics.New(8)
 	w := wheel.New(cfg.WheelShards, cfg.WheelBuckets, time.Duration(cfg.WheelTickMS)*time.Millisecond, nil)
 	e := &Engine{
-		cfg:     cfg,
-		ld:      ld,
-		reg:     reg,
-		wheel:   w,
-		pipes:   make(map[string]*modelPipeline, len(cfg.Models)),
-		startNS: time.Now().UnixNano(),
+		cfg:      cfg,
+		ld:       ld,
+		reg:      reg,
+		wheel:    w,
+		pipes:    make(map[string]*modelPipeline, len(cfg.Models)),
+		startNS:  time.Now().UnixNano(),
+		mode:     modeBenchmark,
+		shutdown: make(chan struct{}),
 	}
 	e.cSubmitted = reg.Register("submitted")
 	e.cAdmitted = reg.Register("admitted")
@@ -168,6 +184,12 @@ func (e *Engine) Submit(r *ledger.Request) {
 		return // draining; loadgen stops submitting before Drain
 	}
 	e.ld.Submit(r)
+	if e.mode == modeReal && e.st != nil && r.ExternalID != "" {
+		_ = e.st.InsertRequest(store.RequestRow{
+			ID: r.ExternalID, BatchID: r.BatchExtID, Model: r.Model,
+			State: "submitted", Tokens: r.EstimateTokens, AdmittedSec: 0,
+		})
+	}
 	if e.DebugTrackRequests {
 		e.requestsMu.Lock()
 		e.allReqs = append(e.allReqs, r)
@@ -179,6 +201,9 @@ func (e *Engine) Submit(r *ledger.Request) {
 	if !ok {
 		e.ld.Transition(r, ledger.Rejected)
 		e.cRejected.Add(1)
+		if e.mode == modeReal {
+			e.realTerminal(r, "rejected", 0)
+		}
 		return
 	}
 	now := time.Now()
@@ -190,17 +215,29 @@ func (e *Engine) Submit(r *ledger.Request) {
 	case adm.OK:
 		e.cAdmitted.Add(1)
 		r.AdmittedSec = now.Unix()
+		if e.mode == modeReal {
+			if e.ld.Transition(r, ledger.Admitted) == nil {
+				e.dispatch(r) // worker transitions InFlight, draws, finalizes
+			}
+			return
+		}
 		res := e.drawCall(p, r, now)
 		e.schedule(p, r, res, now, 0)
 	case adm.OverTPMBudget:
 		e.ld.Transition(r, ledger.Rejected)
 		e.cRejected.Add(1)
+		if e.mode == modeReal {
+			e.realTerminal(r, "rejected", 0)
+		}
 	default:
 		// OverRate: bounded wait queue with expiry
 		e.cOverflow.Add(1)
 		if !p.q.Push(r, now) {
 			e.ld.Transition(r, ledger.Rejected)
 			e.cRejected.Add(1)
+			if e.mode == modeReal {
+				e.realTerminal(r, "rejected", 0)
+			}
 		}
 	}
 }
@@ -237,70 +274,10 @@ func (e *Engine) applyBatch(batch []*wheel.Entry) {
 		r := ent.Req
 		p := pc.pipeline
 		provLatencyNS += int64(pc.res.Latency)
-		r.ActualCharged.Add(pc.res.ActualTokens)
-		// terminal helper: record e2e ONCE per request (at the terminal
-		// transition, not per attempt — retried requests would otherwise
-		// contribute partial samples and bias the percentiles low) and
-		// reconcile the reservation exactly once.
-		terminal := func() {
-			e2e := nowNS - r.BornNS
-			if e2e < 0 {
-				e2e = 0 // clock anomaly defense; clamp before recording
-			}
-			p.hist.Record(e2e)
-			e.cE2ESum.Add(e2e)
-			for {
-				cur := e.e2eMaxNS.Load()
-				if e2e <= cur {
-					break
-				}
-				if e.e2eMaxNS.CompareAndSwap(cur, e2e) {
-					break
-				}
-			}
-			p.lim.Reconcile(r.EstimateTokens, r.ActualCharged.Load(), r.AdmittedSec, now)
-		}
-		switch pc.res.Outcome {
-		case provider.Success:
-			if e.ld.Transition(r, ledger.Completed) == nil {
-				terminal()
-				nOK++
-				nCompleted++
-			}
-		case provider.TransientFailure, provider.ProviderRejected:
-			if int(r.Attempts.Load()) < e.cfg.MaxRetries {
-				// charge the retry against the rolling RPM window FIRST; if
-				// the window is full, defer the retry to the wait queue
-				// instead of bypassing system-side enforcement
-				if p.lim.ChargeRetry(now) {
-					if e.ld.Transition(r, ledger.Admitted) == nil {
-						// exponential backoff: 50ms base, doubling per attempt
-						backoff := time.Duration(50<<uint(r.Attempts.Load()-1)) * time.Millisecond
-						res := e.drawCall(p, r, now) // fresh call, counts against provider limits
-						e.schedule(p, r, res, now, backoff)
-					}
-				} else if e.ld.Transition(r, ledger.Queued) == nil {
-					if !p.q.PushQueued(r, now) {
-						// queue full too: retry infrastructure exhausted
-						if e.ld.Transition(r, ledger.Completed) == nil {
-							terminal()
-							nFailed++
-							nCompleted++
-						}
-					}
-				}
-			} else if e.ld.Transition(r, ledger.Completed) == nil {
-				terminal()
-				nFailed++
-				nCompleted++
-			}
-		case provider.PermanentFailure:
-			if e.ld.Transition(r, ledger.Completed) == nil {
-				terminal()
-				nFailed++
-				nCompleted++
-			}
-		}
+		okN, failN, compN := e.finalizeOne(p, r, pc.res, now, nowNS)
+		nOK += okN
+		nFailed += failN
+		nCompleted += compN
 	}
 	if nOK > 0 {
 		e.cOK.Add(nOK)
@@ -328,7 +305,12 @@ func (e *Engine) queueDrainer() {
 			return
 		case now := <-ticker.C:
 			for _, p := range e.pipes {
-				p.q.SweepExpired(now) // max_wait_ms enforced during the run
+				expired := p.q.SweepExpired(now) // max_wait_ms enforced during the run
+				for _, r := range expired {
+					if e.mode == modeReal {
+						e.realTerminal(r, "expired", r.ActualCharged.Load())
+					}
+				}
 				for {
 					r := p.q.PopIfAdmissible(func(req *ledger.Request) bool {
 						return p.lim.TryAdmit(req.EstimateTokens, now).OK
@@ -338,6 +320,10 @@ func (e *Engine) queueDrainer() {
 					}
 					e.cAdmitted.Add(1)
 					r.AdmittedSec = now.Unix()
+					if e.mode == modeReal {
+						e.dispatch(r)
+						continue
+					}
 					res := e.drawCall(p, r, now)
 					e.schedule(p, r, res, now, 0)
 				}
@@ -381,6 +367,12 @@ func (e *Engine) Drain() Summary {
 	drainStart := time.Now()
 	e.accepting.Store(false)
 	deadline := drainStart.Add(2*time.Duration(e.cfg.MaxWaitMS)*time.Millisecond + 5*time.Second)
+	if e.mode == modeReal {
+		// real mode: blocking HTTP calls take real seconds; the benchmark
+		// deadline (2*max_wait + 5s) does not apply. Bounded at 5 min so a
+		// stuck request surfaces as an error instead of hanging the drain.
+		deadline = drainStart.Add(5 * time.Minute)
+	}
 	for time.Now().Before(deadline) {
 		if e.wheel.Pending() == 0 && e.ld.TerminalBalance() {
 			break
@@ -448,9 +440,13 @@ func (e *Engine) Limiter(model string) *limiter.Limiter {
 	return nil
 }
 
-// Stop halts the wheel and background goroutines.
+// Stop halts the wheel, workers and background goroutines. In real mode,
+// work caught mid-flight by the shutdown is abandoned in memory but stays
+// non-terminal in SQLite and is recovered on the next start (at-least-once).
 func (e *Engine) Stop() {
+	e.shutdownDo.Do(func() { close(e.shutdown) })
 	e.wheel.Stop()
+	e.workersWg.Wait()
 }
 
 func (e *Engine) requests() []*ledger.Request {

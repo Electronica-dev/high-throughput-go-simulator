@@ -200,10 +200,8 @@ state; the callback summary must match what the API returns.
 
 ## Open questions for the owner
 
-None remaining. Owner decisions recorded: batch-ID + fetch results; 202 + ID
-for batches with synchronous single-request results; SQLite for durability.
-Builder-check questions were settled as the calls listed under "Settled
-during review" (batch status enum + crash semantics, restart reconciliation
-and callback resume, simulator headroom and limit-change scope, request-ID policy:
-  server-generated UUIDs only).
-durability.
+None remaining. Owner decisions are recorded under "Owner decisions" above
+(batch status semantics, crash recovery with re-enqueue and callback resume,
+simulator headroom as a scenario parameter, server-generated request IDs)
+and in the intent section (batch-ID + fetch results; 202 + ID for batches;
+synchronous single-request results; SQLite durability).

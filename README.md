@@ -8,8 +8,8 @@ success/failure state** — API acceptance alone is not processing.
 
 Measured on a 16-core laptop (AC power, Go 1.27):
 
-- **299,989 completed requests/second** (required benchmark, 60s run)
-- **999,909 completed requests/second** (stretch benchmark, 30s run)
+- **300,000 completed requests/second** (required benchmark, 60s run — exact)
+- **1,000,000 completed requests/second** (stretch benchmark, 30s run — exact)
 - exact terminal accounting in both runs (submitted = completed + expired +
   rejected, nothing unaccounted), p50 e2e latency 52.6ms against a configured
   50ms median.
@@ -115,10 +115,14 @@ Details: `docs/benchmark/2026-10-13-run-results.md`.
 - **In-process benchmark pipeline.** See the scope caveat above.
 - **Two enforcement layers.** The system's admission limiter is primary; the
   provider simulator also enforces its own limits (429-equivalent backstop),
-  so "observed RPM/TPM" is provider-side measured.
+  so "observed RPM/TPM" is provider-side measured. Both enforce **true
+  rolling 60-second windows** (not per-second pace), maintained
+  incrementally over a 60-slot second-ring.
 - **TPM as reservation + reconciliation.** Estimated tokens are reserved at
-  admission (limits can never be exceeded); on completion the actual charge
-  is reconciled and unused reservation refunded via a lock-free pool.
+  admission (limits can never be exceeded); the provider's actual charge is
+  accumulated per request across attempts and reconciled exactly once at the
+  terminal transition, freeing unused reservation. Retries charge the
+  rolling RPM window like fresh calls.
 - **Overload = bounded wait queue with expiry.** Queued requests wait up to
   `max_wait_ms`, then end `expired`; reject-on-arrival only when the queue
   is full. Every request ends in exactly one terminal state.

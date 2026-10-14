@@ -23,6 +23,8 @@ func main() {
 		cmdBenchmark(os.Args[2:])
 	case "limits":
 		cmdLimits(os.Args[2:])
+	case "simulator":
+		cmdSimulator(os.Args[2:])
 	default:
 		usage()
 		os.Exit(2)

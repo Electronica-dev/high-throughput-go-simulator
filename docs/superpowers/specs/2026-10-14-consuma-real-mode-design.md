@@ -123,6 +123,31 @@ state; the callback summary must match what the API returns.
   then periodic retries (e.g. every 2s up to a TTL); every attempt (time,
   status code, outcome) persisted. Scenario 3 rejects the first two
   deliveries and expects recovery.
+
+## Settled during review (builder defaults, owner may override)
+
+- **Batch status enum:** `pending | processing | completed | failed`.
+  `completed` means every request in the batch reached a terminal state —
+  the outcome mix (successful/failed/expired/rejected counts) lives in the
+  counts and does not block completion. `failed` is reserved for crash loss
+  (see restart reconciliation). A request rejected at admission (wait queue
+  full at submit time) is still part of the acked 202 batch and appears in
+  the rejected count — admission is asynchronous by design.
+- **Restart reconciliation:** on startup, a sweep marks batches found in
+  `processing` as `failed` (the documented crash-loss boundary); batches
+  that were all-terminal pre-crash but whose callback was never delivered
+  **resume delivery** after restart (the persisted delivery state makes
+  this cheap, and "reasonable effort to deliver" covers restarts).
+- **Simulator limits run with headroom** (default 10× the system's
+  configured limits in scenario configs), so provider 429s remain true
+  backstop events instead of window-edge noise that would erode scenario
+  1's ≥90% utilization. `POST /limits/{model}` changes the system's
+  limiter only — the simulator keeps its headroom; the scenarios document
+  this explicitly.
+- **Request IDs are optionally client-supplied** (echoed exactly; duplicate
+  ids within one batch are rejected at submit, so "every request id appears
+  exactly once" is client-verifiable); the server generates UUIDs when the
+  client omits them. The load generator's real mode sends explicit ids.
 - **Durability:** SQLite file per service (`system.db`), WAL mode, via
   `modernc.org/sqlite`. Schema: batches (id, status, counts, callback URL,
   callback state), requests (id, batch id nullable, model, state, outcome,
@@ -166,6 +191,10 @@ state; the callback summary must match what the API returns.
 
 ## Open questions for the owner
 
-None at write time. Owner decisions recorded: batch-ID + fetch results;
-202 + ID for batches with synchronous single-request results; SQLite for
+None remaining. Owner decisions recorded: batch-ID + fetch results; 202 + ID
+for batches with synchronous single-request results; SQLite for durability.
+Builder-check questions were settled as the calls listed under "Settled
+during review" (batch status enum + crash semantics, restart reconciliation
+and callback resume, simulator headroom and limit-change scope, request-ID
+policy).
 durability.

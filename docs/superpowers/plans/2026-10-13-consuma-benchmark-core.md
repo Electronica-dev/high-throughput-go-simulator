@@ -20,7 +20,8 @@
 - Measurements and projections are reported in visibly separate sections, never mixed.
 - Overload policy: bounded wait queue with configurable max wait → `expired`; reject immediately only when the queue is full.
 - Two enforcement layers: system admission limiter primary; provider simulator enforces its own limits (429-equivalent rejection) as backstop.
-- Retries of transient failures count against RPM/TPM like fresh calls; max 3 attempts by default.
+- Retries of transient failures use exponential backoff (50ms base, doubling: 50/100/200ms) and count against RPM/TPM like fresh calls; max 3 attempts by default (`MaxRetries` in config).
+- Code layout: one file per responsibility inside its package (no god files); `cmd/consuma/main.go` is the only place packages are wired together; no package imports upward into `cmd`.
 - TPM: reserve estimated tokens at admission; reconcile against actuals at completion (refund unused); failed calls consume tokens.
 - All randomness through an injectable `*rand.Rand` so tests are deterministic.
 
@@ -314,7 +315,7 @@ git commit -m "feat: sharded counters and bucketed latency histogram"
 
 Engine flow per Submit: ledger Submit → model limiter `TryAdmit` → if `OK`: schedule provider call — wheel entry at `now + drawn latency`, and the wheel's `onFire` handler runs `provider.Call` *result application* (outcome → terminal transition; reconcile tokens; retry transient by re-scheduling with backoff up to 3 attempts). If `OverRate`: wait queue `Push` (queue drain: each tick the engine tries `PopBatch` for models with freed capacity). If queue full or `OverTPMBudget`: ledger transition to `Rejected`.
 
-Retry semantics: a transient failure re-enters as a fresh provider call (counts against limiter/provider rings per Global Constraints), max 3 attempts then terminal `Failed` (counts as Completed+Failed, not Expired).
+Retry semantics: a transient failure re-enters as a fresh provider call (counts against limiter/provider rings per Global Constraints), with **exponential backoff: 50ms base, doubling per attempt (50, 100, 200ms), max 3 attempts** (configurable via `MaxRetries` on Config, default 3), then terminal `Failed` (counts as Completed+Failed, not Expired).
 
 - [ ] **Step 1: Write the failing tests**
 

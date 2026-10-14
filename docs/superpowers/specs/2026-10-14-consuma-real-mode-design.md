@@ -30,8 +30,10 @@ state; the callback summary must match what the API returns.
   delivery retried with backoff and attempts persisted; client can query
   batch status independently at any time.
 - Durability via SQLite: batches, per-request states, and results survive
-  restart; in-flight/queued requests at crash are lost (documented
-  simulation artifact, not hidden).
+  restart. On crash, a recovery sweep re-enqueues every `queued`/`in_flight`
+  request — nothing is lost; the client sees only extra latency. In-flight
+  requests are re-issued at-least-once with idempotency keys, so a provider
+  execution that raced the crash is deduplicated, not lost or duplicated.
 - Provider simulator as a standalone CLI service (`consuma simulator`):
   charges its own rolling RPM/TPM windows, answers after its configured
   latency, returns 429 on its own limit breaches — the real-mode backstop.
@@ -57,8 +59,10 @@ state; the callback summary must match what the API returns.
 ## Non-goals (this phase)
 
 - Persistence beyond SQLite-in-a-file (no server database, no replication).
-- Surviving crashes with in-flight work (in-flight/queued at crash = lost;
-  batches persist as failed/summary per the states recorded before crash).
+- Exactly-once provider execution under crash: crash recovery is
+  at-least-once (re-issued calls carry idempotency keys; the simulated
+  provider deduplicates). The simulated provider keeps a seen-keys table so
+  redelivered calls return the original outcome instead of re-executing.
 - Authentication, TLS, multi-tenancy.
 - Horizontal scale-out (single process per service; the 10B/min planning
   note covers the path).
@@ -119,10 +123,11 @@ state; the callback summary must match what the API returns.
     on the benchmark CLI for the Loom demo).
 - **Callbacks:** when the last request of a batch reaches a terminal state,
   the system POSTs `{batch_id, status, counts, results_url}` to the
-  registered callback URL. Delivery: 3 attempts with backoff (50/100/200ms),
-  then periodic retries (e.g. every 2s up to a TTL); every attempt (time,
-  status code, outcome) persisted. Scenario 3 rejects the first two
-  deliveries and expects recovery.
+  registered callback URL. Delivery schedule (all configurable):
+  3 attempts with exponential backoff (default 500ms / 1s / 2s), then
+  periodic retries (default every 5s) until a TTL (default 5 minutes);
+  every attempt (time, status code, outcome) persisted. Scenario 3 rejects
+  the first two deliveries and expects recovery.
 
 ## Owner decisions (recorded 2026-10-14, review rounds 1-2)
 
@@ -193,8 +198,10 @@ state; the callback summary must match what the API returns.
 - Scenario runner implementation details (traffic shaping, timing checks,
   evidence JSON schema).
 - Configuration: `configs/system.yaml` (listen address, simulator URL,
-  SQLite path, callback retry policy, TTL), `configs/simulator.yaml`
-  (models with limits/latency/outcomes — same schema as today).
+  SQLite path, callback retry policy: attempt backoff schedule, periodic
+  retry interval, delivery TTL — all configurable), `configs/simulator.yaml`
+  (models with limits/latency/outcomes — same schema as today, plus the
+  idempotency seen-keys table).
 - The 10B/min planning note gains one paragraph on where SQLite sits in the
   scaled-out picture (per-shard DB or dropped for in-flight-only).
 

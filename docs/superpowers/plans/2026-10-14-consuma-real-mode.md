@@ -128,6 +128,7 @@
   - `GET /batches/{id}` → `{batch_id, status, counts{total,successful,failed,expired,rejected}, results_url, callback_state}`
   - `GET /batches/{id}/results` → `{batch_id, requests: [{request_id, outcome, tokens_charged, latency_ms}]}`
   - `POST /limits/{model}` `{rpm, tpm}` → 200 (system limiter only)
+  - Graceful shutdown: SIGINT/SIGTERM → stop accepting, drain in-flight, flush SQLite, exit (spec builder item)
 - Subcommand: `serve -config configs/system.yaml`.
 
 - [ ] **Step 1: RED** — `apiserver_test.go` with fake engine/store: single request 200 shape; batch 202 < 1s (measure) with UUID ids, count matching; GET batch 404 unknown id; GET results lists every id exactly once; limits endpoint applies to the engine limiter (assert via `Limiter(model).Limits()`); malformed JSON → 400 with error body.

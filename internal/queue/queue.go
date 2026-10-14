@@ -58,7 +58,7 @@ func (q *WaitQueue) PopBatch(now time.Time) []*ledger.Request {
 	for i := q.head; i < len(q.items); i++ {
 		batch = append(batch, q.items[i].req)
 	}
-	q.items = q.items[q.head:]
+	q.items = q.items[:0] // full drain: the queue pops everything available
 	q.head = 0
 	for _, r := range batch {
 		q.ld.Transition(r, ledger.Admitted)

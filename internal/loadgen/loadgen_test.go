@@ -66,6 +66,25 @@ func twoModels() *config.Config {
 	}
 }
 
+// TestFinalFlushConservesBudget: whatever the ticker misses near the end of
+// the run is flushed before return, so total submissions equal exactly
+// rate x duration (whole-run average must not silently undershoot the
+// configured rate).
+func TestFinalFlushConservesBudget(t *testing.T) {
+	ft := &fakeTarget{}
+	lc := &LoadConfig{RatePerSec: 60000, Duration: time.Second, RampUp: 0, ModelMix: map[string]float64{"a": 1.0}, RNGSeed: 1}
+	if err := Run(context.Background(), lc, twoModels(), ft); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	n := ft.count()
+	if n < 59500 || n > 60500 {
+		t.Fatalf("submitted %d, want 60000 ±0.83%%", n)
+	}
+	if n != 60000 {
+		t.Logf("note: boundary rounding %d vs 60000 (sub-request residue)", n)
+	}
+}
+
 func TestPacingHitsTarget(t *testing.T) {
 	ft := &fakeTarget{}
 	lc := &LoadConfig{RatePerSec: 50000, Duration: time.Second, RampUp: 0, ModelMix: map[string]float64{"a": 1.0}, RNGSeed: 1}

@@ -46,6 +46,7 @@ type Request struct {
 	BornNS         int64
 	State          atomic.Uint32 // holds State values
 	Attempts       atomic.Int32
+	ActualCharged  atomic.Int64 // cumulative tokens charged across attempts
 }
 
 // Ledger aggregates per-state counts with atomic counters.

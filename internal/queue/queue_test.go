@@ -1,6 +1,8 @@
 package queue
 
 import (
+	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -14,6 +16,94 @@ func newQueue(depth int, maxWait time.Duration) (*WaitQueue, *ledger.Ledger) {
 
 func mkReq(id uint64) *ledger.Request {
 	return &ledger.Request{ID: id, Model: "m", EstimateTokens: 10}
+}
+
+// TestPopIfAdmissibleAtomicAgainstSweep: pushers, a popper, and a sweeper
+// race; every request must reach exactly one terminal state - the atomic
+// pop-if-admissible contract is what makes that hold.
+func TestPopIfAdmissibleAtomicAgainstSweep(t *testing.T) {
+	ld := ledger.New()
+	maxWait := time.Millisecond
+	q := New(64, maxWait, ld)
+
+	stop := make(chan struct{})
+	var wg sync.WaitGroup
+	t0 := time.Unix(100000, 0)
+	var clock atomic.Int64
+
+	// pusher: adds requests while running
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		id := uint64(1)
+		for {
+			select {
+			case <-stop:
+				return
+			default:
+				r := &ledger.Request{ID: id, Model: "m", EstimateTokens: 1}
+				id++
+				ld.Submit(r)
+				if !q.Push(r, time.Unix(t0.Unix()+clock.Load(), 0)) {
+					ld.Transition(r, ledger.Rejected) // queue full: reject at door
+				}
+			}
+		}
+	}()
+
+	// sweeper: expires anything older than maxWait as the clock advances
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for {
+			select {
+			case <-stop:
+				return
+			default:
+				clock.Add(1) // advance time so pushed requests age out
+				q.SweepExpired(time.Unix(t0.Unix()+clock.Load(), 0))
+			}
+		}
+	}()
+
+	// popper: atomically pop-if-admissible; admitted requests complete here
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for {
+			select {
+			case <-stop:
+				return
+			default:
+				r := q.PopIfAdmissible(func(*ledger.Request) bool { return true })
+				if r != nil {
+					ld.Transition(r, ledger.InFlight)
+					ld.Transition(r, ledger.Completed)
+				}
+			}
+		}
+	}()
+
+	time.Sleep(50 * time.Millisecond)
+	close(stop)
+	wg.Wait()
+
+	// final sweep + drain whatever remains, then every request must balance
+	now := time.Unix(t0.Unix()+clock.Load()+100, 0)
+	q.SweepExpired(now)
+	for {
+		r := q.PopIfAdmissible(func(*ledger.Request) bool { return true })
+		if r == nil {
+			break
+		}
+		ld.Transition(r, ledger.InFlight)
+		ld.Transition(r, ledger.Completed)
+	}
+	if !ld.TerminalBalance() {
+		t.Fatalf("terminal balance broken: submitted=%d completed=%d expired=%d rejected=%d queued=%d admitted=%d inflight=%d qLen=%d",
+			ld.Submitted(), ld.Count(ledger.Completed), ld.Count(ledger.Expired), ld.Count(ledger.Rejected),
+			ld.Count(ledger.Queued), ld.Count(ledger.Admitted), ld.Count(ledger.InFlight), q.Len())
+	}
 }
 
 func TestFIFOOrder(t *testing.T) {

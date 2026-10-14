@@ -169,17 +169,20 @@ func (e *Engine) Submit(r *ledger.Request) {
 		return
 	}
 	now := time.Now()
-	res := e.drawCall(p, r, now) // draw latency/outcome/tokens; provider backstop check
+	// admission first, provider draw second: a queued or rejected request
+	// must never consume provider-side capacity (the backstop measures real
+	// calls, not attempted ones)
 	adm := p.lim.TryAdmit(r.EstimateTokens, now)
 	switch {
-	case adm.OK && res.Outcome != provider.ProviderRejected:
+	case adm.OK:
 		e.cAdmitted.Add(1)
+		res := e.drawCall(p, r, now)
 		e.schedule(p, r, res, now, 0)
 	case adm.OverTPMBudget:
 		e.ld.Transition(r, ledger.Rejected)
 		e.cRejected.Add(1)
 	default:
-		// OverRate, or provider backstop rejection: bounded wait queue with expiry
+		// OverRate: bounded wait queue with expiry
 		e.cOverflow.Add(1)
 		if !p.q.Push(r, now) {
 			e.ld.Transition(r, ledger.Rejected)
@@ -220,13 +223,12 @@ func (e *Engine) applyBatch(batch []*wheel.Entry) {
 		r := ent.Req
 		p := pc.pipeline
 		provLatencyNS += int64(pc.res.Latency)
-		p.lim.Reconcile(r.EstimateTokens, pc.res.ActualTokens, now)
 		e2e := nowNS - r.BornNS
+		if e2e < 0 {
+			e2e = 0 // clock anomaly defense; clamp before recording
+		}
 		p.hist.Record(e2e)
 		e.cE2ESum.Add(e2e)
-		if e2e < 0 {
-			e2e = 0 // defensive: BornNS from a slower-producing goroutine
-		}
 		for {
 			cur := e.e2eMaxNS.Load()
 			if e2e <= cur {
@@ -236,26 +238,34 @@ func (e *Engine) applyBatch(batch []*wheel.Entry) {
 				break
 			}
 		}
+		r.ActualCharged.Add(pc.res.ActualTokens)
 		switch pc.res.Outcome {
 		case provider.Success:
 			if e.ld.Transition(r, ledger.Completed) == nil {
+				// reconcile once, at the terminal transition: the request's
+				// cumulative actual charge frees its reservation exactly once
+				p.lim.Reconcile(r.EstimateTokens, r.ActualCharged.Load(), now)
 				nOK++
 				nCompleted++
 			}
 		case provider.TransientFailure, provider.ProviderRejected:
 			if int(r.Attempts.Load()) < e.cfg.MaxRetries {
 				if e.ld.Transition(r, ledger.Admitted) == nil {
-					// exponential backoff: 50ms base, doubling per attempt
+					// exponential backoff: 50ms base, doubling per attempt;
+					// the retry charges the rolling RPM window like a fresh call
+					p.lim.ChargeRetry(now)
 					backoff := time.Duration(50<<uint(r.Attempts.Load()-1)) * time.Millisecond
-					res := e.drawCall(p, r, now) // fresh call, counts against limits
+					res := e.drawCall(p, r, now) // fresh call, counts against provider limits
 					e.schedule(p, r, res, now, backoff)
 				}
 			} else if e.ld.Transition(r, ledger.Completed) == nil {
+				p.lim.Reconcile(r.EstimateTokens, r.ActualCharged.Load(), now)
 				nFailed++
 				nCompleted++
 			}
 		case provider.PermanentFailure:
 			if e.ld.Transition(r, ledger.Completed) == nil {
+				p.lim.Reconcile(r.EstimateTokens, r.ActualCharged.Load(), now)
 				nFailed++
 				nCompleted++
 			}
@@ -275,8 +285,9 @@ func (e *Engine) applyBatch(batch []*wheel.Entry) {
 	}
 }
 
-// queueDrainer admits queued requests as capacity frees, FIFO, one model at
-// a time. Runs until Stop.
+// queueDrainer admits queued requests as capacity frees (FIFO, atomic
+// pop-if-admissible so a concurrent sweep can never strand a popped request)
+// and enforces the wait-queue expiry DURING the run, not just at drain.
 func (e *Engine) queueDrainer() {
 	ticker := time.NewTicker(time.Duration(e.cfg.WheelTickMS) * time.Millisecond)
 	defer ticker.Stop()
@@ -285,19 +296,15 @@ func (e *Engine) queueDrainer() {
 		case <-e.wheel.Done():
 			return
 		case now := <-ticker.C:
-			if !e.accepting.Load() {
-				continue
-			}
 			for _, p := range e.pipes {
+				p.q.SweepExpired(now) // max_wait_ms enforced during the run
 				for {
-					r := p.q.Peek()
+					r := p.q.PopIfAdmissible(func(req *ledger.Request) bool {
+						return p.lim.TryAdmit(req.EstimateTokens, now).OK
+					})
 					if r == nil {
-						break
-					}
-					if adm := p.lim.TryAdmit(r.EstimateTokens, now); !adm.OK {
 						break // head can't admit; FIFO stop
 					}
-					p.q.PopOne()
 					e.cAdmitted.Add(1)
 					res := e.drawCall(p, r, now)
 					e.schedule(p, r, res, now, 0)

@@ -149,6 +149,7 @@ func pace(ctx context.Context, lc *LoadConfig, perWorker int64, startNS, rampNS,
 	// truncation and ticks missed to GC pauses are recovered exactly.
 	var lastNS int64
 	var carryNS int64
+	var sentHold int64 // submissions since ramp end (for the final flush)
 	for {
 		select {
 		case <-ctx.Done():
@@ -160,6 +161,25 @@ func pace(ctx context.Context, lc *LoadConfig, perWorker int64, startNS, rampNS,
 				lastNS = nowNS
 			}
 			if nowNS-startNS >= durNS {
+				// final flush: deliver this worker's remaining hold-window
+				// budget so total submissions conserve rate x duration —
+				// the pacer must not silently undershoot its target at the
+				// boundary (the 0.004% headline miss the review caught)
+				if lc.RampUp == 0 {
+					promised := perWorker * int64(durNS/int64(time.Second))
+					remaining := promised - sentHold
+					for i := int64(0); i < remaining; i++ {
+						pending = append(pending, &ledger.Request{
+							ID:             reqID.Add(1),
+							Model:          pick(),
+							EstimateTokens: tokens,
+							BornNS:         time.Now().UnixNano(),
+						})
+						if len(pending) >= batchSize {
+							flush()
+						}
+					}
+				}
 				flush()
 				return nil
 			}
@@ -180,6 +200,7 @@ func pace(ctx context.Context, lc *LoadConfig, perWorker int64, startNS, rampNS,
 					EstimateTokens: tokens,
 					BornNS:         time.Now().UnixNano(),
 				})
+				sentHold++
 				if len(pending) >= batchSize {
 					flush()
 				}

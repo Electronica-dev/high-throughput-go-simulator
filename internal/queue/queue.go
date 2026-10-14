@@ -56,6 +56,31 @@ func (q *WaitQueue) Peek() *ledger.Request {
 	return q.items[q.head].req
 }
 
+// PopIfAdmissible atomically pops the head request when the admission check
+// passes: peek, admit, and pop all happen under the queue lock, so a
+// concurrent SweepExpired can never expire the peeked head between the
+// admission decision and the pop (which would strand the popped request in
+// Admitted with no wheel entry). Returns nil when the queue is empty or the
+// head is not admissible.
+func (q *WaitQueue) PopIfAdmissible(admit func(*ledger.Request) bool) *ledger.Request {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+	if q.head >= len(q.items) {
+		return nil
+	}
+	r := q.items[q.head].req
+	if !admit(r) {
+		return nil
+	}
+	q.head++
+	if q.head == len(q.items) {
+		q.items = q.items[:0]
+		q.head = 0
+	}
+	q.ld.Transition(r, ledger.Admitted)
+	return r
+}
+
 // PopOne pops the head request if any (FIFO), transitioning it to Admitted.
 // Returns nil when the queue is empty. The engine uses this to drain the
 // queue only as fast as the limiter admits, keeping FIFO fairness.

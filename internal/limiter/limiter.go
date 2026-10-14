@@ -1,5 +1,8 @@
-// Package limiter implements per-model admission control: a sliding-window
-// RPM limit and TPM token reservation with reconciliation against actuals.
+// Package limiter implements per-model admission control: a true rolling
+// 60-second RPM window and TPM token reservation with reconciliation against
+// actuals. Enforcement is against the ROLLING total, not the per-second
+// pace: a client sustaining the limit's per-second pace is still capped at
+// the limit across any 60-second span.
 package limiter
 
 import (
@@ -10,37 +13,56 @@ import (
 	"consuma/internal/config"
 )
 
-// AdmissionResult tells the engine what to do with a request: OK → schedule;
-// OK=false with OverTPMBudget → reject outright (the request can never fit);
-// OK=false with OverRate → overflow to the bounded wait queue.
+// AdmissionResult tells the engine what to do with a request: OK -> schedule;
+// OK=false with OverTPMBudget -> reject outright (the request can never fit);
+// OK=false with OverRate -> overflow to the bounded wait queue.
 type AdmissionResult struct {
 	OK            bool
 	OverRate      bool
 	OverTPMBudget bool
 }
 
-// slot is one second's worth of accounting. All ops take the slot mutex so a
-// stale-slot reset can never race a concurrent add; the critical section is
-// a few int operations (~tens of ns) and only the current second's slot is
-// contended.
+// slot is one second's worth of accounting. All mutations take the slot
+// mutex so stale-slot resets can never race concurrent adds.
 type slot struct {
-	mu       sync.Mutex
-	sec      int64
-	rpm      int64 // requests admitted this second
-	tpm      int64 // tokens reserved this second (estimated)
-	actual   int64 // tokens actually charged this second (post-reconcile)
-	actualMu sync.Mutex // actual is touched from the completion path; tiny lock
+	mu     sync.Mutex
+	sec    int64
+	rpm    int64 // requests admitted this second
+	tpm    int64 // tokens reserved this second (estimated)
+	actual int64 // tokens actually charged this second (post-reconcile)
 }
 
-// Limiter is admission control for one model.
+// reset adopts the slot for a new second (call with slot.mu held).
+func (s *slot) reset(sec int64) {
+	if s.sec != sec {
+		s.sec = sec
+		s.rpm = 0
+		s.tpm = 0
+		s.actual = 0
+	}
+}
+
+// Limiter is admission control for one model. Enforcement reads the rolling
+// 60s window totals: rpmUsed/tpmUsed track the sum over the 60-slot ring and
+// are maintained incrementally (add on admit, subtract the evicted slot on
+// rollover), so TryAdmit's decision is a plain compare - no 60-slot scan on
+// the hot path. The rolling totals and the slot ring are updated under
+// usedMu; slot.mu protects slot fields against adopt races only.
 type Limiter struct {
 	rpmLimit atomic.Int64
 	tpmLimit atomic.Int64
 
 	slots [60]slot
 
+	rpmUsed   int64 // rolling 60s admitted count (guarded by usedMu)
+	tpmUsed   int64 // rolling 60s reserved tokens (guarded by usedMu)
+	wheelBase int64 // unix second of the oldest live slot (guarded by usedMu)
+	usedMu    sync.Mutex
+
+	actualUsed int64 // rolling 60s actually-charged tokens
+	actualMu   sync.Mutex
+
 	admittedTPM atomic.Int64 // cumulative reserved tokens
-	refundPool  atomic.Int64 // reconciled refunds, consumed by TryAdmit
 }
 
 // New builds a limiter from a model config.
@@ -51,80 +73,105 @@ func New(m *config.ModelConfig) *Limiter {
 	return l
 }
 
-func (l *Limiter) slotFor(now time.Time) *slot {
-	return &l.slots[now.Unix()%60]
-}
-
-// resetIfStale adopts the slot for a new minute when the wall clock wraps.
-func (s *slot) resetIfStale(sec int64) {
-	if s.sec != sec {
-		s.sec = sec
-		s.rpm = 0
-		s.tpm = 0
-		s.actual = 0
+// roll advances the ring's window base to cover the current second. The
+// window ending at sec covers [sec-59, sec]; slots for seconds older than
+// sec-59 leave the rolling totals. Call with usedMu held. Back-dated
+// seconds (sec < wheelBase) are inside the live window: no eviction.
+func (l *Limiter) roll(sec int64) {
+	if l.wheelBase == 0 {
+		l.wheelBase = sec // first use: window starts empty here
+		return
+	}
+	target := sec - 59
+	if target < l.wheelBase {
+		return // nothing has aged out of the window
+	}
+	for l.wheelBase <= target && l.wheelBase <= sec {
+		// evict second wheelBase: it is now older than the window start
+		s := l.slotFor(l.wheelBase)
+		s.mu.Lock()
+		if s.sec == l.wheelBase {
+			l.rpmUsed -= s.rpm
+			l.tpmUsed -= s.tpm
+			s.rpm, s.tpm, s.actual = 0, 0, 0
+		}
+		s.mu.Unlock()
+		l.wheelBase++
+	}
+	if sec > l.wheelBase-1 {
+		l.wheelBase = sec // window base caught up to the current second
 	}
 }
 
-// TryAdmit checks the RPM window and reserves tokens against TPM.
+func (l *Limiter) slotFor(sec int64) *slot {
+	return &l.slots[sec%60]
+}
+
+// TryAdmit checks the rolling 60s RPM/TPM usage and reserves tokens.
 func (l *Limiter) TryAdmit(tokens int64, now time.Time) AdmissionResult {
-	if tokens > l.tpmLimit.Load() {
+	rpmLimit := l.rpmLimit.Load()
+	tpmLimit := l.tpmLimit.Load()
+	if tokens > tpmLimit {
 		return AdmissionResult{OK: false, OverTPMBudget: true}
 	}
 	sec := now.Unix()
-	s := l.slotFor(now)
-	refund := l.consumeRefund(tokens) // freed budget offsets this reservation
-	s.mu.Lock()
-	s.resetIfStale(sec)
-	net := s.tpm - refund
-	if s.rpm+1 > l.rpmLimit.Load() || net+tokens > l.tpmLimit.Load() {
-		s.mu.Unlock()
-		if refund > 0 {
-			l.refundPool.Add(refund) // unused; return to the pool
-		}
+	l.usedMu.Lock()
+	l.roll(sec)
+	if l.rpmUsed+1 > rpmLimit || l.tpmUsed+tokens > tpmLimit {
+		l.usedMu.Unlock()
 		return AdmissionResult{OK: false, OverRate: true}
 	}
+	s := l.slotFor(sec)
+	s.mu.Lock()
+	s.reset(sec)
 	s.rpm++
 	s.tpm += tokens
 	s.mu.Unlock()
+	l.rpmUsed++
+	l.tpmUsed += tokens
+	l.usedMu.Unlock()
 	l.admittedTPM.Add(tokens)
 	return AdmissionResult{OK: true}
 }
 
 // Reconcile records the provider's actual charge and refunds the unused
 // reservation (estimated - actual) so freed budget is admissible again.
-// Lock-free: refunds accumulate in an atomic pool that TryAdmit subtracts
-// from the current slot's reservation total; no mutex on the completion
-// hot path (Reconcile runs once per completed request).
+// Refunds decrement the rolling total immediately under usedMu, so freed
+// budget is usable at once and can never double-count: each refund is
+// subtracted exactly once, and clamped at zero net (a refund can never make
+// the outstanding figure negative or create headroom beyond the limit).
 func (l *Limiter) Reconcile(reserved, actual int64, now time.Time) {
-	_ = now
-	s := l.slotFor(now)
+	sec := now.Unix()
 	refund := reserved - actual
-	if refund > 0 {
-		l.refundPool.Add(refund)
+	if refund < 0 {
+		refund = 0 // provider charged more than reserved; no phantom budget
 	}
-	s.actualMu.Lock()
+	l.usedMu.Lock()
+	l.roll(sec)
+	l.tpmUsed -= refund
+	if l.tpmUsed < 0 {
+		l.tpmUsed = 0 // defensive: never let refunds mint headroom
+	}
+	l.usedMu.Unlock()
+	s := l.slotFor(sec)
+	s.mu.Lock()
+	s.reset(sec)
 	s.actual += actual
-	s.actualMu.Unlock()
+	s.mu.Unlock()
+	l.actualMu.Lock()
+	l.actualUsed += actual
+	l.actualMu.Unlock()
 }
 
-// consumeRefund drains up to `want` tokens from the refund pool.
-func (l *Limiter) consumeRefund(want int64) int64 {
-	for {
-		cur := l.refundPool.Load()
-		if cur <= 0 {
-			return 0
-		}
-		take := cur
-		if take > want {
-			take = want
-		}
-		if l.refundPool.CompareAndSwap(cur, cur-take) {
-			return take
-		}
-	}
+// ChargeRetry counts one retry attempt against the rolling RPM window (and
+// its estimated tokens against TPM) like a fresh admission, without passing
+// through the queue/overflow path.
+func (l *Limiter) ChargeRetry(now time.Time) bool {
+	return l.TryAdmit(0, now).OK
 }
 
-// SetLimits swaps the configured limits live (no restart).
+// SetLimits swaps the configured limits live (no restart). Enforcement
+// applies to new admissions immediately.
 func (l *Limiter) SetLimits(rpm, tpm int64) {
 	l.rpmLimit.Store(rpm)
 	l.tpmLimit.Store(tpm)
@@ -135,37 +182,36 @@ func (l *Limiter) Limits() (int64, int64) {
 	return l.rpmLimit.Load(), l.tpmLimit.Load()
 }
 
-// ObservedRPM sums admitted requests over the sliding 60s window ending now.
+// ObservedRPM returns the rolling 60s admitted count - by construction
+// capped at the configured limit while enforcement is active.
 func (l *Limiter) ObservedRPM(now time.Time) int64 {
-	return l.sumSlots(now, func(s *slot) int64 { return s.rpm })
+	sec := now.Unix()
+	l.usedMu.Lock()
+	defer l.usedMu.Unlock()
+	l.roll(sec)
+	return l.rpmUsed
 }
 
-// ObservedTPM sums outstanding reserved tokens over the sliding 60s window,
-// net of reconciled refunds still sitting in the refund pool. Before
-// reconciliation this equals the reservation (conservative upper bound);
-// refunds lower it toward the actually-charged amount.
+// ObservedTPM returns the rolling 60s outstanding reserved tokens, net of
+// reconciled refunds. Before reconciliation this equals the reservation
+// (conservative upper bound); refunds lower it toward the actual charge.
 func (l *Limiter) ObservedTPM(now time.Time) int64 {
-	v := l.sumSlots(now, func(s *slot) int64 { return s.tpm }) - l.refundPool.Load()
-	if v < 0 {
-		v = 0
+	sec := now.Unix()
+	l.usedMu.Lock()
+	defer l.usedMu.Unlock()
+	l.roll(sec)
+	if l.tpmUsed < 0 {
+		return 0
 	}
-	return v
+	return l.tpmUsed
+}
+
+// ActualTPM returns the rolling 60s actually-charged tokens (post-reconcile).
+func (l *Limiter) ActualTPM(now time.Time) int64 {
+	l.actualMu.Lock()
+	defer l.actualMu.Unlock()
+	return l.actualUsed
 }
 
 // AdmittedTPM returns cumulative tokens reserved at admission.
 func (l *Limiter) AdmittedTPM() int64 { return l.admittedTPM.Load() }
-
-func (l *Limiter) sumSlots(now time.Time, get func(*slot) int64) int64 {
-	sec := now.Unix()
-	var sum int64
-	for i := range l.slots {
-		s := &l.slots[i]
-		s.mu.Lock()
-		// fresh: slot belongs to the last 60 seconds
-		if s.sec > sec-60 && s.sec != 0 {
-			sum += get(s)
-		}
-		s.mu.Unlock()
-	}
-	return sum
-}

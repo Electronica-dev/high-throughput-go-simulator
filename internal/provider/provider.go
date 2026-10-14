@@ -1,6 +1,7 @@
 // Package provider simulates an inference provider: configurable latency,
 // outcome mix, and actual token charges, plus its own RPM/TPM limits enforced
-// as a real provider would (rejection backstop).
+// as a real provider would (rejection backstop) against a rolling 60-second
+// window - the same enforcement semantics as the system's admission limiter.
 package provider
 
 import (
@@ -31,9 +32,9 @@ type CallResult struct {
 	ActualTokens int64
 }
 
-// providerSlot mirrors limiter slot accounting, kept local to this package so
-// the provider stays decoupled from the system's admission limiter (the
-// duplication is deliberate and small).
+// providerSlot mirrors the limiter's slot accounting, kept local to this
+// package so the provider stays decoupled from the system's admission
+// limiter (the duplication is deliberate and small).
 type providerSlot struct {
 	mu  sync.Mutex
 	sec int64
@@ -41,12 +42,18 @@ type providerSlot struct {
 	tpm int64
 }
 
-// Provider simulates calls for one model.
+// Provider simulates calls for one model. Enforcement reads rolling 60s
+// window totals maintained incrementally over the slot ring (see limiter).
 type Provider struct {
 	model *config.ModelConfig
 	rpm   atomic.Int64
 	tpm   atomic.Int64
 	slots [60]providerSlot
+
+	rpmUsed   int64
+	tpmUsed   int64
+	wheelBase int64
+	usedMu    sync.Mutex
 }
 
 // New builds a provider for a model.
@@ -63,31 +70,55 @@ func (p *Provider) SetLimits(rpm, tpm int64) {
 	p.tpm.Store(tpm)
 }
 
-func (p *Provider) slotFor(now time.Time) *providerSlot {
-	return &p.slots[now.Unix()%60]
+func (p *Provider) slotFor(sec int64) *providerSlot {
+	return &p.slots[sec%60]
 }
 
-func (s *providerSlot) resetIfStale(sec int64) {
-	if s.sec != sec {
-		s.sec = sec
-		s.rpm = 0
-		s.tpm = 0
+// roll advances the rolling window base (call with usedMu held).
+func (p *Provider) roll(sec int64) {
+	if p.wheelBase == 0 {
+		p.wheelBase = sec
+		return
+	}
+	target := sec - 59
+	if target < p.wheelBase {
+		return
+	}
+	for p.wheelBase <= target {
+		s := p.slotFor(p.wheelBase)
+		s.mu.Lock()
+		if s.sec == p.wheelBase {
+			p.rpmUsed -= s.rpm
+			p.tpmUsed -= s.tpm
+			s.rpm, s.tpm = 0, 0
+		}
+		s.mu.Unlock()
+		p.wheelBase++
 	}
 }
 
 // Call simulates one provider call at time now.
 func (p *Provider) Call(r *ledger.Request, rng *rand.Rand, now time.Time) CallResult {
 	sec := now.Unix()
-	s := p.slotFor(now)
-	s.mu.Lock()
-	s.resetIfStale(sec)
-	if s.rpm+1 > p.rpm.Load() || s.tpm+r.EstimateTokens > p.tpm.Load() {
-		s.mu.Unlock()
+	p.usedMu.Lock()
+	p.roll(sec)
+	if p.rpmUsed+1 > p.rpm.Load() || p.tpmUsed+r.EstimateTokens > p.tpm.Load() {
+		p.usedMu.Unlock()
 		return CallResult{Outcome: ProviderRejected}
+	}
+	s := p.slotFor(sec)
+	s.mu.Lock()
+	if s.sec != sec {
+		s.sec = sec
+		s.rpm = 0
+		s.tpm = 0
 	}
 	s.rpm++
 	s.tpm += r.EstimateTokens
 	s.mu.Unlock()
+	p.rpmUsed++
+	p.tpmUsed += r.EstimateTokens
+	p.usedMu.Unlock()
 
 	latency := p.model.Latency.Draw(rng)
 	outcome := p.drawOutcome(rng)
@@ -124,26 +155,20 @@ func (p *Provider) drawTokens(rng *rand.Rand) int64 {
 	return int64(math.Round(t))
 }
 
-// ObservedRPM reports provider-side request usage in the sliding window.
+// ObservedRPM reports provider-side rolling 60s request usage.
 func (p *Provider) ObservedRPM(now time.Time) int64 {
-	return p.sumSlots(now, func(s *providerSlot) int64 { return s.rpm })
-}
-
-// ObservedTPM reports provider-side token usage in the sliding window.
-func (p *Provider) ObservedTPM(now time.Time) int64 {
-	return p.sumSlots(now, func(s *providerSlot) int64 { return s.tpm })
-}
-
-func (p *Provider) sumSlots(now time.Time, get func(*providerSlot) int64) int64 {
 	sec := now.Unix()
-	var sum int64
-	for i := range p.slots {
-		s := &p.slots[i]
-		s.mu.Lock()
-		if s.sec > sec-60 && s.sec != 0 {
-			sum += get(s)
-		}
-		s.mu.Unlock()
-	}
-	return sum
+	p.usedMu.Lock()
+	defer p.usedMu.Unlock()
+	p.roll(sec)
+	return p.rpmUsed
+}
+
+// ObservedTPM reports provider-side rolling 60s token usage.
+func (p *Provider) ObservedTPM(now time.Time) int64 {
+	sec := now.Unix()
+	p.usedMu.Lock()
+	defer p.usedMu.Unlock()
+	p.roll(sec)
+	return p.tpmUsed
 }

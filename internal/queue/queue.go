@@ -45,6 +45,36 @@ func (q *WaitQueue) Push(r *ledger.Request, now time.Time) bool {
 	return true
 }
 
+// Peek returns the head request without popping or transitioning; nil when
+// empty. The engine peeks to test admission before popping (FIFO fairness).
+func (q *WaitQueue) Peek() *ledger.Request {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+	if q.head >= len(q.items) {
+		return nil
+	}
+	return q.items[q.head].req
+}
+
+// PopOne pops the head request if any (FIFO), transitioning it to Admitted.
+// Returns nil when the queue is empty. The engine uses this to drain the
+// queue only as fast as the limiter admits, keeping FIFO fairness.
+func (q *WaitQueue) PopOne() *ledger.Request {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+	if q.head >= len(q.items) {
+		return nil
+	}
+	it := q.items[q.head]
+	q.head++
+	if q.head == len(q.items) {
+		q.items = q.items[:0]
+		q.head = 0
+	}
+	q.ld.Transition(it.req, ledger.Admitted)
+	return it.req
+}
+
 // PopBatch returns queued requests in FIFO order (admitted when capacity
 // frees), transitioning each to Admitted in the ledger.
 func (q *WaitQueue) PopBatch(now time.Time) []*ledger.Request {

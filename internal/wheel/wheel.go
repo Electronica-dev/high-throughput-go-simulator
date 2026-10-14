@@ -11,10 +11,13 @@ import (
 	"consuma/internal/ledger"
 )
 
-// Entry is one scheduled completion event.
+// Entry is one scheduled completion event. Data carries the owner's payload
+// (the engine stores the drawn provider CallResult here) so the wheel stays
+// decoupled from what it schedules.
 type Entry struct {
 	Req    *ledger.Request
 	FireNS int64 // absolute deadline, nanoseconds
+	Data   any
 }
 
 // Wheel holds shards; each shard is a ring of buckets drained by one ticker.
@@ -94,6 +97,12 @@ func (w *Wheel) Stop() {
 
 // Pending returns the number of scheduled-but-not-fired entries.
 func (w *Wheel) Pending() int64 { return w.pending.Load() }
+
+// SetHandler replaces the fire callback (must be called before Start).
+func (w *Wheel) SetHandler(fn func([]*Entry)) { w.onFire = fn }
+
+// Done returns a channel closed when the wheel has stopped.
+func (w *Wheel) Done() <-chan struct{} { return w.stop }
 
 // Schedule adds an entry to the shard that owns its deadline tick. Entries
 // sharing a deadline land in the same shard and drain as one batch.

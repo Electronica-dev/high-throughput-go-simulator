@@ -120,6 +120,7 @@ func TestEngineRetryTransient(t *testing.T) {
 	e, err := New(testConfig(func(c *config.Config) {
 		c.Models[0].Outcome = config.OutcomeConfig{SuccessPct: 0, TransientPct: 100, PermanentPct: 0}
 	}))
+	e.DebugTrackRequests = true
 	if err != nil {
 		t.Fatalf("New: %v", err)
 	}

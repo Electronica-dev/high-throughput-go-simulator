@@ -1,0 +1,24 @@
+# Required simulation benchmark: 300,000 completed requests/second.
+# Simulated model limits are set far above the traffic (allowed by the
+# assignment for high-throughput benchmarks).
+max_wait_ms: 5000
+queue_depth: 65536
+wheel_shards: 8
+wheel_buckets: 4096
+wheel_tick_ms: 1
+max_retries: 3
+
+models:
+  - name: model-a
+    rpm: 500000000
+    tpm: 10000000000000
+    estimate_tokens: 1000
+    actual_token_mean: 1050
+    latency:
+      kind: lognormal
+      mean_ms: 50
+      sigma: 0.3
+    outcome:
+      success_pct: 93
+      transient_pct: 5
+      permanent_pct: 2

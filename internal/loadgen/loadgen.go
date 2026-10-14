@@ -4,6 +4,7 @@
 package loadgen
 
 import (
+	"sync"
 	"context"
 	"fmt"
 	"math/rand"
@@ -79,8 +80,11 @@ func Run(ctx context.Context, lc *LoadConfig, cfg *config.Config, target RunTarg
 		acc += lc.ModelMix[n] / total
 		cum = append(cum, acc)
 	}
+	var pickMu sync.Mutex
 	pick := func() string {
+		pickMu.Lock()
 		roll := rng.Float64()
+		pickMu.Unlock()
 		for i, c := range cum {
 			if roll < c {
 				return names[i]
@@ -94,8 +98,40 @@ func Run(ctx context.Context, lc *LoadConfig, cfg *config.Config, target RunTarg
 	durNS := lc.Duration.Nanoseconds()
 	target.MarkSteady(startNS+rampNS, startNS+durNS)
 
-	perMS := lc.RatePerSec / 1000
-	remainder := lc.RatePerSec % 1000
+	// Pacing: one goroutine per worker, each owning 1/workers of the rate
+	// with its own 1ms ticker (the single-ticker shape saturates around
+	// 280K submits/sec; the per-worker split scales with cores).
+	workers := int(lc.RatePerSec / 50000)
+	if workers < 1 {
+		workers = 1
+	}
+	if workers > 32 {
+		workers = 32
+	}
+	perWorker := lc.RatePerSec / int64(workers)
+	errCh := make(chan error, workers)
+	var wg sync.WaitGroup
+	for wk := 0; wk < workers; wk++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			if err := pace(ctx, lc, perWorker, startNS, rampNS, durNS, batchSize, tokens, pick, target); err != nil {
+				errCh <- err
+			}
+		}()
+	}
+	wg.Wait()
+	close(errCh)
+	for err := range errCh {
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// pace runs one worker's pacing loop at perWorker req/sec.
+func pace(ctx context.Context, lc *LoadConfig, perWorker int64, startNS, rampNS, durNS int64, batchSize int, tokens int64, pick func() string, target RunTarget) error {
 	pending := make([]*ledger.Request, 0, batchSize)
 	flush := func() {
 		if len(pending) > 0 {
@@ -106,42 +142,44 @@ func Run(ctx context.Context, lc *LoadConfig, cfg *config.Config, target RunTarg
 			pending = pending[:0]
 		}
 	}
-	newReq := func() *ledger.Request {
-		return &ledger.Request{
-			ID:             reqID.Add(1),
-			Model:          pick(),
-			EstimateTokens: tokens,
-			BornNS:         time.Now().UnixNano(),
-		}
-	}
-
 	ticker := time.NewTicker(time.Millisecond)
 	defer ticker.Stop()
-	var elapsedMS int64
+	// Catch-up pacing: the budget derives from elapsed wall time with a
+	// nanosecond accumulator, so no fractional request is lost to per-tick
+	// truncation and ticks missed to GC pauses are recovered exactly.
+	var lastNS int64
+	var carryNS int64
 	for {
 		select {
 		case <-ctx.Done():
 			flush()
 			return ctx.Err()
 		case <-ticker.C:
-			elapsedMS++
 			nowNS := time.Now().UnixNano()
+			if lastNS == 0 {
+				lastNS = nowNS
+			}
 			if nowNS-startNS >= durNS {
 				flush()
 				return nil
 			}
-			budget := perMS
-			// distribute remainder ticks across the second
-			if elapsedMS%1000 < remainder {
-				budget++
-			}
+			dt := nowNS - lastNS
+			lastNS = nowNS
+			carryNS += perWorker * dt
+			budget := carryNS / int64(time.Second)
+			carryNS %= int64(time.Second)
 			// ramp-up: linear scale from 0 to full rate
 			if rampNS > 0 && nowNS-startNS < rampNS {
 				frac := float64(nowNS-startNS) / float64(rampNS)
 				budget = int64(float64(budget) * frac)
 			}
 			for i := int64(0); i < budget; i++ {
-				pending = append(pending, newReq())
+				pending = append(pending, &ledger.Request{
+					ID:             reqID.Add(1),
+					Model:          pick(),
+					EstimateTokens: tokens,
+					BornNS:         time.Now().UnixNano(),
+				})
 				if len(pending) >= batchSize {
 					flush()
 				}

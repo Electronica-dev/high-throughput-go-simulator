@@ -24,11 +24,12 @@ type AdmissionResult struct {
 // a few int operations (~tens of ns) and only the current second's slot is
 // contended.
 type slot struct {
-	mu     sync.Mutex
-	sec    int64
-	rpm    int64 // requests admitted this second
-	tpm    int64 // tokens reserved this second (estimated)
-	actual int64 // tokens actually charged this second (post-reconcile)
+	mu       sync.Mutex
+	sec      int64
+	rpm      int64 // requests admitted this second
+	tpm      int64 // tokens reserved this second (estimated)
+	actual   int64 // tokens actually charged this second (post-reconcile)
+	actualMu sync.Mutex // actual is touched from the completion path; tiny lock
 }
 
 // Limiter is admission control for one model.
@@ -39,6 +40,7 @@ type Limiter struct {
 	slots [60]slot
 
 	admittedTPM atomic.Int64 // cumulative reserved tokens
+	refundPool  atomic.Int64 // reconciled refunds, consumed by TryAdmit
 }
 
 // New builds a limiter from a model config.
@@ -70,10 +72,15 @@ func (l *Limiter) TryAdmit(tokens int64, now time.Time) AdmissionResult {
 	}
 	sec := now.Unix()
 	s := l.slotFor(now)
+	refund := l.consumeRefund(tokens) // freed budget offsets this reservation
 	s.mu.Lock()
 	s.resetIfStale(sec)
-	if s.rpm+1 > l.rpmLimit.Load() || s.tpm+tokens > l.tpmLimit.Load() {
+	net := s.tpm - refund
+	if s.rpm+1 > l.rpmLimit.Load() || net+tokens > l.tpmLimit.Load() {
 		s.mu.Unlock()
+		if refund > 0 {
+			l.refundPool.Add(refund) // unused; return to the pool
+		}
 		return AdmissionResult{OK: false, OverRate: true}
 	}
 	s.rpm++
@@ -85,17 +92,36 @@ func (l *Limiter) TryAdmit(tokens int64, now time.Time) AdmissionResult {
 
 // Reconcile records the provider's actual charge and refunds the unused
 // reservation (estimated - actual) so freed budget is admissible again.
+// Lock-free: refunds accumulate in an atomic pool that TryAdmit subtracts
+// from the current slot's reservation total; no mutex on the completion
+// hot path (Reconcile runs once per completed request).
 func (l *Limiter) Reconcile(reserved, actual int64, now time.Time) {
-	sec := now.Unix()
+	_ = now
 	s := l.slotFor(now)
-	s.mu.Lock()
-	s.resetIfStale(sec)
-	s.actual += actual
 	refund := reserved - actual
-	if refund > 0 && s.tpm >= refund {
-		s.tpm -= refund
+	if refund > 0 {
+		l.refundPool.Add(refund)
 	}
-	s.mu.Unlock()
+	s.actualMu.Lock()
+	s.actual += actual
+	s.actualMu.Unlock()
+}
+
+// consumeRefund drains up to `want` tokens from the refund pool.
+func (l *Limiter) consumeRefund(want int64) int64 {
+	for {
+		cur := l.refundPool.Load()
+		if cur <= 0 {
+			return 0
+		}
+		take := cur
+		if take > want {
+			take = want
+		}
+		if l.refundPool.CompareAndSwap(cur, cur-take) {
+			return take
+		}
+	}
 }
 
 // SetLimits swaps the configured limits live (no restart).
@@ -114,12 +140,16 @@ func (l *Limiter) ObservedRPM(now time.Time) int64 {
 	return l.sumSlots(now, func(s *slot) int64 { return s.rpm })
 }
 
-// ObservedTPM sums outstanding reserved tokens over the sliding 60s window.
-// Before reconciliation this equals the reservation (conservative upper
-// bound); Reconcile refunds unused reservations so the observed figure
-// settles to the actually-charged amount.
+// ObservedTPM sums outstanding reserved tokens over the sliding 60s window,
+// net of reconciled refunds still sitting in the refund pool. Before
+// reconciliation this equals the reservation (conservative upper bound);
+// refunds lower it toward the actually-charged amount.
 func (l *Limiter) ObservedTPM(now time.Time) int64 {
-	return l.sumSlots(now, func(s *slot) int64 { return s.tpm })
+	v := l.sumSlots(now, func(s *slot) int64 { return s.tpm }) - l.refundPool.Load()
+	if v < 0 {
+		v = 0
+	}
+	return v
 }
 
 // AdmittedTPM returns cumulative tokens reserved at admission.

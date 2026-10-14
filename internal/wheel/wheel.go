@@ -126,13 +126,50 @@ func (w *Wheel) run(shard int) {
 	ticker := time.NewTicker(time.Duration(w.tickNS))
 	defer ticker.Stop()
 	var batch []*Entry
+	// Sequence-based draining with clock re-anchoring: the shard walks its
+	// buckets in order (no skipping), but re-anchors to the wall clock
+	// whenever it has fallen behind — after a stall it drains the backlog
+	// promptly instead of replaying stale ticks one per ticker fire (which
+	// would leave every scheduled entry uniformly late).
+	var seq uint64
+	first := true
 	for {
 		select {
 		case <-w.stop:
 			return
 		case <-ticker.C:
+			if first {
+				// anchor seq to the current tick; one tick of entries may
+				// already be scheduled in the current bucket, so start at
+				// the bucket the clock considers "just passed"
+				nowTick := uint64(w.nowFn() / w.tickNS)
+				seq = nowTick
+				first = false
+			}
+			// how far behind the wall clock are we (in ticks)?
 			nowTick := uint64(w.nowFn() / w.tickNS)
-			idx := (nowTick - 1) & (w.buckets - 1)
+			behind := int64(nowTick - seq)
+			if behind > 2 {
+				// stalled: drain the entire overdue span in one pass so
+				// queued completions are not metered out one tick at a time
+				for behind > 0 {
+					seq++
+					idx := (seq - 1) & (w.buckets - 1)
+					sw.mus[idx].Lock()
+					batch = append(batch[:0], sw.buckets[idx]...)
+					sw.buckets[idx] = nil
+					sw.mus[idx].Unlock()
+					if len(batch) > 0 {
+						w.pending.Add(-int64(len(batch)))
+						w.onFire(batch)
+						batch = batch[:0]
+					}
+					behind = int64(uint64(w.nowFn()/w.tickNS) - seq)
+				}
+				continue
+			}
+			seq++
+			idx := (seq - 1) & (w.buckets - 1)
 			sw.mus[idx].Lock()
 			batch = append(batch[:0], sw.buckets[idx]...)
 			sw.buckets[idx] = nil

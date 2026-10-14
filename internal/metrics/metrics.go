@@ -7,6 +7,8 @@ import (
 	"math"
 	"sync"
 	"sync/atomic"
+
+	mathrand "math/rand/v2"
 )
 
 // Histogram is a log-scale bucketed histogram from 1µs to 2s (1.1x growth,
@@ -77,67 +79,79 @@ func (h *Histogram) Percentile(p float64) float64 {
 	return 0
 }
 
+// Counter is a pre-registered sharded counter: Add takes no locks beyond the
+// atomic slot add, so it is safe on the hottest path.
+type Counter struct {
+	slots []atomic.Int64
+	rr    atomic.Uint64
+}
+
+// Add adds v, round-robining across shards.
+func (c *Counter) Add(v int64) {
+	i := int(mathrand.Int64N(int64(len(c.slots))))
+	c.slots[i].Add(v)
+}
+
+// Sum returns the counter total across shards.
+func (c *Counter) Sum() int64 {
+	var s int64
+	for i := range c.slots {
+		s += c.slots[i].Load()
+	}
+	return s
+}
+
 // Registry holds named sharded counters. Lookups take a read lock (concurrent
 // and cheap); creation takes the write lock once per name. Pointers are
-// stable across creation of other names.
+// stable across creation of other names. Hot paths should Register once and
+// use the returned *Counter.
 type Registry struct {
 	shards int
 	mu     sync.RWMutex
-	counts map[string]*sharded
-}
-
-type sharded struct {
-	slots []atomic.Int64
+	counts map[string]*Counter
 }
 
 // New builds a registry with the given shard count per counter.
 func New(shards int) *Registry {
-	return &Registry{shards: shards, counts: make(map[string]*sharded)}
+	return &Registry{shards: shards, counts: make(map[string]*Counter)}
 }
 
-func (r *Registry) counter(name string) *sharded {
-	r.mu.RLock()
-	s, ok := r.counts[name]
-	r.mu.RUnlock()
-	if ok {
-		return s
-	}
+// Register returns the named counter, creating it on first use. Call once at
+// setup; keep the *Counter for lock-free Add on hot paths.
+func (r *Registry) Register(name string) *Counter {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	if s, ok := r.counts[name]; ok {
-		return s
+	if c, ok := r.counts[name]; ok {
+		return c
 	}
-	s = &sharded{slots: make([]atomic.Int64, r.shards)}
-	r.counts[name] = s
-	return s
+	c := &Counter{slots: make([]atomic.Int64, r.shards)}
+	r.counts[name] = c
+	return c
 }
 
-// Incr adds 1 to the named counter on a pseudo-random shard.
+// Incr adds 1 to the named counter (lookup path; prefer a registered *Counter
+// on hot paths).
 func (r *Registry) Incr(name string) { r.Add(name, 1) }
 
-// Add adds v to the named counter. The shard is picked by an atomic round
-// robin; at millions of ops/sec this spreads contention without pinning.
-var shardRR atomic.Uint64
-
+// Add adds v to the named counter (lookup path; creates the counter on
+// first use — hot paths should Register once and use the *Counter directly).
 func (r *Registry) Add(name string, v int64) {
-	s := r.counter(name)
-	i := shardRR.Add(1) % uint64(len(s.slots))
-	s.slots[i].Add(v)
+	r.Register(name).Add(v)
+}
+
+func (r *Registry) lookup(name string) *Counter {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+	return r.counts[name]
 }
 
 // Get sums the named counter across shards.
 func (r *Registry) Get(name string) int64 {
-	r.mu.RLock()
-	s, ok := r.counts[name]
-	r.mu.RUnlock()
-	if !ok {
+	c := r.lookup(name)
+	if c == nil {
 		return 0
 	}
-	var sum int64
-	for k := range s.slots {
-		sum += s.slots[k].Load()
-	}
-	return sum
+	return c.Sum()
 }
 
 // Snapshot returns a copy of all counter totals.
@@ -145,12 +159,8 @@ func (r *Registry) Snapshot() map[string]int64 {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 	out := make(map[string]int64, len(r.counts))
-	for name, s := range r.counts {
-		var sum int64
-		for k := range s.slots {
-			sum += s.slots[k].Load()
-		}
-		out[name] = sum
+	for name, c := range r.counts {
+		out[name] = c.Sum()
 	}
 	return out
 }

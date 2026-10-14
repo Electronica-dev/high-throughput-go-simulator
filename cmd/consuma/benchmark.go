@@ -12,6 +12,8 @@ import (
 	"strings"
 	"time"
 
+	"runtime/debug"
+
 	"consuma/internal/config"
 	"consuma/internal/engine"
 	"consuma/internal/loadgen"
@@ -62,6 +64,14 @@ func cmdBenchmark(argv []string) {
 func runBenchmark(ra runArgs) (*engine.Summary, error) {
 	if err := validateRunArgs(ra.Rate, ra.Duration); err != nil {
 		return nil, err
+	}
+	// Optional GC tuning for benchmark runs (e.g. CONSUMA_GOGC=400 reduces
+	// GC pause frequency; the live set is tiny so the heap cost is small).
+	// Documented in the README; results note whether it was set.
+	if v := os.Getenv("CONSUMA_GOGC"); v != "" {
+		if p, err := strconv.Atoi(v); err == nil && p > 0 {
+			debug.SetGCPercent(p)
+		}
 	}
 	cfg, err := loadConfigFile(ra.Config)
 	if err != nil {

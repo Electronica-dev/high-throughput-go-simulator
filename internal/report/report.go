@@ -102,6 +102,9 @@ func Build(s engine.Summary, eng *engine.Engine, cfg *config.Config) *Report {
 		r.Measured.Limits = append(r.Measured.Limits, row)
 	}
 	r.Measured.Extra = eng.Metrics().Snapshot()
+	if eng.E2EMaxNS() > 0 {
+		r.Measured.Extra["e2e_max_ns"] = eng.E2EMaxNS()
+	}
 
 	// Projections and assumptions are LABELLED separately from measurements.
 	// The first projection is always the scope caveat (spec requirement).

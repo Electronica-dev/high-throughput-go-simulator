@@ -54,7 +54,20 @@ type Engine struct {
 	pipes   map[string]*modelPipeline
 	startNS int64
 
+	// pre-registered counters: no map/RWMutex cost on the hot path
+	cSubmitted, cAdmitted, cRejected, cOK, cFailed, cCompleted,
+	cExpired, cOverflow, cProvLatency, cE2ESum, cE2EMax *metrics.Counter
+
+	// e2eMaxNS tracks the largest observed end-to-end latency (CAS max).
+	e2eMaxNS atomic.Int64
+
 	accepting atomic.Bool
+
+	// DebugTrackRequests keeps every request in memory (test/debug only).
+	// Off by default: at 1M req/sec a tracked run would hold ~1GB of
+	// request objects and throttle the pipeline through GC alone.
+	DebugTrackRequests bool
+
 
 	steadyStart      atomic.Int64
 	steadyEnd        atomic.Int64
@@ -106,6 +119,17 @@ func New(cfg *config.Config) (*Engine, error) {
 		pipes:   make(map[string]*modelPipeline, len(cfg.Models)),
 		startNS: time.Now().UnixNano(),
 	}
+	e.cSubmitted = reg.Register("submitted")
+	e.cAdmitted = reg.Register("admitted")
+	e.cRejected = reg.Register("rejected")
+	e.cOK = reg.Register("ok")
+	e.cFailed = reg.Register("failed")
+	e.cCompleted = reg.Register("completed")
+	e.cExpired = reg.Register("expired")
+	e.cOverflow = reg.Register("overflowed")
+	e.cProvLatency = reg.Register("provider_latency_ns")
+	e.cE2ESum = reg.Register("e2e_sum_ns")
+	e.cE2EMax = reg.Register("e2e_max_ns")
 	e.accepting.Store(true)
 	for i := range cfg.Models {
 		m := &cfg.Models[i]
@@ -131,15 +155,17 @@ func (e *Engine) Submit(r *ledger.Request) {
 		return // draining; loadgen stops submitting before Drain
 	}
 	e.ld.Submit(r)
-	e.requestsMu.Lock()
-	e.allReqs = append(e.allReqs, r)
-	e.requestsMu.Unlock()
-	e.reg.Incr("submitted")
+	if e.DebugTrackRequests {
+		e.requestsMu.Lock()
+		e.allReqs = append(e.allReqs, r)
+		e.requestsMu.Unlock()
+	}
+	e.cSubmitted.Add(1)
 
 	p, ok := e.pipes[r.Model]
 	if !ok {
 		e.ld.Transition(r, ledger.Rejected)
-		e.reg.Incr("rejected")
+		e.cRejected.Add(1)
 		return
 	}
 	now := time.Now()
@@ -147,17 +173,17 @@ func (e *Engine) Submit(r *ledger.Request) {
 	adm := p.lim.TryAdmit(r.EstimateTokens, now)
 	switch {
 	case adm.OK && res.Outcome != provider.ProviderRejected:
-		e.reg.Incr("admitted")
+		e.cAdmitted.Add(1)
 		e.schedule(p, r, res, now, 0)
 	case adm.OverTPMBudget:
 		e.ld.Transition(r, ledger.Rejected)
-		e.reg.Incr("rejected")
+		e.cRejected.Add(1)
 	default:
 		// OverRate, or provider backstop rejection: bounded wait queue with expiry
-		e.reg.Incr("overflowed")
+		e.cOverflow.Add(1)
 		if !p.q.Push(r, now) {
 			e.ld.Transition(r, ledger.Rejected)
-			e.reg.Incr("rejected")
+			e.cRejected.Add(1)
 		}
 	}
 }
@@ -183,23 +209,38 @@ type pendingCall struct {
 }
 
 // applyBatch finalizes drained wheel entries: terminal transition, token
-// reconciliation, retries with exponential backoff, metrics.
+// reconciliation, retries with exponential backoff, metrics. Counters are
+// aggregated per batch (one atomic add per batch, not per request).
 func (e *Engine) applyBatch(batch []*wheel.Entry) {
 	now := time.Now()
 	nowNS := now.UnixNano()
+	var nOK, nFailed, nCompleted, provLatencyNS int64
 	for _, ent := range batch {
 		pc := ent.Data.(pendingCall)
 		r := ent.Req
 		p := pc.pipeline
-		e.reg.Add("provider_latency_ns", int64(pc.res.Latency))
+		provLatencyNS += int64(pc.res.Latency)
 		p.lim.Reconcile(r.EstimateTokens, pc.res.ActualTokens, now)
 		e2e := nowNS - r.BornNS
 		p.hist.Record(e2e)
+		e.cE2ESum.Add(e2e)
+		if e2e < 0 {
+			e2e = 0 // defensive: BornNS from a slower-producing goroutine
+		}
+		for {
+			cur := e.e2eMaxNS.Load()
+			if e2e <= cur {
+				break
+			}
+			if e.e2eMaxNS.CompareAndSwap(cur, e2e) {
+				break
+			}
+		}
 		switch pc.res.Outcome {
 		case provider.Success:
 			if e.ld.Transition(r, ledger.Completed) == nil {
-				e.reg.Incr("ok")
-				e.reg.Incr("completed")
+				nOK++
+				nCompleted++
 			}
 		case provider.TransientFailure, provider.ProviderRejected:
 			if int(r.Attempts.Load()) < e.cfg.MaxRetries {
@@ -210,15 +251,27 @@ func (e *Engine) applyBatch(batch []*wheel.Entry) {
 					e.schedule(p, r, res, now, backoff)
 				}
 			} else if e.ld.Transition(r, ledger.Completed) == nil {
-				e.reg.Incr("failed")
-				e.reg.Incr("completed")
+				nFailed++
+				nCompleted++
 			}
 		case provider.PermanentFailure:
 			if e.ld.Transition(r, ledger.Completed) == nil {
-				e.reg.Incr("failed")
-				e.reg.Incr("completed")
+				nFailed++
+				nCompleted++
 			}
 		}
+	}
+	if nOK > 0 {
+		e.cOK.Add(nOK)
+	}
+	if nFailed > 0 {
+		e.cFailed.Add(nFailed)
+	}
+	if nCompleted > 0 {
+		e.cCompleted.Add(nCompleted)
+	}
+	if provLatencyNS > 0 {
+		e.cProvLatency.Add(provLatencyNS)
 	}
 }
 
@@ -245,7 +298,7 @@ func (e *Engine) queueDrainer() {
 						break // head can't admit; FIFO stop
 					}
 					p.q.PopOne()
-					e.reg.Incr("admitted")
+					e.cAdmitted.Add(1)
 					res := e.drawCall(p, r, now)
 					e.schedule(p, r, res, now, 0)
 				}
@@ -273,20 +326,14 @@ func (e *Engine) SetLimit(model string, rpm, tpm int64) error {
 }
 
 // MarkSteady records the steady-state window (load generator's hold phase).
-// Called at hold start; a sampler goroutine snapshots the completed counter
-// at hold end so SteadyStatePerSec counts completions inside the window only.
+// Called at hold start; SteadyStatePerSec is computed at drain time as
+// (completed at drain - completed at hold start) / hold seconds. Computing at
+// drain (not at hold end) correctly includes the trailing in-flight
+// completions, which belong to submissions made inside the window.
 func (e *Engine) MarkSteady(startNS, endNS int64) {
 	e.steadyStart.Store(startNS)
 	e.steadyEnd.Store(endNS)
-	e.completedAtStart.Store(e.reg.Get("completed"))
-	wait := time.Duration(endNS-time.Now().UnixNano()) * time.Nanosecond
-	if wait > 0 {
-		time.AfterFunc(wait, func() {
-			e.steadyCompleted.Store(e.reg.Get("completed") - e.completedAtStart.Load())
-		})
-	} else {
-		e.steadyCompleted.Store(0)
-	}
+	e.completedAtStart.Store(e.cCompleted.Sum())
 }
 
 // Drain stops accepting submissions, sweeps queues, waits for all in-flight
@@ -329,7 +376,7 @@ func (e *Engine) buildSummary(drainSec float64) Summary {
 	start := e.steadyStart.Load()
 	end := e.steadyEnd.Load()
 	if end > start {
-		s.SteadyStatePerSec = float64(e.steadyCompleted.Load()) / (float64(end-start) / 1e9)
+		s.SteadyStatePerSec = float64(e.cCompleted.Sum()-e.completedAtStart.Load()) / (float64(end-start) / 1e9)
 	}
 	s.Percentiles = map[string]float64{}
 	for name, p := range e.pipes {
@@ -342,6 +389,9 @@ func (e *Engine) buildSummary(drainSec float64) Summary {
 
 // Metrics exposes the registry for the report writer.
 func (e *Engine) Metrics() *metrics.Registry { return e.reg }
+
+// E2EMaxNS returns the largest observed end-to-end latency in ns (0 if none).
+func (e *Engine) E2EMaxNS() int64 { return e.e2eMaxNS.Load() }
 
 // Provider exposes a model's simulated provider (report).
 func (e *Engine) Provider(model string) *provider.Provider {
@@ -365,6 +415,9 @@ func (e *Engine) Stop() {
 }
 
 func (e *Engine) requests() []*ledger.Request {
+	if !e.DebugTrackRequests {
+		return nil
+	}
 	e.requestsMu.Lock()
 	defer e.requestsMu.Unlock()
 	out := make([]*ledger.Request, len(e.allReqs))

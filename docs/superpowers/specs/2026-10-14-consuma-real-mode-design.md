@@ -144,10 +144,12 @@ state; the callback summary must match what the API returns.
   1's ≥90% utilization. `POST /limits/{model}` changes the system's
   limiter only — the simulator keeps its headroom; the scenarios document
   this explicitly.
-- **Request IDs are optionally client-supplied** (echoed exactly; duplicate
-  ids within one batch are rejected at submit, so "every request id appears
-  exactly once" is client-verifiable); the server generates UUIDs when the
-  client omits them. The load generator's real mode sends explicit ids.
+- **Request IDs are server-generated** (UUIDs, assigned at batch submit
+  time); the client never supplies them. The submit response and the
+  results document carry the full ID list, so scenario 3's "every request
+  id appears exactly once" is verified by the client against the server's
+  own IDs. The load generator's real mode reads IDs from the submit
+  response.
 - **Durability:** SQLite file per service (`system.db`), WAL mode, via
   `modernc.org/sqlite`. Schema: batches (id, status, counts, callback URL,
   callback state), requests (id, batch id nullable, model, state, outcome,
@@ -195,6 +197,6 @@ None remaining. Owner decisions recorded: batch-ID + fetch results; 202 + ID
 for batches with synchronous single-request results; SQLite for durability.
 Builder-check questions were settled as the calls listed under "Settled
 during review" (batch status enum + crash semantics, restart reconciliation
-and callback resume, simulator headroom and limit-change scope, request-ID
-policy).
+and callback resume, simulator headroom and limit-change scope, request-ID policy:
+  server-generated UUIDs only).
 durability.

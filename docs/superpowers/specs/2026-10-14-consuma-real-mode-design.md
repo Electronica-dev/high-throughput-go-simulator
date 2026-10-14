@@ -124,26 +124,33 @@ state; the callback summary must match what the API returns.
   status code, outcome) persisted. Scenario 3 rejects the first two
   deliveries and expects recovery.
 
-## Settled during review (builder defaults, owner may override)
+## Owner decisions (recorded 2026-10-14, review rounds 1-2)
 
-- **Batch status enum:** `pending | processing | completed | failed`.
-  `completed` means every request in the batch reached a terminal state —
-  the outcome mix (successful/failed/expired/rejected counts) lives in the
-  counts and does not block completion. `failed` is reserved for crash loss
-  (see restart reconciliation). A request rejected at admission (wait queue
-  full at submit time) is still part of the acked 202 batch and appears in
-  the rejected count — admission is asynchronous by design.
-- **Restart reconciliation:** on startup, a sweep marks batches found in
-  `processing` as `failed` (the documented crash-loss boundary); batches
-  that were all-terminal pre-crash but whose callback was never delivered
-  **resume delivery** after restart (the persisted delivery state makes
-  this cheap, and "reasonable effort to deliver" covers restarts).
-- **Simulator limits run with headroom** (default 10× the system's
-  configured limits in scenario configs), so provider 429s remain true
-  backstop events instead of window-edge noise that would erode scenario
-  1's ≥90% utilization. `POST /limits/{model}` changes the system's
-  limiter only — the simulator keeps its headroom; the scenarios document
-  this explicitly.
+- **Batch status:** `pending | processing | completed | failed`.
+  `completed` means every request in the batch is accounted for — the
+  callback and the results document carry the full breakdown
+  (`successful / failed / expired / rejected` counts plus per-request
+  terminal states). `failed` is reserved for invalid input or unrecoverable
+  loss of the record of which requests existed. A request rejected at
+  admission (wait queue full at submit time) is still part of the acked
+  202 batch and appears in the rejected count — admission is asynchronous
+  by design.
+- **Crash recovery (owner-decided, replaces the earlier "mark processing
+  as failed" default):** per-request state is persisted durably (SQLite,
+  WAL mode — see Durability). On restart, a recovery sweep re-enqueues
+  every request found `queued` or `in_flight`; the batch stays
+  `processing` throughout and eventually reaches `completed` — the client
+  never sees the crash, only extra latency. Idempotency keys per request
+  are required, because an in-flight request may or may not have reached
+  the provider before the crash. Batches whose callback was never
+  delivered **resume delivery** after restart (persisted delivery state;
+  "reasonable effort to deliver" covers restarts).
+- **Simulator limits:** the simulator is a separate fixed entity —
+  `POST /limits/{model}` changes only the system's limiter and cannot
+  reach the simulator. The simulator's headroom over the system's limits
+  (default 10×) is a **scenario parameter**, so provider 429s stay backstop
+  events without eroding scenario 1's ≥90% utilization, and a scenario can
+  tighten the headroom to exercise the backstop deliberately.
 - **Request IDs are server-generated** (UUIDs, assigned at batch submit
   time); the client never supplies them. The submit response and the
   results document carry the full ID list, so scenario 3's "every request

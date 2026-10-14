@@ -52,6 +52,7 @@ type Engine struct {
 	reg     *metrics.Registry
 	wheel   *wheel.Wheel
 	pipes   map[string]*modelPipeline
+	caller  Caller
 	startNS int64
 
 	// pre-registered counters: no map/RWMutex cost on the hot path
@@ -92,15 +93,19 @@ func (e *Engine) rng() *rand.Rand {
 
 func putRNG(e *Engine, r *rand.Rand) { e.rngs.Put(r) }
 
-// drawCall runs one provider call with a pooled RNG.
+// drawCall runs one provider call via the engine's Caller.
 func (e *Engine) drawCall(p *modelPipeline, r *ledger.Request, now time.Time) provider.CallResult {
-	rng := e.rng()
-	defer putRNG(e, rng)
-	return p.prov.Call(r, rng, now)
+	return e.caller.Call(r, now)
 }
 
-// New builds and starts an engine from a validated config.
+// New builds and starts a benchmark-mode engine (in-process caller).
 func New(cfg *config.Config) (*Engine, error) {
+	return NewWithCaller(cfg, nil)
+}
+
+// NewWithCaller builds and starts an engine using the given Caller
+// (nil = benchmark mode's in-process caller).
+func NewWithCaller(cfg *config.Config, c Caller) (*Engine, error) {
 	horizon := time.Duration(cfg.WheelBuckets) * time.Duration(cfg.WheelTickMS) * time.Millisecond
 	if err := cfg.Validate(horizon); err != nil {
 		return nil, err
@@ -142,6 +147,14 @@ func New(cfg *config.Config) (*Engine, error) {
 		}
 		e.pipes[m.Name] = p
 	}
+	if c == nil {
+		provs := make(map[string]*provider.Provider, len(e.pipes))
+		for name, p := range e.pipes {
+			provs[name] = p.prov
+		}
+		c = NewInProcessCaller(provs, e.rng, func(r *rand.Rand) { putRNG(e, r) })
+	}
+	e.caller = c
 	w.SetHandler(func(batch []*wheel.Entry) { e.applyBatch(batch) })
 	w.Start()
 	// queue drain ticker: admit queued requests as capacity frees

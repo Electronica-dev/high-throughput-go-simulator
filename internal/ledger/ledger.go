@@ -1,0 +1,104 @@
+// Package ledger tracks every request through its lifecycle with exactly-once
+// terminal accounting. Terminal states: Completed, Expired, Rejected — every
+// submitted request ends in exactly one of them.
+package ledger
+
+import (
+	"fmt"
+	"sync/atomic"
+)
+
+// State is a request lifecycle state.
+type State uint8
+
+const (
+	Submitted State = iota
+	Queued
+	Admitted
+	InFlight
+	Completed
+	Expired
+	Rejected
+	stateCount
+)
+
+// legal maps each state to the states it may transition to.
+var legal = map[State][]State{
+	Submitted: {Queued, Admitted, Rejected},
+	Queued:    {Admitted, Expired},
+	Admitted:  {InFlight},
+	// InFlight -> Admitted is the retry path: a transient failure re-enters
+	// admission as a fresh provider call.
+	InFlight: {Completed, Admitted},
+	Completed: {},
+	Expired:   {},
+	Rejected:  {},
+}
+
+func isTerminal(s State) bool { return len(legal[s]) == 0 }
+
+// Request is one simulated inference request. State is packed into the struct
+// to keep allocations single-sized and cache friendly on the hot path.
+type Request struct {
+	ID             uint64
+	Model          string
+	EstimateTokens int64
+	BornNS         int64
+	State          atomic.Uint32 // holds State values
+	Attempts       atomic.Int32
+}
+
+// Ledger aggregates per-state counts with atomic counters.
+type Ledger struct {
+	counts     [stateCount]atomic.Int64
+	submitted  atomic.Int64
+	terminated atomic.Int64 // completed + expired + rejected
+}
+
+// New returns an empty ledger.
+func New() *Ledger { return &Ledger{} }
+
+// Submit records a newly submitted request (state starts at Submitted).
+func (l *Ledger) Submit(r *Request) {
+	r.State.Store(uint32(Submitted))
+	l.submitted.Add(1)
+	l.counts[Submitted].Add(1)
+}
+
+// Transition moves r to `to` if the current state allows it; otherwise it
+// returns an error and changes nothing. Exactly-once terminals follow from
+// the compare-and-swap: only one goroutine can win any given transition.
+func (l *Ledger) Transition(r *Request, to State) error {
+	from := State(r.State.Load())
+	allowed := false
+	for _, s := range legal[from] {
+		if s == to {
+			allowed = true
+			break
+		}
+	}
+	if !allowed {
+		return fmt.Errorf("ledger: illegal transition %d -> %d for request %d", from, to, r.ID)
+	}
+	if !r.State.CompareAndSwap(uint32(from), uint32(to)) {
+		return fmt.Errorf("ledger: lost race on transition %d -> %d for request %d", from, to, r.ID)
+	}
+	l.counts[from].Add(-1)
+	l.counts[to].Add(1)
+	if isTerminal(to) {
+		l.terminated.Add(1)
+	}
+	return nil
+}
+
+// Count returns the number of requests currently in state s.
+func (l *Ledger) Count(s State) int64 { return l.counts[s].Load() }
+
+// Submitted returns the total number of submitted requests.
+func (l *Ledger) Submitted() int64 { return l.submitted.Load() }
+
+// TerminalBalance reports whether every submitted request has reached a
+// terminal state (submitted == completed + expired + rejected).
+func (l *Ledger) TerminalBalance() bool {
+	return l.submitted.Load() == l.terminated.Load()
+}

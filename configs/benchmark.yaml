@@ -1,0 +1,24 @@
+# Sample Consuma simulation configuration.
+# Benchmark runs may give simulated models limits far above real capacity
+# (allowed by the assignment for high-throughput benchmarks).
+max_wait_ms: 5000      # bounded wait queue expiry (overload policy)
+queue_depth: 4096      # per-model bounded wait queue capacity
+wheel_shards: 8        # timer wheel shards (one goroutine each)
+wheel_buckets: 4096    # per-shard buckets (power of two)
+wheel_tick_ms: 1       # wheel tick resolution
+max_retries: 3         # transient-failure retries (exponential backoff 50/100/200ms)
+
+models:
+  - name: model-a
+    rpm: 500000000        # high limit for benchmark mode
+    tpm: 10000000000000   # high limit for benchmark mode
+    estimate_tokens: 1000
+    actual_token_mean: 1050
+    latency:
+      kind: lognormal
+      mean_ms: 50         # median latency
+      sigma: 0.3
+    outcome:
+      success_pct: 93
+      transient_pct: 5
+      permanent_pct: 2

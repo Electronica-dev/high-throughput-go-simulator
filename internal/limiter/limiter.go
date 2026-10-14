@@ -104,6 +104,11 @@ func (l *Limiter) SetLimits(rpm, tpm int64) {
 	l.tpmLimit.Store(tpm)
 }
 
+// Limits returns the currently configured limits.
+func (l *Limiter) Limits() (int64, int64) {
+	return l.rpmLimit.Load(), l.tpmLimit.Load()
+}
+
 // ObservedRPM sums admitted requests over the sliding 60s window ending now.
 func (l *Limiter) ObservedRPM(now time.Time) int64 {
 	return l.sumSlots(now, func(s *slot) int64 { return s.rpm })

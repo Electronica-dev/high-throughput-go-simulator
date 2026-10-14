@@ -254,6 +254,13 @@ func (e *Engine) queueDrainer() {
 	}
 }
 
+// SubmitBatch submits a chunk of requests (satisfies loadgen.RunTarget).
+func (e *Engine) SubmitBatch(reqs []*ledger.Request) {
+	for _, r := range reqs {
+		e.Submit(r)
+	}
+}
+
 // SetLimit changes a model's limits live (no restart).
 func (e *Engine) SetLimit(model string, rpm, tpm int64) error {
 	p, ok := e.pipes[model]

@@ -27,9 +27,10 @@ var legal = map[State][]State{
 	Submitted: {Queued, Admitted, Rejected},
 	Queued:    {Admitted, Expired},
 	Admitted:  {InFlight},
-	// InFlight -> Admitted is the retry path: a transient failure re-enters
-	// admission as a fresh provider call.
-	InFlight: {Completed, Admitted},
+	// InFlight -> Queued is the retry-deferral path: the rolling window is
+	// full, so the retry goes back to the wait queue instead of bypassing
+	// RPM enforcement.
+	InFlight: {Completed, Admitted, Queued},
 	Completed: {},
 	Expired:   {},
 	Rejected:  {},
@@ -47,6 +48,7 @@ type Request struct {
 	State          atomic.Uint32 // holds State values
 	Attempts       atomic.Int32
 	ActualCharged  atomic.Int64 // cumulative tokens charged across attempts
+	AdmittedSec    int64        // unix second of the (first) admission; set once
 }
 
 // Ledger aggregates per-state counts with atomic counters.

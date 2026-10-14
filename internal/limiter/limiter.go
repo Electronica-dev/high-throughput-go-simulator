@@ -73,21 +73,20 @@ func New(m *config.ModelConfig) *Limiter {
 	return l
 }
 
-// roll advances the ring's window base to cover the current second. The
-// window ending at sec covers [sec-59, sec]; slots for seconds older than
-// sec-59 leave the rolling totals. Call with usedMu held. Back-dated
-// seconds (sec < wheelBase) are inside the live window: no eviction.
+// roll advances the ring's window base so that the window ending at sec
+// covers [sec-59, sec]. wheelBase is ALWAYS the oldest live second: it
+// advances one second per eviction and is never snapped to the current
+// second (a snap would skip evictions, strand counts in the rolling totals,
+// and permanently starve the limiter under sustained load). Call with
+// usedMu held. Back-dated seconds (sec < wheelBase) are inside the live
+// window: no eviction.
 func (l *Limiter) roll(sec int64) {
 	if l.wheelBase == 0 {
 		l.wheelBase = sec // first use: window starts empty here
 		return
 	}
-	target := sec - 59
-	if target < l.wheelBase {
-		return // nothing has aged out of the window
-	}
-	for l.wheelBase <= target && l.wheelBase <= sec {
-		// evict second wheelBase: it is now older than the window start
+	for l.wheelBase < sec-59 {
+		// evict second wheelBase: it just left the 60s window
 		s := l.slotFor(l.wheelBase)
 		s.mu.Lock()
 		if s.sec == l.wheelBase {
@@ -97,9 +96,6 @@ func (l *Limiter) roll(sec int64) {
 		}
 		s.mu.Unlock()
 		l.wheelBase++
-	}
-	if sec > l.wheelBase-1 {
-		l.wheelBase = sec // window base caught up to the current second
 	}
 }
 
@@ -137,10 +133,11 @@ func (l *Limiter) TryAdmit(tokens int64, now time.Time) AdmissionResult {
 // Reconcile records the provider's actual charge and refunds the unused
 // reservation (estimated - actual) so freed budget is admissible again.
 // Refunds decrement the rolling total immediately under usedMu, so freed
-// budget is usable at once and can never double-count: each refund is
-// subtracted exactly once, and clamped at zero net (a refund can never make
-// the outstanding figure negative or create headroom beyond the limit).
-func (l *Limiter) Reconcile(reserved, actual int64, now time.Time) {
+// budget is usable at once and can never double-count. A refund is applied
+// only if the reservation's admission second is still inside the rolling
+// window (admittedSec >= wheelBase): a refund for an already-evicted
+// reservation must not mint headroom. Net is clamped at zero.
+func (l *Limiter) Reconcile(reserved, actual, admittedSec int64, now time.Time) {
 	sec := now.Unix()
 	refund := reserved - actual
 	if refund < 0 {
@@ -148,9 +145,11 @@ func (l *Limiter) Reconcile(reserved, actual int64, now time.Time) {
 	}
 	l.usedMu.Lock()
 	l.roll(sec)
-	l.tpmUsed -= refund
-	if l.tpmUsed < 0 {
-		l.tpmUsed = 0 // defensive: never let refunds mint headroom
+	if admittedSec >= l.wheelBase && refund > 0 {
+		l.tpmUsed -= refund
+		if l.tpmUsed < 0 {
+			l.tpmUsed = 0 // defensive: never let refunds mint headroom
+		}
 	}
 	l.usedMu.Unlock()
 	s := l.slotFor(sec)

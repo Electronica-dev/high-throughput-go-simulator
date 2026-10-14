@@ -74,17 +74,15 @@ func (p *Provider) slotFor(sec int64) *providerSlot {
 	return &p.slots[sec%60]
 }
 
-// roll advances the rolling window base (call with usedMu held).
+// roll advances the rolling window base (call with usedMu held). wheelBase
+// is always the oldest live second and is never snapped to the current
+// second (a snap would skip evictions and starve the backstop).
 func (p *Provider) roll(sec int64) {
 	if p.wheelBase == 0 {
 		p.wheelBase = sec
 		return
 	}
-	target := sec - 59
-	if target < p.wheelBase {
-		return
-	}
-	for p.wheelBase <= target {
+	for p.wheelBase < sec-59 {
 		s := p.slotFor(p.wheelBase)
 		s.mu.Lock()
 		if s.sec == p.wheelBase {

@@ -176,6 +176,7 @@ func (e *Engine) Submit(r *ledger.Request) {
 	switch {
 	case adm.OK:
 		e.cAdmitted.Add(1)
+		r.AdmittedSec = now.Unix()
 		res := e.drawCall(p, r, now)
 		e.schedule(p, r, res, now, 0)
 	case adm.OverTPMBudget:
@@ -223,49 +224,66 @@ func (e *Engine) applyBatch(batch []*wheel.Entry) {
 		r := ent.Req
 		p := pc.pipeline
 		provLatencyNS += int64(pc.res.Latency)
-		e2e := nowNS - r.BornNS
-		if e2e < 0 {
-			e2e = 0 // clock anomaly defense; clamp before recording
-		}
-		p.hist.Record(e2e)
-		e.cE2ESum.Add(e2e)
-		for {
-			cur := e.e2eMaxNS.Load()
-			if e2e <= cur {
-				break
-			}
-			if e.e2eMaxNS.CompareAndSwap(cur, e2e) {
-				break
-			}
-		}
 		r.ActualCharged.Add(pc.res.ActualTokens)
+		// terminal helper: record e2e ONCE per request (at the terminal
+		// transition, not per attempt — retried requests would otherwise
+		// contribute partial samples and bias the percentiles low) and
+		// reconcile the reservation exactly once.
+		terminal := func() {
+			e2e := nowNS - r.BornNS
+			if e2e < 0 {
+				e2e = 0 // clock anomaly defense; clamp before recording
+			}
+			p.hist.Record(e2e)
+			e.cE2ESum.Add(e2e)
+			for {
+				cur := e.e2eMaxNS.Load()
+				if e2e <= cur {
+					break
+				}
+				if e.e2eMaxNS.CompareAndSwap(cur, e2e) {
+					break
+				}
+			}
+			p.lim.Reconcile(r.EstimateTokens, r.ActualCharged.Load(), r.AdmittedSec, now)
+		}
 		switch pc.res.Outcome {
 		case provider.Success:
 			if e.ld.Transition(r, ledger.Completed) == nil {
-				// reconcile once, at the terminal transition: the request's
-				// cumulative actual charge frees its reservation exactly once
-				p.lim.Reconcile(r.EstimateTokens, r.ActualCharged.Load(), now)
+				terminal()
 				nOK++
 				nCompleted++
 			}
 		case provider.TransientFailure, provider.ProviderRejected:
 			if int(r.Attempts.Load()) < e.cfg.MaxRetries {
-				if e.ld.Transition(r, ledger.Admitted) == nil {
-					// exponential backoff: 50ms base, doubling per attempt;
-					// the retry charges the rolling RPM window like a fresh call
-					p.lim.ChargeRetry(now)
-					backoff := time.Duration(50<<uint(r.Attempts.Load()-1)) * time.Millisecond
-					res := e.drawCall(p, r, now) // fresh call, counts against provider limits
-					e.schedule(p, r, res, now, backoff)
+				// charge the retry against the rolling RPM window FIRST; if
+				// the window is full, defer the retry to the wait queue
+				// instead of bypassing system-side enforcement
+				if p.lim.ChargeRetry(now) {
+					if e.ld.Transition(r, ledger.Admitted) == nil {
+						// exponential backoff: 50ms base, doubling per attempt
+						backoff := time.Duration(50<<uint(r.Attempts.Load()-1)) * time.Millisecond
+						res := e.drawCall(p, r, now) // fresh call, counts against provider limits
+						e.schedule(p, r, res, now, backoff)
+					}
+				} else if e.ld.Transition(r, ledger.Queued) == nil {
+					if !p.q.PushQueued(r, now) {
+						// queue full too: retry infrastructure exhausted
+						if e.ld.Transition(r, ledger.Completed) == nil {
+							terminal()
+							nFailed++
+							nCompleted++
+						}
+					}
 				}
 			} else if e.ld.Transition(r, ledger.Completed) == nil {
-				p.lim.Reconcile(r.EstimateTokens, r.ActualCharged.Load(), now)
+				terminal()
 				nFailed++
 				nCompleted++
 			}
 		case provider.PermanentFailure:
 			if e.ld.Transition(r, ledger.Completed) == nil {
-				p.lim.Reconcile(r.EstimateTokens, r.ActualCharged.Load(), now)
+				terminal()
 				nFailed++
 				nCompleted++
 			}
@@ -306,6 +324,7 @@ func (e *Engine) queueDrainer() {
 						break // head can't admit; FIFO stop
 					}
 					e.cAdmitted.Add(1)
+					r.AdmittedSec = now.Unix()
 					res := e.drawCall(p, r, now)
 					e.schedule(p, r, res, now, 0)
 				}

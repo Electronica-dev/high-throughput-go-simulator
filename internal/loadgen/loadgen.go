@@ -96,7 +96,8 @@ func Run(ctx context.Context, lc *LoadConfig, cfg *config.Config, target RunTarg
 	startNS := time.Now().UnixNano()
 	rampNS := lc.RampUp.Nanoseconds()
 	durNS := lc.Duration.Nanoseconds()
-	target.MarkSteady(startNS+rampNS, startNS+durNS)
+	// MarkSteady fires when the hold phase actually starts (not upfront), so
+	// the engine's completedAtStart snapshot excludes ramp-phase completions.
 
 	// Pacing: one goroutine per worker, each owning 1/workers of the rate
 	// with its own 1ms ticker (the single-ticker shape saturates around
@@ -109,13 +110,19 @@ func Run(ctx context.Context, lc *LoadConfig, cfg *config.Config, target RunTarg
 		workers = 32
 	}
 	perWorker := lc.RatePerSec / int64(workers)
+	extra := lc.RatePerSec - perWorker*int64(workers) // remainder to first workers
 	errCh := make(chan error, workers)
 	var wg sync.WaitGroup
+	var steadyOnce sync.Once
 	for wk := 0; wk < workers; wk++ {
+		pw := perWorker
+		if wk < int(extra) {
+			pw++
+		}
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			if err := pace(ctx, lc, perWorker, startNS, rampNS, durNS, batchSize, tokens, pick, target); err != nil {
+			if err := pace(ctx, lc, pw, startNS, rampNS, durNS, batchSize, tokens, pick, target, &steadyOnce); err != nil {
 				errCh <- err
 			}
 		}()
@@ -130,8 +137,9 @@ func Run(ctx context.Context, lc *LoadConfig, cfg *config.Config, target RunTarg
 	return nil
 }
 
-// pace runs one worker's pacing loop at perWorker req/sec.
-func pace(ctx context.Context, lc *LoadConfig, perWorker int64, startNS, rampNS, durNS int64, batchSize int, tokens int64, pick func() string, target RunTarget) error {
+// pace runs one worker's pacing loop at perWorker req/sec. holdMarked fires
+// MarkSteady exactly once (via steadyOnce) when the hold phase begins.
+func pace(ctx context.Context, lc *LoadConfig, perWorker int64, startNS, rampNS, durNS int64, batchSize int, tokens int64, pick func() string, target RunTarget, steadyOnce *sync.Once) error {
 	pending := make([]*ledger.Request, 0, batchSize)
 	flush := func() {
 		if len(pending) > 0 {
@@ -150,6 +158,7 @@ func pace(ctx context.Context, lc *LoadConfig, perWorker int64, startNS, rampNS,
 	var lastNS int64
 	var carryNS int64
 	var sentHold int64 // submissions since ramp end (for the final flush)
+	holdMarked := false
 	for {
 		select {
 		case <-ctx.Done():
@@ -182,6 +191,12 @@ func pace(ctx context.Context, lc *LoadConfig, perWorker int64, startNS, rampNS,
 				}
 				flush()
 				return nil
+			}
+			if !holdMarked && nowNS-startNS >= rampNS {
+				holdMarked = true
+				steadyOnce.Do(func() {
+					target.MarkSteady(nowNS, startNS+durNS)
+				})
 			}
 			dt := nowNS - lastNS
 			lastNS = nowNS

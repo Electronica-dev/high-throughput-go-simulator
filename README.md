@@ -126,9 +126,9 @@ Details: `docs/benchmark/2026-10-13-run-results.md`.
 - **Overload = bounded wait queue with expiry.** Queued requests wait up to
   `max_wait_ms`, then end `expired`; reject-on-arrival only when the queue
   is full. Every request ends in exactly one terminal state.
-- **Retries.** Transient failures retry with exponential backoff
-  (50/100/200ms, max 3), each retry counting against RPM/TPM like a fresh
-  call; per-attempt and per-request results are both visible in counters.
+- **Retries.** Transient failures retry with exponential backoff until
+  3 attempts total (initial + up to 2 retries; 50ms then 100ms), each retry
+  counting against RPM/TPM like a fresh call; per-attempt and per-request results are both visible in counters.
 
 ## Scaling note
 

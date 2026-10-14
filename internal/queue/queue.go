@@ -56,6 +56,19 @@ func (q *WaitQueue) Peek() *ledger.Request {
 	return q.items[q.head].req
 }
 
+// PushQueued enqueues a request that is ALREADY in the Queued ledger state
+// (the retry-deferral path transitions InFlight→Queued before calling this),
+// recording pushedNS for expiry. Returns false when the queue is full.
+func (q *WaitQueue) PushQueued(r *ledger.Request, now time.Time) bool {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+	if len(q.items)-q.head >= q.depth {
+		return false
+	}
+	q.items = append(q.items, queued{req: r, pushedNS: now.UnixNano()})
+	return true
+}
+
 // PopIfAdmissible atomically pops the head request when the admission check
 // passes: peek, admit, and pop all happen under the queue lock, so a
 // concurrent SweepExpired can never expire the peeked head between the

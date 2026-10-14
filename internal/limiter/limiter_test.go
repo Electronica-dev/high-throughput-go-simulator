@@ -105,6 +105,56 @@ func TestObservedRPMCappedByLimit(t *testing.T) {
 	}
 }
 
+// TestRollingWindowSustainedMinute: the reviewer's starvation probe — RPM=60
+// paced at 1 request/second for 120 seconds must admit every request (each
+// second's admission leaves the window 60s later, freeing budget for the
+// next). A broken eviction (skipped seconds, snap-to-now) blackouts the
+// limiter after ~70 admits.
+func TestRollingWindowSustainedMinute(t *testing.T) {
+	m := testModel()
+	m.RPM = 60
+	m.TPM = 100000000
+	l := New(m)
+	t0 := time.Unix(100000, 0)
+	for s := int64(0); s < 120; s++ {
+		if r := l.TryAdmit(1000, t0.Add(time.Duration(s)*time.Second)); !r.OK {
+			t.Fatalf("admit at +%ds rejected: rolling window is starving (used=%d)", s, l.ObservedRPM(t0.Add(time.Duration(s)*time.Second)))
+		}
+	}
+}
+
+// TestRefundForAgedOutReservationSkipped: a refund whose reservation already
+// left the rolling window must not deflate the in-window total (that would
+// mint headroom: 9 in-window reservations + an aged-out refund would admit
+// 2 more instead of 1).
+func TestRefundForAgedOutReservationSkipped(t *testing.T) {
+	m := testModel()
+	m.RPM = 1000  // isolate TPM
+	m.TPM = 10000 // 10 x 1000-token reservations saturate it exactly
+	l := New(m)
+	t0 := time.Unix(100000, 0)
+	// 1 admission at t0 (will age out), 9 at t0+20s (still in-window at +70s)
+	if r := l.TryAdmit(1000, t0); !r.OK {
+		t.Fatal("admit at t0 should pass")
+	}
+	for i := 0; i < 9; i++ {
+		if r := l.TryAdmit(1000, t0.Add(20*time.Second)); !r.OK {
+			t.Fatalf("in-window admit %d should pass", i+1)
+		}
+	}
+	later := t0.Add(70 * time.Second) // window covers [t0+11, t0+70]
+	l.Reconcile(1000, 0, t0.Unix(), later)
+	admitted := 0
+	for i := 0; i < 5; i++ {
+		if l.TryAdmit(1000, later).OK {
+			admitted++
+		}
+	}
+	if admitted != 1 {
+		t.Fatalf("aged-out refund minted headroom: %d admits, want 1", admitted)
+	}
+}
+
 func TestWindowSlides(t *testing.T) {
 	l := New(testModel())
 	now := time.Unix(100000, 0)
@@ -140,7 +190,7 @@ func TestReconcileRefunds(t *testing.T) {
 	if r := l.TryAdmit(1000, now); !r.OK {
 		t.Fatal("admit should pass")
 	}
-	l.Reconcile(1000, 800, now) // provider charged 800 of 1000 reserved
+	l.Reconcile(1000, 800, now.Unix(), now) // provider charged 800 of 1000 reserved
 	if got := l.ObservedTPM(now); got != 800 {
 		t.Fatalf("ObservedTPM want 800 (actual charged), got %d", got)
 	}
@@ -162,7 +212,7 @@ func TestRefundNeverDrivesNegative(t *testing.T) {
 		l.TryAdmit(1000, t0)
 	}
 	for i := 0; i < 10; i++ {
-		l.Reconcile(1000, 0, t0) // provider charged nothing: full refunds
+		l.Reconcile(1000, 0, t0.Unix(), t0) // provider charged nothing: full refunds
 	}
 	if got := l.ObservedTPM(t0); got != 0 {
 		t.Fatalf("ObservedTPM want 0 after full refunds, got %d", got)

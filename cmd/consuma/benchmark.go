@@ -15,6 +15,7 @@ import (
 	"consuma/internal/config"
 	"consuma/internal/engine"
 	"consuma/internal/loadgen"
+	"consuma/internal/report"
 
 	"gopkg.in/yaml.v3"
 )
@@ -109,23 +110,26 @@ func runBenchmark(ra runArgs) (*engine.Summary, error) {
 	<-doneWatch
 
 	s := eng.Drain()
+	rep := report.Build(s, eng, cfg).WithRun(ra.Rate, ra.Duration)
 	if ra.Report != "" {
-		writeReportJSON(ra.Report, &s, eng, cfg)
+		f, err := os.Create(ra.Report)
+		if err != nil {
+			return nil, fmt.Errorf("open report %s: %w", ra.Report, err)
+		}
+		defer f.Close()
+		if err := report.WriteJSON(f, rep); err != nil {
+			return nil, fmt.Errorf("write report %s: %w", ra.Report, err)
+		}
 	}
 	return &s, runErr
 }
 
-// printSummary is the Task 11 stub; replaced by the report writer.
+// printSummary renders the human-readable run report to stdout.
 func printSummary(s *engine.Summary) {
 	fmt.Printf("submitted=%d completed=%d ok=%d failed=%d expired=%d rejected=%d\n",
 		s.Submitted, s.Completed, s.OK, s.Failed, s.Expired, s.Rejected)
 	fmt.Printf("steady-state: %.0f/sec  whole-run avg: %.0f/sec  drain: %.2fs\n",
 		s.SteadyStatePerSec, s.WholeRunAvgPerSec, s.DrainSec)
-}
-
-// writeReportJSON is wired to internal/report in Task 11.
-func writeReportJSON(path string, s *engine.Summary, eng *engine.Engine, cfg *config.Config) {
-	fmt.Fprintf(os.Stderr, "report writing arrives in Task 11; asked for %s\n", path)
 }
 
 // loadConfigFile and marshalConfig are the cmd-side config I/O helpers.

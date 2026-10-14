@@ -343,6 +343,14 @@ func (e *Engine) buildSummary(drainSec float64) Summary {
 // Metrics exposes the registry for the report writer.
 func (e *Engine) Metrics() *metrics.Registry { return e.reg }
 
+// Provider exposes a model's simulated provider (report).
+func (e *Engine) Provider(model string) *provider.Provider {
+	if p, ok := e.pipes[model]; ok {
+		return p.prov
+	}
+	return nil
+}
+
 // Limiter exposes a model's admission limiter (tests, report).
 func (e *Engine) Limiter(model string) *limiter.Limiter {
 	if p, ok := e.pipes[model]; ok {

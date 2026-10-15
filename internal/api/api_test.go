@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"consuma/internal/ledger"
+	"htsim/internal/ledger"
 )
 
 // fakeDeps implements the server's dependency surface.

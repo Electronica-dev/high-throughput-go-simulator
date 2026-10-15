@@ -1,9 +1,9 @@
-# Consuma — Real-Mode System: Design (Phase 2)
+# Real-Mode System: Design (Phase 2)
 
 Date: 2026-10-14
 Status: draft for builder check
-Source: `consuma ai project.pdf` (Consuma Technologies assignment)
-Phase 1: `docs/superpowers/specs/2026-10-13-consuma-inference-system-design.md` (committed, benchmark core on `main`)
+Source: `the assignment PDF` (the take-home assignment)
+Phase 1: `docs/superpowers/specs/2026-10-13-inference-system-design.md` (committed, benchmark core on `main`)
 
 ## Intent and why
 
@@ -34,7 +34,7 @@ state; the callback summary must match what the API returns.
   request — nothing is lost; the client sees only extra latency. In-flight
   requests are re-issued at-least-once with idempotency keys, so a provider
   execution that raced the crash is deduplicated, not lost or duplicated.
-- Provider simulator as a standalone CLI service (`consuma simulator`):
+- Provider simulator as a standalone CLI service (`htsim simulator`):
   charges its own rolling RPM/TPM windows, answers after its configured
   latency, returns 429 on its own limit breaches — the real-mode backstop.
 - The system calls the simulator over HTTP in real mode (a real network
@@ -82,7 +82,7 @@ state; the callback summary must match what the API returns.
 ## Constraints
 
 - Same machine (ASUS Zenbook, 16 cores, Windows 11), same Go 1.27 module
-  (`consuma`).
+  (`htsim`).
 - Dependency policy: the benchmark core allows only `gopkg.in/yaml.v3`.
   Phase 2 adds `modernc.org/sqlite` (pure Go, no cgo — the only SQLite
   driver buildable on this host) and uses the standard library
@@ -95,9 +95,9 @@ state; the callback summary must match what the API returns.
 
 ## Decided architecture (owner-approved)
 
-- **Two new binaries in the same module:** `consuma system` (HTTP service,
-  real mode) and `consuma simulator` (standalone provider simulator
-  service). The existing `consuma benchmark` and `consuma limits` remain.
+- **Two new binaries in the same module:** `htsim system` (HTTP service,
+  real mode) and `htsim simulator` (standalone provider simulator
+  service). The existing `htsim benchmark` and `htsim limits` remain.
 - **Provider abstraction:** the engine takes a provider interface. Two
   implementations: the existing in-process wheel-scheduled simulator
   (benchmark mode — unchanged, still the 300K/1M path) and an HTTP provider
@@ -174,7 +174,7 @@ state; the callback summary must match what the API returns.
 
 ## Scenario runner decisions (owner-decided)
 
-- Each scenario is a runner command (`consuma scenario1|scenario2|scenario3`)
+- Each scenario is a runner command (`htsim scenario1|scenario2|scenario3`)
   that: starts/uses the services, drives the traffic, changes limits via the
   API where the scenario requires it, collects the system's own observed
   windows plus client-side measurements, and writes an evidence JSON +

@@ -1,7 +1,6 @@
 package scenarios
 
 import (
-	"strings"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -9,6 +8,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 )

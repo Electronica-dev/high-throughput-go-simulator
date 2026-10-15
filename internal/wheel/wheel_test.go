@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"consuma/internal/ledger"
+	"htsim/internal/ledger"
 )
 
 func mkReq(id uint64) *ledger.Request {

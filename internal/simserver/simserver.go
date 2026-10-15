@@ -14,8 +14,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"consuma/internal/config"
-	"consuma/internal/store"
+	"htsim/internal/config"
+	"htsim/internal/store"
 )
 
 type simSlot struct {

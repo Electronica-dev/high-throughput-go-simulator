@@ -115,7 +115,7 @@ fix trail.
 - `cpu_bench_test.go` has a hardcoded profile path (debug artifact).
 - `Drain` hitting its deadline returns the summary without a
   `drained_complete` flag — an unbalanced report is not visibly marked.
-- `cmd/consuma/main.go` has a test-only helper (`newEngineFromConfig`).
+- `cmd/htsim/main.go` has a test-only helper (`newEngineFromConfig`).
 - The wheel's `Schedule` silently drops entries after `Stop` (unreachable
   in the benchmark flow, but unguarded).
 - The race detector could not run on the Windows host (no cgo/gcc); run one

@@ -11,8 +11,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"consuma/internal/config"
-	"consuma/internal/ledger"
+	"htsim/internal/config"
+	"htsim/internal/ledger"
 )
 
 // RunTarget is what the load generator feeds. Engine implements it; tests

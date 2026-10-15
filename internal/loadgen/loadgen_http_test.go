@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"consuma/internal/config"
+	"htsim/internal/config"
 )
 
 // fakeAPI is a minimal system API: counts POST /batches, sums submitted

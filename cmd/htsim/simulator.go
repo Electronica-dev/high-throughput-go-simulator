@@ -1,4 +1,4 @@
-// simulator.go: the `consuma simulator` subcommand — the standalone provider
+// simulator.go: the `htsim simulator` subcommand — the standalone provider
 // simulator service (rolling limits, latency sleeps, idempotency seen-keys).
 package main
 
@@ -9,9 +9,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"consuma/internal/config"
-	"consuma/internal/simserver"
-	"consuma/internal/store"
+	"htsim/internal/config"
+	"htsim/internal/simserver"
+	"htsim/internal/store"
 )
 
 func cmdSimulator(argv []string) {

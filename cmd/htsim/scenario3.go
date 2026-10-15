@@ -4,7 +4,7 @@
 package main
 
 import (
-	"consuma/internal/scenarios"
+	"htsim/internal/scenarios"
 )
 
 func cmdScenario3(argv []string) {

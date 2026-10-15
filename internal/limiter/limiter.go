@@ -10,7 +10,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"consuma/internal/config"
+	"htsim/internal/config"
 )
 
 // AdmissionResult tells the engine what to do with a request: OK -> schedule;

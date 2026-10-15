@@ -16,8 +16,8 @@ import (
 	"sync"
 	"time"
 
-	"consuma/internal/config"
-	"consuma/internal/loadgen"
+	"htsim/internal/config"
+	"htsim/internal/loadgen"
 )
 
 // WindowSample mirrors api.WindowSample (one model's rolling-window snapshot).

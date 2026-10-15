@@ -1,4 +1,4 @@
-# Consuma Benchmark Core Implementation Plan
+# Benchmark Core Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -8,11 +8,11 @@
 
 **Tech Stack:** Go 1.27, stdlib only except `gopkg.in/yaml.v3` for config. `testing` + `testing/quick` for tests; no test frameworks.
 
-**Spec:** `docs/superpowers/specs/2026-10-13-consuma-inference-system-design.md`
+**Spec:** `docs/superpowers/specs/2026-10-13-inference-system-design.md`
 
 ## Global Constraints
 
-- Go 1.27; module name `consuma`.
+- Go 1.27; module name `htsim`.
 - Only external dependency allowed: `gopkg.in/yaml.v3`.
 - Target machine: ASUS Zenbook, 16 cores, Windows 11; benchmarks run on AC power.
 - Terminal states are exactly: `completed`, `expired`, `rejected`. `waiting` is never terminal. Every submitted request ends in exactly one terminal state; runs drain fully before reporting.
@@ -21,7 +21,7 @@
 - Overload policy: bounded wait queue with configurable max wait → `expired`; reject immediately only when the queue is full.
 - Two enforcement layers: system admission limiter primary; provider simulator enforces its own limits (429-equivalent rejection) as backstop.
 - Retries of transient failures use exponential backoff (50ms base, doubling: 50/100/200ms) and count against RPM/TPM like fresh calls; max 3 attempts by default (`MaxRetries` in config).
-- Code layout: one file per responsibility inside its package (no god files); `cmd/consuma/main.go` is the only place packages are wired together; no package imports upward into `cmd`.
+- Code layout: one file per responsibility inside its package (no god files); `cmd/htsim/main.go` is the only place packages are wired together; no package imports upward into `cmd`.
 - TPM: reserve estimated tokens at admission; reconcile against actuals at completion (refund unused); failed calls consume tokens.
 - All randomness through an injectable `*rand.Rand` so tests are deterministic.
 
@@ -382,14 +382,14 @@ git commit -m "feat: paced load generator with ramp/hold phases and model mix"
 ### Task 10: CLI — three subcommands
 
 **Files:**
-- Create: `cmd/consuma/main.go`, `cmd/consuma/benchmark.go`, `cmd/consuma/limits.go`
-- Test: `cmd/consuma/main_test.go`
+- Create: `cmd/htsim/main.go`, `cmd/htsim/benchmark.go`, `cmd/htsim/limits.go`
+- Test: `cmd/htsim/main_test.go`
 
 **Interfaces:**
 - Consumes: everything above.
 - Produces:
-  - `consuma benchmark -config configs/benchmark.yaml -rate 300000 -duration 60s -models model-a:1.0 -batch 1 -tokens 1000` — in-process run: loadgen → Engine.Drain → report to stdout + `-report out.json`
-  - `consuma limits -config configs/benchmark.yaml -model model-a -rpm 5000 -tpm 100000000` — updates the config file live (atomic write) so a running benchmark's file-watcher picks it up; this is the Task 8 `SetLimit` surface for the CLI phase
+  - `htsim benchmark -config configs/benchmark.yaml -rate 300000 -duration 60s -models model-a:1.0 -batch 1 -tokens 1000` — in-process run: loadgen → Engine.Drain → report to stdout + `-report out.json`
+  - `htsim limits -config configs/benchmark.yaml -model model-a -rpm 5000 -tpm 100000000` — updates the config file live (atomic write) so a running benchmark's file-watcher picks it up; this is the Task 8 `SetLimit` surface for the CLI phase
   - shared flag validation helper `validateRunArgs(rate int64, duration time.Duration) error`
 
 `benchmark.go` wires: config load → Engine → LoadGen.Run → Engine.Drain → Report (Task 11's collector writes; this task writes a stub `printSummary`). Config file-watching: a goroutine with 500ms polling mtime; on change, reload and call `Engine.SetLimit` for each model.
@@ -400,7 +400,7 @@ git commit -m "feat: paced load generator with ramp/hold phases and model mix"
 
 - [ ] **Step 2: Run tests to verify they fail**
 
-Run: `go test ./cmd/consuma/`
+Run: `go test ./cmd/htsim/`
 Expected: FAIL
 
 - [ ] **Step 3: Implement `main.go`, `benchmark.go`, `limits.go`**
@@ -409,13 +409,13 @@ Stdlib `flag` per subcommand; `main` dispatches on `os.Args[1]`. `limits.go` rew
 
 - [ ] **Step 4: Run tests to verify they pass**
 
-Run: `go test ./cmd/consuma/`
+Run: `go test ./cmd/htsim/`
 Expected: PASS
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add cmd/consuma
+git add cmd/htsim
 git commit -m "feat: CLI subcommands benchmark and live limits"
 ```
 
@@ -423,7 +423,7 @@ git commit -m "feat: CLI subcommands benchmark and live limits"
 
 **Files:**
 - Create: `internal/report/report.go`
-- Modify: `cmd/consuma/benchmark.go` (replace stub `printSummary` with `report.Write`)
+- Modify: `cmd/htsim/benchmark.go` (replace stub `printSummary` with `report.Write`)
 - Test: `internal/report/report_test.go`
 
 **Interfaces:**
@@ -453,7 +453,7 @@ Expected: PASS
 - [ ] **Step 5: Commit**
 
 ```bash
-git add internal/report cmd/consuma/benchmark.go
+git add internal/report cmd/htsim/benchmark.go
 git commit -m "feat: measured-vs-projections report writer"
 ```
 
@@ -465,7 +465,7 @@ git commit -m "feat: measured-vs-projections report writer"
 - Modify: `README.md` (create: run instructions + the quantified in-process caveat section per spec)
 
 **Interfaces:**
-- Consumes: `consuma benchmark` CLI.
+- Consumes: `htsim benchmark` CLI.
 - Produces: recorded evidence files (`-report` JSON outputs committed under `docs/benchmark/`).
 
 - [ ] **Step 1: Write the two configs**
@@ -474,12 +474,12 @@ benchmark-300k.yaml: single model, rate 300K, duration 60s. benchmark-1m.yaml: r
 
 - [ ] **Step 2: Run the required benchmark**
 
-Run: `go build -o bin/consuma.exe ./cmd/consuma && ./bin/consuma benchmark -config configs/benchmark-300k.yaml -rate 300000 -duration 60s -report docs/benchmark/run-300k.json`
+Run: `go build -o bin/htsim.exe ./cmd/htsim && ./bin/htsim benchmark -config configs/benchmark-300k.yaml -rate 300000 -duration 60s -report docs/benchmark/run-300k.json`
 Expected: steady-state ≥ 300,000/sec; terminal balance; p99 < 100ms. If steady-state misses, profile (`go test -bench` on engine, pprof CPU profile) and fix the top contention point before re-running.
 
 - [ ] **Step 3: Run the stretch benchmark**
 
-Run: `./bin/consuma benchmark -config configs/benchmark-1m.yaml -rate 1000000 -duration 30s -report docs/benchmark/run-1m.json`
+Run: `./bin/htsim benchmark -config configs/benchmark-1m.yaml -rate 1000000 -duration 30s -report docs/benchmark/run-1m.json`
 Expected: stretch within reach (≥900K/sec steady-state acceptable for phase 1; record the number).
 
 - [ ] **Step 4: Record results**
@@ -503,4 +503,4 @@ git commit -m "feat: benchmark validation runs, results, README with scope cavea
 
 - Tasks 1–7 are leaf packages with no cross-dependencies except config → all others; Tasks 2,3,4,5,6,7 can be built in any order after Task 1.
 - Task 8 depends on 1–7; Task 9 on 8; Task 10 on 9; Task 11 on 10; Task 12 last.
-- The spike code in `C:\Users\sammy\AppData\Local\hermes\cache\scratch\consuma-spike` is reference-only; do not copy it wholesale (per-wheel design differs: sharded, injectable clock, ledger integration).
+- The spike code in `C:\Users\sammy\AppData\Local\hermes\cache\scratch\htsim-spike` is reference-only; do not copy it wholesale (per-wheel design differs: sharded, injectable clock, ledger integration).

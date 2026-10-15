@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"consuma/internal/ledger"
-	"consuma/internal/provider"
+	"htsim/internal/ledger"
+	"htsim/internal/provider"
 )
 
 // fakeCaller returns a scripted CallResult for every call.

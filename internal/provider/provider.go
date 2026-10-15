@@ -11,8 +11,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"consuma/internal/config"
-	"consuma/internal/ledger"
+	"htsim/internal/config"
+	"htsim/internal/ledger"
 )
 
 // Outcome is the final classification of one provider call.

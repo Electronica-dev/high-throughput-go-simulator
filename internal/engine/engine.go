@@ -11,14 +11,14 @@ import (
 	"sync/atomic"
 	"time"
 
-	"consuma/internal/config"
-	"consuma/internal/ledger"
-	"consuma/internal/limiter"
-	"consuma/internal/metrics"
-	"consuma/internal/provider"
-	"consuma/internal/queue"
-	"consuma/internal/store"
-	"consuma/internal/wheel"
+	"htsim/internal/config"
+	"htsim/internal/ledger"
+	"htsim/internal/limiter"
+	"htsim/internal/metrics"
+	"htsim/internal/provider"
+	"htsim/internal/queue"
+	"htsim/internal/store"
+	"htsim/internal/wheel"
 )
 
 // Summary is the end-of-run accounting for one benchmark run.

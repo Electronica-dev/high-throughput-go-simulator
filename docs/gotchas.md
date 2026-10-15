@@ -1,4 +1,4 @@
-# Gotchas — things that bit us while building Consuma
+# Gotchas — things that bit us while building the project
 
 Every non-obvious trap we ran into, in plain language, with the fix. The
 deep technical version of most of these lives in `docs/decisions.md` and the

@@ -8,8 +8,8 @@ import (
 	"io"
 	"time"
 
-	"consuma/internal/config"
-	"consuma/internal/engine"
+	"htsim/internal/config"
+	"htsim/internal/engine"
 )
 
 // LimitsRow is one model's configured-vs-observed limits.

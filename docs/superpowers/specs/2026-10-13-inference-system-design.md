@@ -1,8 +1,8 @@
-# Consuma — High-Throughput Inference System: Design
+# High-Throughput Inference System: Design
 
 Date: 2026-10-13
 Status: reviewed (builder check passed), pending owner approval
-Source: `consuma ai project.pdf` (Consuma Technologies assignment)
+Source: `the assignment PDF` (the take-home assignment)
 
 ## Intent and why
 

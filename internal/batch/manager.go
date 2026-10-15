@@ -14,10 +14,10 @@ import (
 
 	"github.com/google/uuid"
 
-	"consuma/internal/config"
-	"consuma/internal/engine"
-	"consuma/internal/ledger"
-	"consuma/internal/store"
+	"htsim/internal/config"
+	"htsim/internal/engine"
+	"htsim/internal/ledger"
+	"htsim/internal/store"
 )
 
 // batchState tracks one in-flight batch's live counters.
@@ -214,7 +214,7 @@ func (manager *Manager) onTerminal(r *ledger.Request, outcome string, tokens int
 	bs := manager.batches[r.BatchExtID]
 	manager.mu.Unlock()
 	if bs == nil {
-		if os.Getenv("CONSUMA_DEBUG_BATCH") != "" {
+		if os.Getenv("HTSIM_DEBUG_BATCH") != "" {
 			fmt.Println("DBG onTerminal: no batchState for", r.BatchExtID, "outcome", outcome)
 		}
 		return // not a batch request (sync path has no BatchExtID)

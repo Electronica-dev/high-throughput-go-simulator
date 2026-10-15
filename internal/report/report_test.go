@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"consuma/internal/config"
-	"consuma/internal/engine"
-	"consuma/internal/ledger"
+	"htsim/internal/config"
+	"htsim/internal/engine"
+	"htsim/internal/ledger"
 )
 
 func sampleReport(t *testing.T) *Report {

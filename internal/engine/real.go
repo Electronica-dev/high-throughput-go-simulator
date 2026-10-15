@@ -10,9 +10,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	"consuma/internal/config"
-	"consuma/internal/ledger"
-	"consuma/internal/store"
+	"htsim/internal/config"
+	"htsim/internal/ledger"
+	"htsim/internal/store"
 )
 
 type engineMode uint8

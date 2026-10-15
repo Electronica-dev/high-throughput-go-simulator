@@ -1,8 +1,8 @@
-// Command consuma is the entry point that wires the simulation packages
+// Command htsim is the entry point that wires the simulation packages
 // together. Subcommands:
 //
-//	consuma benchmark -config <yaml> -rate N -duration 60s [...]
-//	consuma limits    -config <yaml> -model <name> -rpm N -tpm N
+//	htsim benchmark -config <yaml> -rate N -duration 60s [...]
+//	htsim limits    -config <yaml> -model <name> -rpm N -tpm N
 package main
 
 import (
@@ -10,7 +10,7 @@ import (
 	"os"
 	"time"
 
-	"consuma/internal/engine"
+	"htsim/internal/engine"
 )
 
 func main() {
@@ -41,11 +41,11 @@ func main() {
 
 func usage() {
 	fmt.Fprintln(os.Stderr, `usage:
-  consuma benchmark  -config <yaml> -rate N -duration 60s [-models name:share,...] [-batch N] [-tokens N] [-report out.json] [-target URL]
-  consuma limits     -config <yaml> -model <name> -rpm N -tpm N
-  consuma serve      [-config configs/system.yaml] [-addr 127.0.0.1:9000] [-simulator URL] [-db path]
-  consuma simulator  [-config configs/simulator.yaml] [-addr 127.0.0.1:9001]
-  consuma scenario1|2|3 [-system URL] [-simulator URL] [-out dir] [overrides]`)
+  htsim benchmark  -config <yaml> -rate N -duration 60s [-models name:share,...] [-batch N] [-tokens N] [-report out.json] [-target URL]
+  htsim limits     -config <yaml> -model <name> -rpm N -tpm N
+  htsim serve      [-config configs/system.yaml] [-addr 127.0.0.1:9000] [-simulator URL] [-db path]
+  htsim simulator  [-config configs/simulator.yaml] [-addr 127.0.0.1:9001]
+  htsim scenario1|2|3 [-system URL] [-simulator URL] [-out dir] [overrides]`)
 }
 
 // validateRunArgs rejects nonsensical run parameters before any engine starts.

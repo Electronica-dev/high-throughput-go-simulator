@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"consuma/internal/config"
-	"consuma/internal/ledger"
+	"htsim/internal/config"
+	"htsim/internal/ledger"
 )
 
 func baseModel(name string) config.ModelConfig {

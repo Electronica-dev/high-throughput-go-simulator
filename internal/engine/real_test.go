@@ -7,10 +7,10 @@ import (
 	"testing"
 	"time"
 
-	"consuma/internal/config"
-	"consuma/internal/ledger"
-	"consuma/internal/provider"
-	"consuma/internal/store"
+	"htsim/internal/config"
+	"htsim/internal/ledger"
+	"htsim/internal/provider"
+	"htsim/internal/store"
 )
 
 func realConfig() *config.Config {

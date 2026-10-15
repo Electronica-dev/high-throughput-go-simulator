@@ -1,4 +1,4 @@
-// scenarios.go: the `consuma scenario1|2|3` subcommands — validation
+// scenarios.go: the `htsim scenario1|2|3` subcommands — validation
 // scenario runners against a running system + simulator (evidence written
 // to -out).
 package main
@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"consuma/internal/scenarios"
+	"htsim/internal/scenarios"
 )
 
 func parseScenarioArgs(argv []string, name string) (string, string, scenarios.Config, string, string, error) {
@@ -126,6 +126,6 @@ func checkReachable(url, role string) error {
 		resp.Body.Close()
 		return nil
 	}
-	return fmt.Errorf("%s not reachable at %s (%v) — start the services first: `bin/consuma.exe simulator -config configs/simulator.yaml -addr 127.0.0.1:9001` and `bin/consuma.exe serve -config configs/system.yaml -addr 127.0.0.1:9000 -simulator http://127.0.0.1:9001 -db consuma.db` (see README §1)",
+	return fmt.Errorf("%s not reachable at %s (%v) — start the services first: `bin/htsim.exe simulator -config configs/simulator.yaml -addr 127.0.0.1:9001` and `bin/htsim.exe serve -config configs/system.yaml -addr 127.0.0.1:9000 -simulator http://127.0.0.1:9001 -db htsim.db` (see README §1)",
 		role, url, err)
 }

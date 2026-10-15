@@ -1,4 +1,4 @@
-# Sample Consuma simulation configuration.
+# Sample simulation configuration.
 # Benchmark runs may give simulated models limits far above real capacity
 # (allowed by the assignment for high-throughput benchmarks).
 max_wait_ms: 5000      # bounded wait queue expiry (overload policy)

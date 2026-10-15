@@ -13,9 +13,9 @@ import (
 
 	"github.com/google/uuid"
 
-	"consuma/internal/batch"
+	"htsim/internal/batch"
 
-	"consuma/internal/ledger"
+	"htsim/internal/ledger"
 )
 
 // errUnknownModel signals an unconfigured model (maps to 400).

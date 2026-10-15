@@ -65,7 +65,7 @@ func TestConfigFileWatchAppliesLimits(t *testing.T) {
 		watchConfig(path, eng, stop)
 	}()
 
-	// rewrite the config with a reduced RPM, like `consuma limits` does
+	// rewrite the config with a reduced RPM, like `htsim limits` does
 	if err := applyLimitToFile(path, "model-a", 12345, 1000000000); err != nil {
 		t.Fatalf("applyLimitToFile: %v", err)
 	}

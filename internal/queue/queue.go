@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"consuma/internal/ledger"
+	"htsim/internal/ledger"
 )
 
 type queued struct {

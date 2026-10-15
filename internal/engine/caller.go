@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
-	"consuma/internal/ledger"
-	"consuma/internal/provider"
+	"htsim/internal/ledger"
+	"htsim/internal/provider"
 )
 
 // Caller performs one simulated provider call for a request.

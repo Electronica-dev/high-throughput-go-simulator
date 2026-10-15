@@ -8,7 +8,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"consuma/internal/ledger"
+	"htsim/internal/ledger"
 )
 
 // Entry is one scheduled completion event. Data carries the owner's payload

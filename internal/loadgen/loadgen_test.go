@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"consuma/internal/config"
-	"consuma/internal/ledger"
+	"htsim/internal/config"
+	"htsim/internal/ledger"
 )
 
 type fakeTarget struct {

@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"consuma/internal/config"
+	"htsim/internal/config"
 )
 
 func testModel() *config.ModelConfig {

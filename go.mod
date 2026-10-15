@@ -1,4 +1,4 @@
-module consuma
+module htsim
 
 go 1.27
 

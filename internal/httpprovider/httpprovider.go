@@ -10,8 +10,8 @@ import (
 	"net/http"
 	"time"
 
-	"consuma/internal/ledger"
-	"consuma/internal/provider"
+	"htsim/internal/ledger"
+	"htsim/internal/provider"
 )
 
 // HTTPProvider posts calls to the simulator's /call endpoint.

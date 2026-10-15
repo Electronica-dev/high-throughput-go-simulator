@@ -1,4 +1,4 @@
-# Consuma — high-throughput inference under provider limits
+# High-throughput inference under provider limits
 
 A simulated inference-processing system: a paced load generator feeds requests
 through per-model RPM/TPM admission control, a bounded wait queue, and a
@@ -23,14 +23,14 @@ scenario evidence: `docs/validation/`.
 Build once:
 
 ```bash
-go build -o bin/consuma.exe ./cmd/consuma
+go build -o bin/htsim.exe ./cmd/htsim
 ```
 
 **The system, as a service** (HTTP API, SQLite durability, crash recovery):
 
 ```bash
-bin/consuma.exe serve -config configs/system.yaml -addr 127.0.0.1:9000 \
-    -simulator http://127.0.0.1:9001 -db consuma.db
+bin/htsim.exe serve -config configs/system.yaml -addr 127.0.0.1:9000 \
+    -simulator http://127.0.0.1:9001 -db htsim.db
 ```
 
 **The provider simulator**, a separate process with its own config — its
@@ -38,7 +38,7 @@ limits and outcome mix are a scenario parameter, sized with headroom over the
 system's limits so it never masks what the system enforces:
 
 ```bash
-bin/consuma.exe simulator -config configs/simulator.yaml -addr 127.0.0.1:9001
+bin/htsim.exe simulator -config configs/simulator.yaml -addr 127.0.0.1:9001
 ```
 
 **The load generator.** Without `-target` it drives the in-process benchmark
@@ -47,13 +47,13 @@ over HTTP:
 
 ```bash
 # required benchmark, in-process
-bin/consuma.exe benchmark -config configs/benchmark-300k.yaml -rate 300000 -duration 60s -batch 50 -report docs/benchmark/run-300k.json
+bin/htsim.exe benchmark -config configs/benchmark-300k.yaml -rate 300000 -duration 60s -batch 50 -report docs/benchmark/run-300k.json
 
 # stretch benchmark, in-process
-bin/consuma.exe benchmark -config configs/benchmark-1m.yaml -rate 1000000 -duration 30s -batch 50 -report docs/benchmark/run-1m.json
+bin/htsim.exe benchmark -config configs/benchmark-1m.yaml -rate 1000000 -duration 30s -batch 50 -report docs/benchmark/run-1m.json
 
 # real mode: drive the live service (model mix included)
-bin/consuma.exe benchmark -target http://127.0.0.1:9000 -rate 20000 -duration 60s -batch 50 -models model-a:0.6,model-b:0.4
+bin/htsim.exe benchmark -target http://127.0.0.1:9000 -rate 20000 -duration 60s -batch 50 -models model-a:0.6,model-b:0.4
 ```
 
 | Flag | Meaning |
@@ -67,7 +67,7 @@ bin/consuma.exe benchmark -target http://127.0.0.1:9000 -rate 20000 -duration 60
 | `-report` | write the JSON report to this path |
 | `-target` | real mode: drive a running system over HTTP instead of the in-process engine |
 
-Run on AC power. `CONSUMA_GOGC=400` optionally raises the GC target (no
+Run on AC power. `HTSIM_GOGC=400` optionally raises the GC target (no
 measurable effect; reported runs used defaults).
 
 ### HTTP API of `serve`
@@ -137,7 +137,7 @@ curl -X POST http://127.0.0.1:9000/limits/model-a -d '{"rpm": 5000, "tpm": 60000
 
 # the `limits` CLI for the in-process benchmark (the benchmark watches the
 # config file and applies changes within ~500ms)
-bin/consuma.exe limits -config configs/benchmark-300k.yaml -model model-a -rpm 5000 -tpm 1000000000
+bin/htsim.exe limits -config configs/benchmark-300k.yaml -model model-a -rpm 5000 -tpm 1000000000
 ```
 
 Or edit the YAML and restart. Note: the `limits` CLI rewrites the file via
@@ -146,9 +146,9 @@ yaml marshal, which drops comments.
 ## 3 · Validation scenarios
 
 ```bash
-bin/consuma.exe scenario1 -out docs/validation -duration 300   # sustained load at the limit
-bin/consuma.exe scenario2 -out docs/validation                  # live 30K→5K→30K RPM change, both models
-bin/consuma.exe scenario3 -out docs/validation                  # async batches + reject-first callback sink
+bin/htsim.exe scenario1 -out docs/validation -duration 300   # sustained load at the limit
+bin/htsim.exe scenario2 -out docs/validation                  # live 30K→5K→30K RPM change, both models
+bin/htsim.exe scenario3 -out docs/validation                  # async batches + reject-first callback sink
 ```
 
 - **Scenario 1** — 5 minutes at ~94% of the 30K RPM / 3M TPM budget: ≥90%
@@ -212,7 +212,7 @@ scenarios — its rates are bounded by HTTP, not the simulation logic.
 ## Repo map
 
 ```
-cmd/consuma/        CLI: serve | simulator | benchmark | limits | scenario1-3
+cmd/htsim/        CLI: serve | simulator | benchmark | limits | scenario1-3
 internal/config/    YAML config (models, limits, latency, outcomes, wheel)
 internal/ledger/    request lifecycle, exactly-once terminal accounting
 internal/limiter/   sliding-window RPM + TPM reservation/reconciliation

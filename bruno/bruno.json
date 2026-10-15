@@ -1,6 +1,6 @@
 {
   "version": "1",
-  "name": "Consuma",
+  "name": "HTSim",
   "type": "collection",
   "ignore": [
     "node_modules",

@@ -5,8 +5,8 @@ import (
 	"runtime/pprof"
 	"testing"
 
-	"consuma/internal/config"
-	"consuma/internal/ledger"
+	"htsim/internal/config"
+	"htsim/internal/ledger"
 )
 
 func BenchmarkEngineHot(b *testing.B) {

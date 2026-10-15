@@ -1,4 +1,4 @@
-// limits.go: the `consuma limits` subcommand (live limit change via config
+// limits.go: the `htsim limits` subcommand (live limit change via config
 // file rewrite) and the config file watcher the benchmark uses to pick up
 // limit changes without a restart.
 package main
@@ -9,8 +9,8 @@ import (
 	"os"
 	"time"
 
-	"consuma/internal/config"
-	"consuma/internal/engine"
+	"htsim/internal/config"
+	"htsim/internal/engine"
 )
 
 func cmdLimits(argv []string) {

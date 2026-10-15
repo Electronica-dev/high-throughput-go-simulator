@@ -14,10 +14,10 @@ import (
 	"sync"
 	"time"
 
-	"consuma/internal/ledger"
+	"htsim/internal/ledger"
 )
 
-// HTTPTarget satisfies RunTarget against a running `consuma serve`.
+// HTTPTarget satisfies RunTarget against a running `htsim serve`.
 type HTTPTarget struct {
 	url    string
 	client *http.Client

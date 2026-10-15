@@ -9,11 +9,11 @@ import (
 	"testing"
 	"time"
 
-	"consuma/internal/config"
-	"consuma/internal/engine"
-	"consuma/internal/ledger"
-	"consuma/internal/provider"
-	"consuma/internal/store"
+	"htsim/internal/config"
+	"htsim/internal/engine"
+	"htsim/internal/ledger"
+	"htsim/internal/provider"
+	"htsim/internal/store"
 )
 
 // ---------- fakes ----------

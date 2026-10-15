@@ -1,5 +1,5 @@
 // realbench.go: real-mode load generation (`benchmark -target URL`): the
-// load generator drives a running `consuma serve` over HTTP; batch ids from
+// load generator drives a running `htsim serve` over HTTP; batch ids from
 // each 202 are polled to completion as the run's completion evidence.
 package main
 
@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"consuma/internal/loadgen"
+	"htsim/internal/loadgen"
 )
 
 // realRunReport is the real-mode run summary printed to stdout.

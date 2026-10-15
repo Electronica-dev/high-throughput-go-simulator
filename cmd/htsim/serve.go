@@ -1,4 +1,4 @@
-// serve.go: the `consuma serve` subcommand — the real-mode system: engine +
+// serve.go: the `htsim serve` subcommand — the real-mode system: engine +
 // batch manager + HTTP API (sync requests, 202 batches, live limits) with
 // crash recovery at startup and graceful shutdown on SIGINT/SIGTERM.
 package main
@@ -11,13 +11,13 @@ import (
 	"syscall"
 	"time"
 
-	"consuma/internal/api"
-	"consuma/internal/batch"
-	"consuma/internal/config"
-	"consuma/internal/engine"
-	"consuma/internal/httpprovider"
-	"consuma/internal/ledger"
-	"consuma/internal/store"
+	"htsim/internal/api"
+	"htsim/internal/batch"
+	"htsim/internal/config"
+	"htsim/internal/engine"
+	"htsim/internal/httpprovider"
+	"htsim/internal/ledger"
+	"htsim/internal/store"
 )
 
 // systemDeps adapts engine + batch manager to api.Deps.
@@ -89,7 +89,7 @@ func cmdServe(argv []string) {
 	cfgPath := fs.String("config", "configs/system.yaml", "system config")
 	addr := fs.String("addr", "127.0.0.1:9000", "listen address")
 	simURL := fs.String("simulator", "http://127.0.0.1:9001", "simulator service URL")
-	dbPath := fs.String("db", "consuma.db", "SQLite database path")
+	dbPath := fs.String("db", "htsim.db", "SQLite database path")
 	if err := fs.Parse(argv); err != nil {
 		os.Exit(2)
 	}
@@ -120,7 +120,7 @@ func cmdServe(argv []string) {
 		names[i] = m.Name
 	}
 	apiSrv := startHTTP(*addr, api.New(deps, names).Handler())
-	fmt.Printf("consuma serve listening on %s (simulator %s, db %s)\n", *addr, *simURL, *dbPath)
+	fmt.Printf("htsim serve listening on %s (simulator %s, db %s)\n", *addr, *simURL, *dbPath)
 
 	// crash recovery: register mid-flight batches BEFORE re-enqueueing their
 	// requests — Restore recomputes each batch's counters from its rows, so

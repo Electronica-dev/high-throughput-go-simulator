@@ -1,4 +1,4 @@
-# Standalone simulator service configuration (consuma simulator).
+# Standalone simulator service configuration (htsim simulator).
 # Limits are a separate fixed entity — the system's limits (configs/system.yaml)
 # times a scenario's headroom parameter (default 10x) so the simulator never
 # throttles a scenario that is testing system-side admission.

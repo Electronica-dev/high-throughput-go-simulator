@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"consuma/internal/config"
-	"consuma/internal/ledger"
+	"htsim/internal/config"
+	"htsim/internal/ledger"
 )
 
 func fixedModel() *config.ModelConfig {

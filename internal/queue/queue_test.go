@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"consuma/internal/ledger"
+	"htsim/internal/ledger"
 )
 
 func newQueue(depth int, maxWait time.Duration) (*WaitQueue, *ledger.Ledger) {

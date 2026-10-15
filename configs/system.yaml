@@ -1,4 +1,4 @@
-# Real-mode system configuration (consuma serve).
+# Real-mode system configuration (htsim serve).
 models:
   - name: model-a
     rpm: 30000

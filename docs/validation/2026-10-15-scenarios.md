@@ -1,9 +1,9 @@
 # Real-mode validation evidence — 2026-10-15
 
 All scenarios were run end-to-end against the live services:
-`consuma serve` (system: SQLite durability, HTTP API, batch manager,
+`htsim serve` (system: SQLite durability, HTTP API, batch manager,
 callback dispatcher, crash recovery) driving the standalone
-`consuma simulator` over HTTP. Evidence JSONs + summaries live beside this
+`htsim simulator` over HTTP. Evidence JSONs + summaries live beside this
 file (`scenario-{1,2,3}.json`, `scenario-{1,2,3}-summary.txt`).
 
 Config under test (`configs/system.yaml`): model-a, 30,000 RPM / 3,000,000 TPM,
@@ -117,7 +117,7 @@ executed" and "system recorded" cannot double-charge or double-complete.
 
 ## Benchmark regression — phase-1 path intact
 
-`consuma benchmark -config configs/benchmark-300k.yaml -rate 300000
+`htsim benchmark -config configs/benchmark-300k.yaml -rate 300000
 -duration 30s -batch 50` (in-process, no SQLite, no HTTP):
 
 - **steady-state 300,015 completed/sec** (required bar: ≥ 300,000)
@@ -130,12 +130,12 @@ Report: `docs/benchmark/2026-10-15-benchmark-report.md`.
 ## How to reproduce
 
 ```
-bin/consuma.exe simulator -config configs/scenario1.yaml -addr 127.0.0.1:9001 &
-bin/consuma.exe serve -config configs/system.yaml -addr 127.0.0.1:9000 &
+bin/htsim.exe simulator -config configs/scenario1.yaml -addr 127.0.0.1:9001 &
+bin/htsim.exe serve -config configs/system.yaml -addr 127.0.0.1:9000 &
 
-bin/consuma.exe scenario1 -out docs/validation -duration 300
-bin/consuma.exe scenario2 -out docs/validation
-bin/consuma.exe scenario3 -out docs/validation
+bin/htsim.exe scenario1 -out docs/validation -duration 300
+bin/htsim.exe scenario2 -out docs/validation
+bin/htsim.exe scenario3 -out docs/validation
 ```
 
 Crash-recovery demo: submit a large batch (`POST /batches`), kill `serve`

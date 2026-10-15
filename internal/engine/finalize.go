@@ -8,8 +8,8 @@ package engine
 import (
 	"time"
 
-	"consuma/internal/ledger"
-	"consuma/internal/provider"
+	"htsim/internal/ledger"
+	"htsim/internal/provider"
 )
 
 // finalizeOne applies one call result to its request. Returns the number of

@@ -200,6 +200,7 @@ func (e *Engine) Recover() (int, error) {
 			Model:          row.Model,
 			EstimateTokens: row.Tokens,
 			BornNS:         time.Now().UnixNano(),
+			Recovered:      true,
 		}
 		e.ld.Submit(r)
 		if err := e.ld.Transition(r, ledger.Queued); err != nil {

@@ -68,7 +68,13 @@ func (e *Engine) finalizeOne(p *modelPipeline, r *ledger.Request, res provider.C
 					}
 				}
 			} else if e.ld.Transition(r, ledger.Queued) == nil {
-				if !p.q.PushQueued(r, now) {
+				// a recovered request keeps its sweep-expiry exemption across
+				// the deferral: recovery resumes work, it never expires it
+				push := p.q.PushQueued
+				if r.Recovered {
+					push = p.q.PushRecovered
+				}
+				if !push(r, now) {
 					// queue full too: retry infrastructure exhausted
 					if e.ld.Transition(r, ledger.Completed) == nil {
 						terminal("failed")

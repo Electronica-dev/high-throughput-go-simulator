@@ -248,3 +248,71 @@ func TestRecoveryNeverExpiresRecoveredRequests(t *testing.T) {
 	}
 	t.Fatalf("recovered requests expired: %d of 100 (recovery must not be subject to max_wait)", expired)
 }
+
+// scriptedCaller returns pre-scripted results in order.
+type scriptedCaller struct {
+	mu   sync.Mutex
+	res  []provider.CallResult
+	i    int
+	calls atomic.Int32
+}
+
+func (s *scriptedCaller) Call(r *ledger.Request, now time.Time) provider.CallResult {
+	s.mu.Lock()
+	i := s.i
+	if i < len(s.res) {
+		s.i++
+	}
+	s.mu.Unlock()
+	s.calls.Add(1)
+	if i >= len(s.res) {
+		i = len(s.res) - 1
+	}
+	return s.res[i]
+}
+
+// TestRecoveredRequestRetryDeferralNeverExpires (review F3): the recovered
+// exemption must survive a retry deferral — a recovered request that fails
+// once is re-queued via the deferral path and must NOT become sweep-expiry
+// fodder. Unfixed, the deferral rides a normal queue entry and the request
+// expires ~50ms later.
+func TestRecoveredRequestRetryDeferralNeverExpires(t *testing.T) {
+	st := openStore(t)
+	fc := &scriptedCaller{res: []provider.CallResult{
+		{Outcome: provider.TransientFailure, ActualTokens: 0},
+		{Outcome: provider.Success, ActualTokens: 900},
+	}}
+	cfg := realConfig()
+	cfg.MaxWaitMS = 50
+	cfg.Models[0].RPM = 1         // window full after the first admission → ChargeRetry fails → deferral
+	cfg.Models[0].TPM = 1 << 40
+	e, err := NewReal(cfg, fc, st)
+	if err != nil {
+		t.Fatalf("NewReal: %v", err)
+	}
+	defer e.Stop()
+
+	if err := st.InsertRequest(store.RequestRow{
+		ID: "ext-rec-def", BatchID: "b-rec", Model: "model-a", State: "in_flight", Tokens: 1000,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if n, err := e.Recover(); err != nil || n != 1 {
+		t.Fatalf("Recover: %d %v", n, err)
+	}
+
+	deadline := time.Now().Add(2 * time.Second)
+	for time.Now().Before(deadline) {
+		row, _, _ := st.GetRequest("ext-rec-def")
+		if row.State == "expired" {
+			t.Fatal("recovered request expired after a retry deferral — the exemption did not survive the re-queue")
+		}
+		time.Sleep(50 * time.Millisecond)
+	}
+	// still not expired after 2s (the deferral waits for the rolling window;
+	// completing would need the window to roll, which takes ~60s)
+	row, _, _ := st.GetRequest("ext-rec-def")
+	if row.State == "expired" {
+		t.Fatal("recovered request expired")
+	}
+}

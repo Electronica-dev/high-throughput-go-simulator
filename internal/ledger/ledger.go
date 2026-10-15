@@ -51,6 +51,7 @@ type Request struct {
 	AdmittedSec    int64        // unix second of the (first) admission; set once
 	ExternalID     string       // real-mode UUID (set by the batch manager); empty in benchmark mode
 	BatchExtID     string       // real-mode batch UUID this request belongs to; empty in benchmark mode
+	Recovered      bool         // crash-recovered request: exempt from sweep expiry (survives re-queue)
 }
 
 // Ledger aggregates per-state counts with atomic counters.

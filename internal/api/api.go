@@ -13,6 +13,8 @@ import (
 
 	"github.com/google/uuid"
 
+	"consuma/internal/batch"
+
 	"consuma/internal/ledger"
 )
 
@@ -31,7 +33,23 @@ type Deps interface {
 	Limits(model string) (rpm, tpm int64, err error)
 	// CreateBatch registers and starts an async batch; returns its UUID.
 	CreateBatch(model string, tokens, count int64, callbackURL string) (string, error)
+	// ObservedWindows snapshots a model's rolling windows (scenario sampling).
+	ObservedWindows(model string) (WindowSample, error)
+	// BatchResults lists a batch's per-request outcomes.
+	BatchResults(id string) ([]ResultRow, bool)
 }
+
+// WindowSample is one snapshot of a model's rolling windows (60s windows).
+type WindowSample struct {
+	ObservedRPM   int64 `json:"observed_rpm"`
+	ObservedTPM   int64 `json:"observed_tpm"`
+	ConfiguredRPM int64 `json:"configured_rpm"`
+	ConfiguredTPM int64 `json:"configured_tpm"`
+}
+
+// ResultRow aliases the batch package's per-request outcome row (the API
+// serializes it verbatim).
+type ResultRow = batch.ResultRow
 
 // Server is the HTTP API.
 type Server struct {
@@ -58,8 +76,10 @@ func (s *Server) Handler() http.Handler {
 	})
 	mux.HandleFunc("POST /requests", s.handleRequest)
 	mux.HandleFunc("POST /batches", s.handleBatch)
+	mux.HandleFunc("GET /batches/{id}/results", s.handleBatchResults)
 	mux.HandleFunc("GET /limits/{model}", s.handleGetLimits)
 	mux.HandleFunc("POST /limits/{model}", s.handleSetLimits)
+	mux.HandleFunc("GET /metrics/{model}", s.handleMetrics)
 	return mux
 }
 
@@ -163,4 +183,27 @@ func (s *Server) handleSetLimits(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"model": model, "rpm": in.RPM, "tpm": in.TPM})
+}
+
+// handleMetrics snapshots a model's rolling windows (scenario runners sample
+// this over time for the configured-vs-observed evidence).
+func (s *Server) handleMetrics(w http.ResponseWriter, r *http.Request) {
+	model := r.PathValue("model")
+	sample, err := s.d.ObservedWindows(model)
+	if err != nil {
+		writeJSON(w, http.StatusNotFound, map[string]string{"error": err.Error()})
+		return
+	}
+	writeJSON(w, http.StatusOK, sample)
+}
+
+// handleBatchResults lists a batch's per-request outcomes.
+func (s *Server) handleBatchResults(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	rows, ok := s.d.BatchResults(id)
+	if !ok {
+		writeJSON(w, http.StatusNotFound, map[string]string{"error": "unknown batch"})
+		return
+	}
+	writeJSON(w, http.StatusOK, rows)
 }

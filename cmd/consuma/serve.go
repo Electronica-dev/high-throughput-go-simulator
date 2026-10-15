@@ -49,6 +49,29 @@ func (s *systemDeps) CreateBatch(model string, tokens, count int64, callbackURL 
 	return s.mgr.Submit(model, tokens, count, callbackURL)
 }
 
+func (s *systemDeps) ObservedWindows(model string) (api.WindowSample, error) {
+	l := s.eng.Limiter(model)
+	if l == nil {
+		return api.WindowSample{}, fmt.Errorf("unknown model %q", model)
+	}
+	now := time.Now()
+	cfgRPM, cfgTPM := l.Limits()
+	return api.WindowSample{
+		ObservedRPM:   l.ObservedRPM(now),
+		ObservedTPM:   l.ObservedTPM(now),
+		ConfiguredRPM: cfgRPM,
+		ConfiguredTPM: cfgTPM,
+	}, nil
+}
+
+func (s *systemDeps) BatchResults(id string) ([]api.ResultRow, bool) {
+	rows, ok := s.mgr.Results(id)
+	if !ok {
+		return nil, false
+	}
+	return rows, true
+}
+
 func cmdServe(argv []string) {
 	fs := flag.NewFlagSet("serve", flag.ExitOnError)
 	cfgPath := fs.String("config", "configs/system.yaml", "system config")

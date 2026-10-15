@@ -15,6 +15,7 @@ import (
 // fakeDeps implements the server's dependency surface.
 type fakeDeps struct {
 	mu        sync.Mutex
+	sample    WindowSample
 	waitRes   string
 	waitTok   int64
 	waitErr   error
@@ -188,3 +189,67 @@ func TestBatchUnknownModel(t *testing.T) {
 }
 
 
+
+// ---------- T9: observed-window metrics + batch results endpoints ----------
+
+func (f *fakeDeps) ObservedWindows(model string) (WindowSample, error) {
+	if !f.known[model] {
+		return WindowSample{}, errUnknownModel
+	}
+	return f.sample, nil
+}
+
+func (f *fakeDeps) BatchResults(id string) ([]ResultRow, bool) {
+	if id != f.batchID {
+		return nil, false
+	}
+	return []ResultRow{
+		{ID: "r-1", State: "completed", Outcome: "success", Tokens: 900},
+		{ID: "r-2", State: "completed", Outcome: "success", Tokens: 910},
+	}, true
+}
+
+func TestObservedWindowsEndpoint(t *testing.T) {
+	d := &fakeDeps{known: map[string]bool{"model-a": true}}
+	d.sample = WindowSample{ObservedRPM: 29000, ObservedTPM: 480000, ConfiguredRPM: 30000, ConfiguredTPM: 500000}
+	srv := apiSrv(t, d)
+	resp, err := http.Get(srv.URL + "/metrics/model-a")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp.Body.Close()
+	var got WindowSample
+	if err := json.NewDecoder(resp.Body).Decode(&got); err != nil {
+		t.Fatal(err)
+	}
+	if resp.StatusCode != 200 || got.ObservedRPM != 29000 || got.ConfiguredRPM != 30000 {
+		t.Fatalf("GET /metrics: %d %+v", resp.StatusCode, got)
+	}
+	resp2, _ := http.Get(srv.URL + "/metrics/nope")
+	if resp2.StatusCode != 404 {
+		t.Fatalf("unknown model want 404, got %d", resp2.StatusCode)
+	}
+	resp2.Body.Close()
+}
+
+func TestBatchResultsEndpoint(t *testing.T) {
+	d := &fakeDeps{known: map[string]bool{"model-a": true}, batchID: "b-9"}
+	srv := apiSrv(t, d)
+	resp, err := http.Get(srv.URL + "/batches/b-9/results")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp.Body.Close()
+	var rows []ResultRow
+	if err := json.NewDecoder(resp.Body).Decode(&rows); err != nil {
+		t.Fatal(err)
+	}
+	if resp.StatusCode != 200 || len(rows) != 2 || rows[0].ID != "r-1" || rows[1].Tokens != 910 {
+		t.Fatalf("GET results: %d %+v", resp.StatusCode, rows)
+	}
+	resp2, _ := http.Get(srv.URL + "/batches/nope/results")
+	if resp2.StatusCode != 404 {
+		t.Fatalf("unknown batch want 404, got %d", resp2.StatusCode)
+	}
+	resp2.Body.Close()
+}

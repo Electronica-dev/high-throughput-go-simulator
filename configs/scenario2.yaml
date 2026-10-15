@@ -1,13 +1,16 @@
-# Simulator config for scenario 2: two models, limits = system.yaml ×
-# headroom (10×). Scenario 2 changes the SYSTEM's model-a limit live
-# (30K -> 5K -> 30K RPM); the simulator's limits stay fixed — that is the
-# owner decision: the simulator is a separate fixed entity.
+# Simulator config for scenario 2: two models, limits = system limits x
+# headroom (10x). Scenario 2 pins the SYSTEM's limits per the spec -
+# model-a 30,000 RPM / 60M TPM, model-b 20,000 RPM / 40M TPM - then changes
+# model-a LIVE (30K -> 5K -> 30K RPM); the simulator's limits stay fixed -
+# that is the owner decision: the simulator is a separate fixed entity.
+# estimate/actual tokens are 2000 so the TPM limit (not just RPM) is the
+# binding constraint at the submitted 94% rate.
 models:
   - name: model-a
     rpm: 300000
-    tpm: 30000000
-    estimate_tokens: 100
-    actual_token_mean: 100
+    tpm: 600000000
+    estimate_tokens: 2000
+    actual_token_mean: 2000
     latency:
       kind: lognormal
       mean_ms: 50
@@ -17,10 +20,10 @@ models:
       transient_pct: 5
       permanent_pct: 2
   - name: model-b
-    rpm: 300000
-    tpm: 30000000
-    estimate_tokens: 100
-    actual_token_mean: 100
+    rpm: 200000
+    tpm: 400000000
+    estimate_tokens: 2000
+    actual_token_mean: 2000
     latency:
       kind: lognormal
       mean_ms: 50

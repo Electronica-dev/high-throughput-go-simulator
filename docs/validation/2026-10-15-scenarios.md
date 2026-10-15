@@ -32,8 +32,16 @@ request the window allowed (utilization > 96%).
 
 ## Scenario 2 — live limit change 30K → 5K → 30K RPM — PASS
 
-- phase 1 (75s at 30K RPM) → `POST /limits/model-a {rpm: 5000}` →
-  phase 2 (75s at 5K RPM) → restore to 30K → phase 3 (75s)
+Spec limits, pinned explicitly at run start: model-a **30,000 RPM / 60M
+TPM**, model-b **20,000 RPM / 40M TPM** (2,000-token requests so the TPM
+limit, not just RPM, is the binding constraint at the submitted 94% rate).
+BOTH models are under load in every phase.
+
+- phase 1 (75s, both models at their spec limits) →
+  `POST /limits/model-a {rpm: 5000, tpm: 60000000}` →
+  phase 2 (75s, model-a constrained; the spec reduces RPM only, so A's TPM
+  stays 60M) → restore to 30K/60M → phase 3 (75s)
+- model-b's limits are set exactly once (20K/40M) and never touched again
 - **no restart between phases** — the limit change is applied live through
   the engine's limiter (`SetLimits`, atomic swap; enforcement is immediate
   for new admissions)
@@ -41,9 +49,13 @@ request the window allowed (utilization > 96%).
   period after the decrease (a live decrease cannot retroactively un-admit
   traffic already inside the 60s window; enforcement means no NEW admissions
   beyond it — the evidence time series shows the monotonic decay)
-- model-b traffic unaffected throughout (its windows never moved)
-- full configured-vs-observed time series in the evidence JSON, labelled per
-  phase (`p1`/`p2`/`p3`)
+- **model-b kept processing while model-a was constrained**: ~19.1K RPM
+  observed (95% of its own 20K limit) during phase 2, never over 40M TPM
+- full configured-vs-observed time series in the evidence JSON for BOTH
+  models, labelled per phase (`p1`/`p2`/`p3`) and per model
+- graphical evidence: `scenario-2-rpm.svg` and `scenario-2-tpm.svg` — each
+  chart shows both models' observed windows against both models' configured
+  limits over time (A blue/red, B green/amber)
 
 ## Scenario 3 — durable async batches + callbacks — PASS
 

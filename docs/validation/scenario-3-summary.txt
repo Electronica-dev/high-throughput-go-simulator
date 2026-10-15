@@ -1,2 +1,5 @@
-scenario scenario-3: PASS=true
+scenario scenario-3: PASS=false
+  - batch f5629c9a-86c9-47a6-8613-d433f70050bb has duplicate result ids
+  - batch dfaeb439-4344-41c0-9906-5b765dca690c has duplicate result ids
+  - request ids are not unique across batches
 over-limit samples: 0

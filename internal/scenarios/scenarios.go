@@ -109,7 +109,10 @@ type Config struct {
 	Headroom       float64 `yaml:"headroom"` // simulator limits = system × headroom
 	MinUtilPct     float64 `yaml:"min_util_pct"`
 	Phase1RPM      int64   `yaml:"phase1_rpm"`
+	Phase1TPM      int64   `yaml:"phase1_tpm"`
 	Phase2RPM      int64   `yaml:"phase2_rpm"`
+	SecondRPM      int64   `yaml:"second_rpm"` // model B's limits, pinned once and never changed
+	SecondTPM      int64   `yaml:"second_tpm"`
 	Phase1Sec      int     `yaml:"phase1_sec"`
 	Phase2Sec      int     `yaml:"phase2_sec"`
 	Phase3Sec      int     `yaml:"phase3_sec"`
@@ -128,10 +131,12 @@ type Result struct {
 	Charts     []string       `json:"charts,omitempty"`
 }
 
-// TimePoint is one configured-vs-observed sample with its phase label.
+// TimePoint is one configured-vs-observed sample with its phase label and
+// the model it was sampled from (scenario 2 samples BOTH models).
 type TimePoint struct {
 	AtSec  float64      `json:"at_sec"`
 	Phase  string       `json:"phase"`
+	Model  string       `json:"model"`
 	Sample WindowSample `json:"sample"`
 }
 
@@ -190,10 +195,26 @@ type batchStatus struct {
 // writeTimelineCharts renders the sampled configured-vs-observed windows as
 // standalone SVG charts (one per metric) — the PDF's scenario-2 evidence,
 // "configured limits and observed throughput over time", made graphical.
-// Runs without samples (S3) produce no charts.
+// Every sampled model gets its own observed + configured series in the same
+// chart, so the two models' limits are visible side by side. Runs without
+// samples (S3) produce no charts.
 func writeTimelineCharts(outDir, name string, series []TimePoint) ([]string, error) {
 	if len(series) == 0 {
 		return nil, nil
+	}
+	// stable per-model series; first-seen order (model-a before model-b)
+	var models []string
+	byModel := make(map[string][]TimePoint)
+	for _, tp := range series {
+		if _, seen := byModel[tp.Model]; !seen {
+			models = append(models, tp.Model)
+		}
+		byModel[tp.Model] = append(byModel[tp.Model], tp)
+	}
+	// per-model palette: observed solid, configured limit dashed
+	palette := []struct{ observed, limit string }{
+		{"#2563eb", "#dc2626"}, // blue / red
+		{"#059669", "#d97706"}, // green / amber
 	}
 	var charts []string
 	for _, m := range []struct {
@@ -202,23 +223,28 @@ func writeTimelineCharts(outDir, name string, series []TimePoint) ([]string, err
 		{"rpm", "requests/minute", name + "-rpm.svg"},
 		{"tpm", "tokens/minute", name + "-tpm.svg"},
 	} {
-		observed := ChartSeries{Label: "observed " + m.key, Color: "#2563eb"}
-		configured := ChartSeries{Label: "configured limit", Color: "#dc2626", Dashed: true}
-		for _, tp := range series {
-			x := ChartPoint{X: tp.AtSec}
-			switch m.key {
-			case "rpm":
-				x.Y = float64(tp.Sample.ObservedRPM)
-				observed.Points = append(observed.Points, x)
-				configured.Points = append(configured.Points, ChartPoint{X: tp.AtSec, Y: float64(tp.Sample.ConfiguredRPM)})
-			default:
-				x.Y = float64(tp.Sample.ObservedTPM)
-				observed.Points = append(observed.Points, x)
-				configured.Points = append(configured.Points, ChartPoint{X: tp.AtSec, Y: float64(tp.Sample.ConfiguredTPM)})
+		var seriesList []ChartSeries
+		for i, modelName := range models {
+			colors := palette[i%len(palette)]
+			observed := ChartSeries{Label: "observed " + modelName, Color: colors.observed}
+			configured := ChartSeries{Label: "configured limit " + modelName, Color: colors.limit, Dashed: true}
+			for _, tp := range byModel[modelName] {
+				x := ChartPoint{X: tp.AtSec}
+				switch m.key {
+				case "rpm":
+					x.Y = float64(tp.Sample.ObservedRPM)
+					observed.Points = append(observed.Points, x)
+					configured.Points = append(configured.Points, ChartPoint{X: tp.AtSec, Y: float64(tp.Sample.ConfiguredRPM)})
+				default:
+					x.Y = float64(tp.Sample.ObservedTPM)
+					observed.Points = append(observed.Points, x)
+					configured.Points = append(configured.Points, ChartPoint{X: tp.AtSec, Y: float64(tp.Sample.ConfiguredTPM)})
+				}
 			}
+			seriesList = append(seriesList, observed, configured)
 		}
 		path := filepath.Join(outDir, m.file)
-		if err := WriteTimelineSVG(path, name+" — "+m.label+" over time (observed vs configured)", m.label, []ChartSeries{observed, configured}); err != nil {
+		if err := WriteTimelineSVG(path, name+" — "+m.label+" over time (observed vs configured)", m.label, seriesList); err != nil {
 			return charts, err
 		}
 		charts = append(charts, path)
@@ -227,7 +253,7 @@ func writeTimelineCharts(outDir, name string, series []TimePoint) ([]string, err
 }
 
 // sampler samples a model's windows every interval, labelling each point
-// with its phase, until the stop channel closes.
+// with its phase and model, until the stop channel closes.
 func sampler(client *http.Client, systemURL, model string, every time.Duration, phase func() string, stop <-chan struct{}, out *[]TimePoint, mu *sync.Mutex) {
 	t := time.NewTicker(every)
 	defer t.Stop()
@@ -242,7 +268,7 @@ func sampler(client *http.Client, systemURL, model string, every time.Duration, 
 				continue // sample lost; the report shows gaps
 			}
 			mu.Lock()
-			*out = append(*out, TimePoint{AtSec: time.Since(start).Seconds(), Phase: phase(), Sample: ws})
+			*out = append(*out, TimePoint{AtSec: time.Since(start).Seconds(), Phase: phase(), Model: model, Sample: ws})
 			mu.Unlock()
 		}
 	}

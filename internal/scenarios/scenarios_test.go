@@ -164,7 +164,9 @@ func TestScenario2LimitPhases(t *testing.T) {
 	sc := Config{
 		RatePerSec: 300, DurationSec: 3, BatchSize: 25, Tokens: 100,
 		Model: "model-a", SecondModel: "model-b",
-		Phase1RPM: 30000, Phase2RPM: 5000, Phase1Sec: 1, Phase2Sec: 1, Phase3Sec: 1,
+		Phase1RPM: 30000, Phase1TPM: 60000000, Phase2RPM: 5000,
+		SecondRPM: 20000, SecondTPM: 40000000,
+		Phase1Sec: 1, Phase2Sec: 1, Phase3Sec: 1,
 		SampleEverySec: 1, Headroom: 10,
 	}
 	out := t.TempDir()
@@ -172,8 +174,8 @@ func TestScenario2LimitPhases(t *testing.T) {
 	if err != nil {
 		t.Fatalf("RunScenario2: %v", err)
 	}
-	// the runner must have posted 30K → 5K → 30K
-	if len(sys.limitPosts) != 3 || sys.limitPosts[0] != 30000 || sys.limitPosts[1] != 5000 || sys.limitPosts[2] != 30000 {
+	// the runner must have pinned B (20K) once, then A 30K -> 5K -> 30K
+	if len(sys.limitPosts) != 4 || sys.limitPosts[0] != 30000 || sys.limitPosts[1] != 20000 || sys.limitPosts[2] != 5000 || sys.limitPosts[3] != 30000 {
 		t.Fatalf("limit phase posts: %v", sys.limitPosts)
 	}
 	// the observed-vs-configured time series must have been sampled

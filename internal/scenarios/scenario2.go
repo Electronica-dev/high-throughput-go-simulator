@@ -1,6 +1,8 @@
-// Scenario 2 — live limit change: A runs 30K → 5K → 30K RPM mid-run with no
-// restart, B's traffic is untouched throughout, and the report carries the
-// configured-vs-observed time series per phase.
+// Scenario 2 — live limit change per the spec: model A runs at 30,000 RPM /
+// 60M TPM, model B at 20,000 RPM / 40M TPM; A is reduced to 5,000 RPM
+// mid-run (TPM unchanged) and restored, with no restart; B is pinned once
+// and keeps processing throughout. Both models are under load every phase,
+// and the report carries each model's configured-vs-observed time series.
 package scenarios
 
 import (
@@ -12,7 +14,7 @@ import (
 )
 
 // RunScenario2 drives the three-phase limit change and asserts each phase's
-// observed window matches its configured limit.
+// observed windows match the configured limits for BOTH models.
 func RunScenario2(systemURL string, sc Config, outDir string) (*Result, error) {
 	client := &http.Client{Timeout: 30 * time.Second}
 
@@ -24,79 +26,91 @@ func RunScenario2(systemURL string, sc Config, outDir string) (*Result, error) {
 	stop := make(chan struct{})
 	go sampler(client, systemURL, sc.Model, time.Duration(sc.SampleEverySec)*time.Second,
 		func() string { return phase.Load().(string) }, stop, &series, mu)
-	// model B untouched: its own sampler
+	// model B: its own sampler — it must keep processing while A is constrained
 	muB := &sync.Mutex{}
 	var seriesB []TimePoint
 	stopB := make(chan struct{})
 	go sampler(client, systemURL, sc.SecondModel, time.Duration(sc.SampleEverySec)*time.Second,
 		func() string { return phase.Load().(string) }, stopB, &seriesB, muB)
 
-	// phase 1: pin the scenario's baseline limit explicitly (the scenario is
-	// self-contained regardless of what the system started with)
-	phase.Store("p1")
+	fail := func(err error) (*Result, error) {
+		close(stop)
+		close(stopB)
+		return nil, err
+	}
 	runStart := time.Now()
 	stepf := func(format string, args ...any) {
 		fmt.Printf("[s2 +%.1fs] %s\n", time.Since(runStart).Seconds(), fmt.Sprintf(format, args...))
 	}
-	if err := postJSON(client, systemURL+"/limits/"+sc.Model, map[string]any{"rpm": sc.Phase1RPM, "tpm": sc.Phase1RPM * sc.Tokens}); err != nil {
-		close(stop)
-		close(stopB)
-		return nil, fmt.Errorf("limit set to %d: %w", sc.Phase1RPM, err)
+	// load for one phase: BOTH models at 94% of their current per-second
+	// capacity (retry attempts also consume limit slots, so submitting at
+	// capacity would pin the windows and expire retry deferrals), weighted
+	// by each model's share of the current total capacity.
+	phaseLoad := func(modelARPM int64) (*Config, map[string]float64) {
+		totalRPM := modelARPM + sc.SecondRPM
+		lc := sc
+		lc.RatePerSec = totalRPM * 94 / 6000
+		mix := map[string]float64{
+			sc.Model:       float64(modelARPM) / float64(totalRPM),
+			sc.SecondModel: float64(sc.SecondRPM) / float64(totalRPM),
+		}
+		return &lc, mix
 	}
-	stepf("phase p1: %s limit pinned to %d RPM via POST /limits (no restart); load incoming", sc.Model, sc.Phase1RPM)
-	sc1 := sc
-	sc1.DurationSec = sc.Phase1Sec
-	sc1.RatePerSec = sc.Phase1RPM * 94 / 6000 // 94% of capacity: retry attempts also consume RPM slots, so submitting at capacity would pin the window and expire retry deferrals
-	if _, err := runLoad(client, systemURL, &sc1, map[string]float64{sc.Model: 1.0}); err != nil {
-		close(stop)
-		close(stopB)
-		return nil, err
+
+	// baseline: pin BOTH models' spec limits explicitly (the scenario is
+	// self-contained regardless of what the system started with). B's limits
+	// are set exactly once here and never touched again.
+	if err := postJSON(client, systemURL+"/limits/"+sc.Model, map[string]any{"rpm": sc.Phase1RPM, "tpm": sc.Phase1TPM}); err != nil {
+		return fail(fmt.Errorf("limit set to %d/%d: %w", sc.Phase1RPM, sc.Phase1TPM, err))
 	}
-	// phase 2: drop A's limit to Phase2RPM (no restart); the submitted rate
-	// tracks each phase's per-second capacity (RPM/60) at 94%
+	if err := postJSON(client, systemURL+"/limits/"+sc.SecondModel, map[string]any{"rpm": sc.SecondRPM, "tpm": sc.SecondTPM}); err != nil {
+		return fail(fmt.Errorf("limit set to %d/%d: %w", sc.SecondRPM, sc.SecondTPM, err))
+	}
+	stepf("phase p1: limits pinned per spec — %s %d RPM/%d TPM, %s %d RPM/%d TPM (no restart); both models under load",
+		sc.Model, sc.Phase1RPM, sc.Phase1TPM, sc.SecondModel, sc.SecondRPM, sc.SecondTPM)
+	lc1, mix1 := phaseLoad(sc.Phase1RPM)
+	lc1.DurationSec = sc.Phase1Sec
+	if _, err := runLoad(client, systemURL, lc1, mix1); err != nil {
+		return fail(err)
+	}
+	// phase 2: drop A to Phase2RPM (no restart); the spec reduces RPM only —
+	// A's TPM stays at Phase1TPM. B's load and limits are untouched.
 	phase.Store("p2")
 	p2StartSec := time.Since(samplerStart).Seconds()
-	if err := postJSON(client, systemURL+"/limits/"+sc.Model, map[string]any{"rpm": sc.Phase2RPM, "tpm": sc.Phase2RPM * sc.Tokens}); err != nil {
-		close(stop)
-		close(stopB)
-		return nil, fmt.Errorf("limit change to %d: %w", sc.Phase2RPM, err)
+	if err := postJSON(client, systemURL+"/limits/"+sc.Model, map[string]any{"rpm": sc.Phase2RPM, "tpm": sc.Phase1TPM}); err != nil {
+		return fail(fmt.Errorf("limit change to %d: %w", sc.Phase2RPM, err))
 	}
-	stepf("phase p2: %s limit changed LIVE to %d RPM (no restart) — expect the observed window to decay to the new ceiling within one 60s window", sc.Model, sc.Phase2RPM)
-	sc2 := sc
-	sc2.DurationSec = sc.Phase2Sec
-	sc2.RatePerSec = sc.Phase2RPM * 94 / 6000 // 94% of the phase's capacity
-	if _, err := runLoad(client, systemURL, &sc2, map[string]float64{sc.Model: 1.0}); err != nil {
-		close(stop)
-		close(stopB)
-		return nil, err
+	stepf("phase p2: %s limit changed LIVE to %d RPM (TPM stays %d; no restart) — expect the observed window to decay to the new ceiling within one 60s window; %s keeps processing",
+		sc.Model, sc.Phase2RPM, sc.Phase1TPM, sc.SecondModel)
+	lc2, mix2 := phaseLoad(sc.Phase2RPM)
+	lc2.DurationSec = sc.Phase2Sec
+	if _, err := runLoad(client, systemURL, lc2, mix2); err != nil {
+		return fail(err)
 	}
 	// phase 3: restore
 	phase.Store("p3")
-	if err := postJSON(client, systemURL+"/limits/"+sc.Model, map[string]any{"rpm": sc.Phase1RPM, "tpm": sc.Phase1RPM * sc.Tokens}); err != nil {
-		close(stop)
-		close(stopB)
-		return nil, fmt.Errorf("limit restore to %d: %w", sc.Phase1RPM, err)
+	if err := postJSON(client, systemURL+"/limits/"+sc.Model, map[string]any{"rpm": sc.Phase1RPM, "tpm": sc.Phase1TPM}); err != nil {
+		return fail(fmt.Errorf("limit restore to %d/%d: %w", sc.Phase1RPM, sc.Phase1TPM, err))
 	}
-	stepf("phase p3: %s limit restored to %d RPM; second model %s sampled throughout (must stay untouched)", sc.Model, sc.Phase1RPM, sc.SecondModel)
-	sc3 := sc
-	sc3.DurationSec = sc.Phase3Sec
-	sc3.RatePerSec = sc.Phase1RPM * 94 / 6000 // 94% of capacity
-	if _, err := runLoad(client, systemURL, &sc3, map[string]float64{sc.Model: 1.0}); err != nil {
-		close(stop)
-		close(stopB)
-		return nil, err
+	stepf("phase p3: %s limit restored to %d RPM/%d TPM; %s sampled throughout (limits never changed)",
+		sc.Model, sc.Phase1RPM, sc.Phase1TPM, sc.SecondModel)
+	lc3, mix3 := phaseLoad(sc.Phase1RPM)
+	lc3.DurationSec = sc.Phase3Sec
+	if _, err := runLoad(client, systemURL, lc3, mix3); err != nil {
+		return fail(err)
 	}
 	close(stop)
 	close(stopB)
 
 	res := &Result{Pass: true}
-	// per-phase configured-vs-observed: phase windows must track their limits
+	// per-phase configured-vs-observed for model A: phase windows must track
+	// BOTH of A's limits (rpm during every phase; tpm is unchanged all run)
 	for _, p := range []string{"p1", "p2", "p3"} {
-		limit := sc.Phase1RPM
+		limitRPM := sc.Phase1RPM
 		if p == "p2" {
-			limit = sc.Phase2RPM
+			limitRPM = sc.Phase2RPM
 		}
-		var over int
+		var overRPM, overTPM int
 		for _, tp := range series {
 			if tp.Phase != p {
 				continue
@@ -111,27 +125,52 @@ func RunScenario2(systemURL string, sc Config, outDir string) (*Result, error) {
 			}
 			sink := tp.Sample
 			if sink.ConfiguredRPM > 0 && float64(sink.ObservedRPM) > float64(sink.ConfiguredRPM)*1.005 {
-				over++
+				overRPM++
+			}
+			if sink.ConfiguredTPM > 0 && float64(sink.ObservedTPM) > float64(sink.ConfiguredTPM)*1.005 {
+				overTPM++
 			}
 		}
-		if over > 0 {
+		if overRPM > 0 {
 			res.Pass = false
-			res.Reasons = append(res.Reasons, fmt.Sprintf("phase %s: %d window(s) observed above the configured %d RPM", p, over, limit))
+			res.Reasons = append(res.Reasons, fmt.Sprintf("phase %s: %d window(s) observed above the configured %d RPM", p, overRPM, limitRPM))
+		}
+		if overTPM > 0 {
+			res.Pass = false
+			res.Reasons = append(res.Reasons, fmt.Sprintf("phase %s: %d window(s) observed above the configured %d TPM", p, overTPM, sc.Phase1TPM))
 		}
 	}
-	// model B untouched: its observed windows never exceeded its own config
+	// model B: never over its own limits, and still processing while A was
+	// constrained (observed rpm in p2 well above zero)
 	muB.Lock()
 	overB := len(OverLimit(seriesBSamples(seriesB), 0.005))
+	var p2Windows int
+	var p2ObservedRPMSum int64
+	for _, tp := range seriesB {
+		if tp.Phase != "p2" || tp.AtSec < p2StartSec+61 {
+			continue
+		}
+		p2Windows++
+		p2ObservedRPMSum += tp.Sample.ObservedRPM
+	}
 	muB.Unlock()
 	if overB > 0 {
 		res.Pass = false
 		res.Reasons = append(res.Reasons, fmt.Sprintf("model %s observed over its limits in %d window(s)", sc.SecondModel, overB))
 	}
+	// B kept processing while A was constrained — checked only when the
+	// post-drain p2 windows exist (a 60s decay period leaves none in
+	// short-lived test runs)
+	if p2Windows > 0 && p2ObservedRPMSum/int64(p2Windows) < sc.SecondRPM/2 {
+		res.Pass = false
+		res.Reasons = append(res.Reasons, fmt.Sprintf("model %s did not keep processing while %s was constrained (mean p2 observed %d RPM over %d window(s))",
+			sc.SecondModel, sc.Model, p2ObservedRPMSum/int64(p2Windows), p2Windows))
+	}
 
 	mu.Lock()
-	res.TimeSeries = series
+	res.TimeSeries = append(append([]TimePoint{}, series...), seriesB...)
 	mu.Unlock()
-	charts, err := writeTimelineCharts(outDir, "scenario-2", series)
+	charts, err := writeTimelineCharts(outDir, "scenario-2", res.TimeSeries)
 	if err != nil {
 		return nil, err
 	}

@@ -158,7 +158,7 @@ summary equals the API's batch status.
 
 ```bash
 bin/consuma.exe scenario1 -out docs/validation -duration 300   # sustained load at the limit: utilization, zero over-limit windows, full accounting
-bin/consuma.exe scenario2 -out docs/validation                  # live 30K→5K→30K RPM change, second model untouched, configured-vs-observed time series
+bin/consuma.exe scenario2 -out docs/validation                  # live 30K→5K→30K RPM change (spec limits: A 30K/60M, B 20K/40M), both models charted
 bin/consuma.exe scenario3 -out docs/validation                  # durable 10K batches, reject-first callback sink, delivery recovery, id uniqueness
 ```
 

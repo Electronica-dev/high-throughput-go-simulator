@@ -109,3 +109,21 @@ func TestRequestBodyUsesExternalID(t *testing.T) {
 		t.Fatalf("model/tokens mismatch: %q %v", gotModel, gotTokens)
 	}
 }
+
+// TestNewBuildsPooledTransport: at hundreds of calls/sec the default
+// transport (MaxIdleConnsPerHost=2) churns connections — resets surface as
+// spurious transient failures and amplify retries. The provider must ship a
+// pooled transport sized for its worker pool.
+func TestNewBuildsPooledTransport(t *testing.T) {
+	p := New("http://127.0.0.1:9001", nil)
+	tr, ok := p.client.Transport.(*http.Transport)
+	if !ok {
+		t.Fatalf("client.Transport must be *http.Transport, got %T", p.client.Transport)
+	}
+	if tr.MaxIdleConnsPerHost < 64 {
+		t.Fatalf("MaxIdleConnsPerHost want >= 64, got %d", tr.MaxIdleConnsPerHost)
+	}
+	if tr.MaxIdleConns < 256 {
+		t.Fatalf("MaxIdleConns want >= 256, got %d", tr.MaxIdleConns)
+	}
+}

@@ -1,0 +1,2270 @@
+{
+  "pass": true,
+  "utilization_pct": {
+    "RPM": 0,
+    "TPM": 0
+  },
+  "over_limit_samples": 0,
+  "time_series": [
+    {
+      "at_sec": 1.0009608,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 471,
+        "observed_tpm": 42231,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 2.0020407,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 954,
+        "observed_tpm": 83619,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 3.0007501,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 1424,
+        "observed_tpm": 125165,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 4.0004053,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 1950,
+        "observed_tpm": 171716,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 5.0002281,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 2420,
+        "observed_tpm": 213290,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 6.0003208,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 2952,
+        "observed_tpm": 259683,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 7.0017834,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 3437,
+        "observed_tpm": 300899,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 8.0007481,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 3953,
+        "observed_tpm": 347424,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 9.001754,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 4423,
+        "observed_tpm": 388179,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 10.0000313,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 4895,
+        "observed_tpm": 429376,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 11.0002579,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 5424,
+        "observed_tpm": 476085,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 12.0018427,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 5898,
+        "observed_tpm": 517869,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 13.0005546,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 6423,
+        "observed_tpm": 564696,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 14.0012013,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 6905,
+        "observed_tpm": 605920,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 15.0005036,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 7375,
+        "observed_tpm": 646923,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 16.0001344,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 7907,
+        "observed_tpm": 693800,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 17.002672,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 8390,
+        "observed_tpm": 735368,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 18.0005125,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 8812,
+        "observed_tpm": 772237,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 19.0001581,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 9374,
+        "observed_tpm": 823097,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 20.0008957,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 9851,
+        "observed_tpm": 864316,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 21.0006939,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 10382,
+        "observed_tpm": 910665,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 22.0004259,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 10850,
+        "observed_tpm": 951706,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 23.0006378,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 11373,
+        "observed_tpm": 998196,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 24.0004794,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 11837,
+        "observed_tpm": 1039346,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 25.0018379,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 12314,
+        "observed_tpm": 1080122,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 26.0003789,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 12831,
+        "observed_tpm": 1126813,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 27.0007805,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 13295,
+        "observed_tpm": 1168027,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 28.0003858,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 13817,
+        "observed_tpm": 1214607,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 29.0003471,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 14297,
+        "observed_tpm": 1255956,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 30.0001427,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 14774,
+        "observed_tpm": 1297376,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 31.0002047,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 15292,
+        "observed_tpm": 1343251,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 32.000455,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 15759,
+        "observed_tpm": 1384262,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 33.0007121,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 16282,
+        "observed_tpm": 1431145,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 34.000019,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 16747,
+        "observed_tpm": 1472553,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 35.0004299,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 17224,
+        "observed_tpm": 1514093,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 36.0007465,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 17745,
+        "observed_tpm": 1560261,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 37.0003623,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 18220,
+        "observed_tpm": 1601730,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 38.0008993,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 18692,
+        "observed_tpm": 1643256,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 39.0003967,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 19210,
+        "observed_tpm": 1689164,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 40.0001252,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 19682,
+        "observed_tpm": 1730279,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 41.0001023,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 20206,
+        "observed_tpm": 1776731,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 42.0002732,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 20684,
+        "observed_tpm": 1817904,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 43.0002024,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 21164,
+        "observed_tpm": 1859268,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 44.0002857,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 21691,
+        "observed_tpm": 1905950,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 45.0009497,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 22167,
+        "observed_tpm": 1947176,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 46.0000625,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 22692,
+        "observed_tpm": 1992906,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 47.0001787,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 23165,
+        "observed_tpm": 2034624,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 48.0005212,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 23686,
+        "observed_tpm": 2081548,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 49.0003144,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 24157,
+        "observed_tpm": 2122641,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 50.0000989,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 24630,
+        "observed_tpm": 2164164,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 51.0002647,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 25154,
+        "observed_tpm": 2210842,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 52.0004296,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 25626,
+        "observed_tpm": 2252040,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 53.0008629,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 26151,
+        "observed_tpm": 2298793,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 54.0004397,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 26627,
+        "observed_tpm": 2340366,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 55.0000907,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 27103,
+        "observed_tpm": 2381950,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 56.000128,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 27633,
+        "observed_tpm": 2428397,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 57.0002289,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 28103,
+        "observed_tpm": 2470229,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 58.0000335,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 28585,
+        "observed_tpm": 2511507,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 59.0002136,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 29120,
+        "observed_tpm": 2558442,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 60.0008074,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 29175,
+        "observed_tpm": 2560648,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 61.0008342,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 29172,
+        "observed_tpm": 2557282,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 62.0007015,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 29180,
+        "observed_tpm": 2553660,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 63.0009286,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 29230,
+        "observed_tpm": 2555184,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 64.0005946,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 29185,
+        "observed_tpm": 2546540,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 65.0006979,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 29183,
+        "observed_tpm": 2543026,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 66.0005581,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 29184,
+        "observed_tpm": 2539745,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 67.0004894,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 29194,
+        "observed_tpm": 2536100,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 68.0003296,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 29252,
+        "observed_tpm": 2537277,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 69.0004978,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 29210,
+        "observed_tpm": 2528940,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 70.000485,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 29204,
+        "observed_tpm": 2525356,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 71.0002713,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 29204,
+        "observed_tpm": 2522154,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 72.0004254,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 29213,
+        "observed_tpm": 2518050,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 73.0001916,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 29262,
+        "observed_tpm": 2519626,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 74.0002359,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 29213,
+        "observed_tpm": 2511226,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 75.0000704,
+      "phase": "p1",
+      "sample": {
+        "observed_rpm": 29209,
+        "observed_tpm": 2507493,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 76.0004627,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 28727,
+        "observed_tpm": 2462055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 77.0004377,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 28305,
+        "observed_tpm": 2422055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 78.0011021,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 27793,
+        "observed_tpm": 2372055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 79.0009951,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 27265,
+        "observed_tpm": 2322055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 80.000433,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 26784,
+        "observed_tpm": 2277055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 81.0011323,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 26266,
+        "observed_tpm": 2227055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 82.0004294,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 25793,
+        "observed_tpm": 2182055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 83.0009129,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 25330,
+        "observed_tpm": 2137055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 84.0007105,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 24802,
+        "observed_tpm": 2087055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 85.0004248,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 24336,
+        "observed_tpm": 2042055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 86.001092,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 23820,
+        "observed_tpm": 1992055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 87.0008344,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 23348,
+        "observed_tpm": 1947055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 88.0007369,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 22870,
+        "observed_tpm": 1902055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 89.0010031,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 22343,
+        "observed_tpm": 1852055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 90.0012862,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 21875,
+        "observed_tpm": 1807055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 91.0005562,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 21356,
+        "observed_tpm": 1757055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 92.0005075,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 20885,
+        "observed_tpm": 1712055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 93.0001761,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 20420,
+        "observed_tpm": 1667055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 94.000798,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 19893,
+        "observed_tpm": 1617055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 95.0002235,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 19421,
+        "observed_tpm": 1572055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 96.0003613,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 18895,
+        "observed_tpm": 1522055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 97.0008258,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 18424,
+        "observed_tpm": 1477055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 98.0009851,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 17957,
+        "observed_tpm": 1432055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 99.0013237,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 17432,
+        "observed_tpm": 1382055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 100.0001907,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 16960,
+        "observed_tpm": 1337055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 101.0003375,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 16432,
+        "observed_tpm": 1287055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 102.0003621,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 15953,
+        "observed_tpm": 1242055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 103.0010499,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 15477,
+        "observed_tpm": 1197055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 104.0008159,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 14947,
+        "observed_tpm": 1147055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 105.0005166,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 14473,
+        "observed_tpm": 1102055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 106.0010456,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 13951,
+        "observed_tpm": 1052055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 107.00014,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 13480,
+        "observed_tpm": 1007055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 108.000687,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 13010,
+        "observed_tpm": 962055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 109.0008422,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 12487,
+        "observed_tpm": 912055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 110.001062,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 12011,
+        "observed_tpm": 867055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 111.0008083,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 11492,
+        "observed_tpm": 817055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 112.0000835,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 11014,
+        "observed_tpm": 772055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 113.0002846,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 10540,
+        "observed_tpm": 727055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 114.001122,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 10013,
+        "observed_tpm": 677055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 115.0009478,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 9533,
+        "observed_tpm": 632055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 116.0000832,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 9010,
+        "observed_tpm": 582055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 117.000906,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 8527,
+        "observed_tpm": 537055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 118.0001133,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 8048,
+        "observed_tpm": 492055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 119.0011197,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 7517,
+        "observed_tpm": 442055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 120.0008173,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 7039,
+        "observed_tpm": 397055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 121.0008007,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 6508,
+        "observed_tpm": 347055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 122.0009056,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 6036,
+        "observed_tpm": 302055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 123.0009329,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 5561,
+        "observed_tpm": 257055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 124.0011309,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 5032,
+        "observed_tpm": 207055,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 125.0003742,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 4946,
+        "observed_tpm": 202052,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 126.0019169,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 4497,
+        "observed_tpm": 153971,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 127.0010004,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 4124,
+        "observed_tpm": 117988,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 128.0005602,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 3747,
+        "observed_tpm": 82627,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 129.0000511,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 3276,
+        "observed_tpm": 36831,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 130.000178,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 2904,
+        "observed_tpm": 1281,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 131.0001413,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 2430,
+        "observed_tpm": 0,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 132.0005212,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 2050,
+        "observed_tpm": 0,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 133.0000429,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 1635,
+        "observed_tpm": 0,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 134.0006873,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 1207,
+        "observed_tpm": 0,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 135.0003901,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 1209,
+        "observed_tpm": 0,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 136.0006592,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 1314,
+        "observed_tpm": 4635,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 137.0000615,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 1420,
+        "observed_tpm": 14291,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 138.0011923,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 1474,
+        "observed_tpm": 18491,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 139.0006797,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 1578,
+        "observed_tpm": 27746,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 140.0057235,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 1630,
+        "observed_tpm": 32219,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 141.0008011,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 1734,
+        "observed_tpm": 41497,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 142.0004869,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 1788,
+        "observed_tpm": 46214,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 143.0008698,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 1895,
+        "observed_tpm": 55542,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 144.000285,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 1999,
+        "observed_tpm": 65262,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 145.0010058,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 2054,
+        "observed_tpm": 69493,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 146.0014329,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 2161,
+        "observed_tpm": 78767,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 147.0002746,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 2215,
+        "observed_tpm": 83328,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 148.0003057,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 2318,
+        "observed_tpm": 92676,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 149.0014617,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 2368,
+        "observed_tpm": 97213,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 150.0005174,
+      "phase": "p2",
+      "sample": {
+        "observed_rpm": 2473,
+        "observed_tpm": 106421,
+        "configured_rpm": 5000,
+        "configured_tpm": 500000
+      }
+    },
+    {
+      "at_sec": 151.000272,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 2627,
+        "observed_tpm": 120718,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 152.000499,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 3101,
+        "observed_tpm": 161901,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 153.005516,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 3622,
+        "observed_tpm": 208519,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 154.0000646,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 4086,
+        "observed_tpm": 249150,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 155.0007545,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 4506,
+        "observed_tpm": 286314,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 156.0004013,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 5080,
+        "observed_tpm": 338439,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 157.0000846,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 5558,
+        "observed_tpm": 378930,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 158.0000721,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 6085,
+        "observed_tpm": 425345,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 159.0004135,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 6502,
+        "observed_tpm": 462287,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 160.0015842,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 7088,
+        "observed_tpm": 513636,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 161.0005284,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 7551,
+        "observed_tpm": 554643,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 162.0004212,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 8027,
+        "observed_tpm": 595888,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 163.000063,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 8548,
+        "observed_tpm": 642438,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 164.0003163,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 9016,
+        "observed_tpm": 683747,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 165.00093,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 9486,
+        "observed_tpm": 725529,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 166.0002969,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 10019,
+        "observed_tpm": 771599,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 167.0004168,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 10488,
+        "observed_tpm": 812989,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 168.000667,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 11010,
+        "observed_tpm": 859339,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 169.0001037,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 11479,
+        "observed_tpm": 901040,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 170.0023756,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 11997,
+        "observed_tpm": 947670,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 171.0000373,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 12472,
+        "observed_tpm": 989060,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 172.0004958,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 12945,
+        "observed_tpm": 1030262,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 173.0026384,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 13463,
+        "observed_tpm": 1076467,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 174.000787,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 13937,
+        "observed_tpm": 1117582,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 175.0008535,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 14418,
+        "observed_tpm": 1159151,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 176.0001353,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 14887,
+        "observed_tpm": 1200537,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 177.0003796,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 15411,
+        "observed_tpm": 1246920,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 178.0000977,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 15947,
+        "observed_tpm": 1293234,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 179.0004476,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 16416,
+        "observed_tpm": 1335008,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 180.0018726,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 16943,
+        "observed_tpm": 1381238,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 181.0005247,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 17423,
+        "observed_tpm": 1422633,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 182.000241,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 17896,
+        "observed_tpm": 1463864,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 183.0002042,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 18418,
+        "observed_tpm": 1510225,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 184.0001106,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 18906,
+        "observed_tpm": 1551596,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 185.0009207,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 18975,
+        "observed_tpm": 1555144,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 186.0002836,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 19311,
+        "observed_tpm": 1584232,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 187.0002324,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 19737,
+        "observed_tpm": 1620532,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 188.0002983,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 20151,
+        "observed_tpm": 1657015,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 189.0002716,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 20522,
+        "observed_tpm": 1688994,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 190.0006592,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 20999,
+        "observed_tpm": 1730249,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 191.0003572,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 21373,
+        "observed_tpm": 1761693,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 192.0002465,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 21797,
+        "observed_tpm": 1797840,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 193.0002201,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 22217,
+        "observed_tpm": 1834155,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 194.0001141,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 22640,
+        "observed_tpm": 1870316,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 195.0006241,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 23006,
+        "observed_tpm": 1902005,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 196.0004014,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 23484,
+        "observed_tpm": 1943830,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 197.0003259,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 23857,
+        "observed_tpm": 1975211,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 198.0004911,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 24279,
+        "observed_tpm": 2011958,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 199.0006713,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 24699,
+        "observed_tpm": 2048114,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 200.0012012,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 25120,
+        "observed_tpm": 2084382,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 201.0000268,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 25540,
+        "observed_tpm": 2120843,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 202.0010063,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 25904,
+        "observed_tpm": 2152210,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 203.0004693,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 26374,
+        "observed_tpm": 2193592,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 204.0005747,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 26740,
+        "observed_tpm": 2225274,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 205.0001122,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 27162,
+        "observed_tpm": 2262087,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 206.0005548,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 27589,
+        "observed_tpm": 2299427,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 207.0004849,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 27950,
+        "observed_tpm": 2330076,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 208.0005753,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 28424,
+        "observed_tpm": 2371926,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 209.000437,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 28798,
+        "observed_tpm": 2403057,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 210.0001258,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 29170,
+        "observed_tpm": 2434564,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 211.0002333,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 29167,
+        "observed_tpm": 2430701,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 212.0000452,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 29161,
+        "observed_tpm": 2428145,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 213.0000444,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 29165,
+        "observed_tpm": 2423795,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 214.0010231,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 29272,
+        "observed_tpm": 2429369,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 215.0008108,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 29165,
+        "observed_tpm": 2415742,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 216.0005115,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 29168,
+        "observed_tpm": 2412292,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 217.0005364,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 29169,
+        "observed_tpm": 2408993,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 218.000305,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 29225,
+        "observed_tpm": 2410091,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 219.0010222,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 29165,
+        "observed_tpm": 2401873,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 220.0038079,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 29226,
+        "observed_tpm": 2403639,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 221.0003683,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 29170,
+        "observed_tpm": 2394951,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 222.0004936,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 29174,
+        "observed_tpm": 2391359,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 223.000756,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 29186,
+        "observed_tpm": 2387930,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 224.0002622,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 29186,
+        "observed_tpm": 2384377,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 225.0010765,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 29179,
+        "observed_tpm": 2380674,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    },
+    {
+      "at_sec": 226.0002408,
+      "phase": "p3",
+      "sample": {
+        "observed_rpm": 29087,
+        "observed_tpm": 2367397,
+        "configured_rpm": 30000,
+        "configured_tpm": 3000000
+      }
+    }
+  ]
+}

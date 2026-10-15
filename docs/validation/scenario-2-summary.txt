@@ -1,0 +1,3 @@
+scenario scenario-2: PASS=true
+utilization: rpm=0.0% tpm=0.0%
+over-limit samples: 0

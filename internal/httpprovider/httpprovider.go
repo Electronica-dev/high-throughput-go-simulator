@@ -23,7 +23,17 @@ type HTTPProvider struct {
 // New builds a provider client against the simulator at url.
 func New(url string, client *http.Client) *HTTPProvider {
 	if client == nil {
-		client = &http.Client{Timeout: 30 * time.Second}
+		// pooled transport: at hundreds of calls/sec the default transport
+		// (MaxIdleConnsPerHost=2) churns TCP connections, and connection
+		// resets surface as spurious transient failures that amplify the
+		// retry load. Size the pool for the engine's worker count and above.
+		tr := &http.Transport{
+			MaxIdleConns:        512,
+			MaxIdleConnsPerHost: 128,
+			MaxConnsPerHost:     0, // unbounded active conns; workers bound concurrency
+			IdleConnTimeout:     90 * time.Second,
+		}
+		client = &http.Client{Timeout: 30 * time.Second, Transport: tr}
 	}
 	return &HTTPProvider{url: url, client: client}
 }

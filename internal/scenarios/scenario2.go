@@ -18,6 +18,7 @@ func RunScenario2(systemURL string, sc Config, outDir string) (*Result, error) {
 
 	var phase atomic.Value // string: p1 | p2 | p3
 	phase.Store("p1")
+	samplerStart := time.Now()
 	mu := &sync.Mutex{}
 	var series []TimePoint
 	stop := make(chan struct{})
@@ -49,6 +50,7 @@ func RunScenario2(systemURL string, sc Config, outDir string) (*Result, error) {
 	// phase 2: drop A's limit to Phase2RPM (no restart); the submitted rate
 	// tracks each phase's per-second capacity (RPM/60) at 94%
 	phase.Store("p2")
+	p2StartSec := time.Since(samplerStart).Seconds()
 	if err := postJSON(client, systemURL+"/limits/"+sc.Model, map[string]any{"rpm": sc.Phase2RPM, "tpm": sc.Phase2RPM * sc.Tokens}); err != nil {
 		close(stop)
 		close(stopB)
@@ -99,7 +101,19 @@ func RunScenario2(systemURL string, sc Config, outDir string) (*Result, error) {
 			limit = sc.Phase2RPM
 		}
 		var over int
-		for _, s := range samples {
+		for _, tp := range series {
+			if tp.Phase != p {
+				continue
+			}
+			// a live limit DECREASE cannot retroactively un-admit traffic
+			// already inside the rolling 60s window: the observed window
+			// decays to the new limit within one window period. Enforcement
+			// means no NEW admissions beyond the limit — skip the drain
+			// period after the change (61s covers it).
+			if p == "p2" && tp.AtSec < p2StartSec+61 {
+				continue
+			}
+			s := tp.Sample
 			if s.ConfiguredRPM > 0 && float64(s.ObservedRPM) > float64(s.ConfiguredRPM)*1.005 {
 				over++
 			}

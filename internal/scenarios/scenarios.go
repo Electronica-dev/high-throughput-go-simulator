@@ -273,7 +273,9 @@ func writeEvidence(outDir, name string, res *Result) error {
 	for _, r := range res.Reasons {
 		fmt.Fprintf(&b, "  - %s\n", r)
 	}
-	fmt.Fprintf(&b, "utilization: rpm=%.1f%% tpm=%.1f%%\n", res.Util.RPM, res.Util.TPM)
+	if res.Util.RPM != 0 || res.Util.TPM != 0 {
+		fmt.Fprintf(&b, "utilization: rpm=%.1f%% tpm=%.1f%%\n", res.Util.RPM, res.Util.TPM)
+	}
 	fmt.Fprintf(&b, "over-limit samples: %d\n", res.OverLimitN)
 	return os.WriteFile(filepath.Join(outDir, name+"-summary.txt"), b.Bytes(), 0o644)
 }

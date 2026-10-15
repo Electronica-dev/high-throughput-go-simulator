@@ -180,16 +180,6 @@ func (s *Store) InsertRequest(r RequestRow) error {
 	return nil
 }
 
-// UpdateRequestTerminal records the final outcome and charged tokens.
-func (s *Store) UpdateRequestTerminal(id, outcome string, tokens int64) error {
-	_, err := s.db.Exec(`UPDATE requests SET state='completed', outcome=?, tokens=? WHERE id=?`,
-		outcome, tokens, id)
-	if err != nil {
-		return fmt.Errorf("store: UpdateRequestTerminal %s: %w", id, err)
-	}
-	return nil
-}
-
 // RequestsNeedingRecovery returns rows in submitted/queued/in_flight state
 // (everything accepted but not yet terminal — crash-recovery candidates).
 func (s *Store) RequestsNeedingRecovery() ([]RequestRow, error) {
@@ -393,6 +383,33 @@ func (s *Store) ProcessingBatches() ([]Batch, error) {
 		}
 		b.CreatedAt = time.Unix(created, 0)
 		out = append(out, b)
+	}
+	return out, rows.Err()
+}
+
+// StateCount is one (state, outcome) group of a batch's request rows.
+type StateCount struct {
+	State   string
+	Outcome string
+	N       int64
+}
+
+// BatchRequestStates groups a batch's request rows by (state, outcome) —
+// the startup reconcile recomputes batch counters from this row truth
+// (persisted batch counters can lag or miss the terminal crash window).
+func (s *Store) BatchRequestStates(batchID string) ([]StateCount, error) {
+	rows, err := s.db.Query(`SELECT state, outcome, COUNT(*) FROM requests WHERE batch_id=? GROUP BY state, outcome`, batchID)
+	if err != nil {
+		return nil, fmt.Errorf("store: BatchRequestStates %s: %w", batchID, err)
+	}
+	defer rows.Close()
+	var out []StateCount
+	for rows.Next() {
+		var sc StateCount
+		if err := rows.Scan(&sc.State, &sc.Outcome, &sc.N); err != nil {
+			return nil, fmt.Errorf("store: BatchRequestStates scan: %w", err)
+		}
+		out = append(out, sc)
 	}
 	return out, rows.Err()
 }

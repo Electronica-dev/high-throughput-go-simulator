@@ -391,3 +391,129 @@ func TestRestoreContinuesInterruptedBatches(t *testing.T) {
 	b, _ := m.Status("b-crash")
 	t.Fatalf("batch never completed after restore: status=%q counts=%+v", b.Status, b.Counts)
 }
+
+// ---------- F1: startup reconcile derives batch truth from request rows ----------
+
+// TestRestoreCompletesFullyTerminalBatch: crash window (b) — every request
+// row is terminal and the counts are persisted, but the SetBatchStatus
+// write was lost, so the batch is stuck at processing. Restore must
+// recompute from the rows, complete the batch, and dispatch the callback.
+func TestRestoreCompletesFullyTerminalBatch(t *testing.T) {
+	st := openStore(t)
+	sink, srv := newSink(0)
+	defer srv.Close()
+
+	if err := st.CreateBatch(store.Batch{
+		ID: "b-window-b", Status: "processing", CallbackURL: srv.URL, CreatedAt: time.Now(),
+		Counts: store.Counts{Total: 3, Successful: 2, Failed: 1},
+	}); err != nil {
+		t.Fatal(err)
+	}
+	rows := []store.RequestRow{
+		{ID: "r-1", BatchID: "b-window-b", Model: "model-a", State: "completed", Outcome: "success", Tokens: 900},
+		{ID: "r-2", BatchID: "b-window-b", Model: "model-a", State: "completed", Outcome: "success", Tokens: 900},
+		{ID: "r-3", BatchID: "b-window-b", Model: "model-a", State: "completed", Outcome: "failed", Tokens: 40},
+	}
+	if err := st.BulkInsertRequests(rows); err != nil {
+		t.Fatal(err)
+	}
+
+	eng, err := engine.NewReal(bigConfig(), &okCaller{}, st)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer eng.Stop()
+	m := New(st, eng, fastCallbackCfg())
+	if err := m.Restore(); err != nil {
+		t.Fatalf("Restore: %v", err)
+	}
+
+	b, ok := m.Status("b-window-b")
+	if !ok || b.Status != "completed" {
+		t.Fatalf("batch must be completed by Restore, got status=%q", b.Status)
+	}
+	if b.Counts.Successful != 2 || b.Counts.Failed != 1 || b.Counts.Total != 3 {
+		t.Fatalf("recomputed counts mismatch: %+v", b.Counts)
+	}
+	select {
+	case <-sink.ch:
+	case <-time.After(3 * time.Second):
+		t.Fatal("callback never dispatched for the restored-completed batch")
+	}
+}
+
+// TestRestoreReconcilesStaleCounters: crash window (a) — a row went terminal
+// after the last counter write, so the persisted batch counts are one short.
+// Restore must recompute from rows so the remaining terminal lands the
+// batch on exactly total.
+func TestRestoreReconcilesStaleCounters(t *testing.T) {
+	st := openStore(t)
+
+	if err := st.CreateBatch(store.Batch{
+		ID: "b-window-a", Status: "processing", CallbackURL: "", CreatedAt: time.Now(),
+		Counts: store.Counts{Total: 2}, // persisted counters stale: 0 terminal
+	}); err != nil {
+		t.Fatal(err)
+	}
+	rows := []store.RequestRow{
+		{ID: "r-done", BatchID: "b-window-a", Model: "model-a", State: "completed", Outcome: "success", Tokens: 900},
+		{ID: "r-pend", BatchID: "b-window-a", Model: "model-a", State: "in_flight", Tokens: 1000},
+	}
+	if err := st.BulkInsertRequests(rows); err != nil {
+		t.Fatal(err)
+	}
+
+	eng, err := engine.NewReal(bigConfig(), &okCaller{}, st)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer eng.Stop()
+	m := New(st, eng, fastCallbackCfg())
+	if err := m.Restore(); err != nil {
+		t.Fatalf("Restore: %v", err)
+	}
+	if n, err := eng.Recover(); err != nil || n != 1 {
+		t.Fatalf("Recover: %d %v", n, err)
+	}
+
+	deadline := time.Now().Add(10 * time.Second)
+	for time.Now().Before(deadline) {
+		if b, ok := m.Status("b-window-a"); ok && b.Status == "completed" {
+			if b.Counts.Successful != 2 || b.Counts.Total != 2 {
+				t.Fatalf("counts must land on exactly 2/2, got %+v", b.Counts)
+			}
+			return
+		}
+		time.Sleep(20 * time.Millisecond)
+	}
+	b, _ := m.Status("b-window-a")
+	t.Fatalf("batch never completed: status=%q counts=%+v", b.Status, b.Counts)
+}
+
+// TestRestoreFailsEmptyProcessingBatch: crash window (c) — CreateBatch
+// persisted but BulkInsertRequests never did: a processing batch with zero
+// rows and total>0 can never progress; Restore marks it failed.
+func TestRestoreFailsEmptyProcessingBatch(t *testing.T) {
+	st := openStore(t)
+	if err := st.CreateBatch(store.Batch{
+		ID: "b-window-c", Status: "processing", CallbackURL: "", CreatedAt: time.Now(),
+		Counts: store.Counts{Total: 5},
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	eng, err := engine.NewReal(bigConfig(), &okCaller{}, st)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer eng.Stop()
+	m := New(st, eng, fastCallbackCfg())
+	if err := m.Restore(); err != nil {
+		t.Fatalf("Restore: %v", err)
+	}
+
+	b, ok := m.Status("b-window-c")
+	if !ok || b.Status != "failed" {
+		t.Fatalf("empty processing batch must be failed by Restore, got status=%q ok=%v", b.Status, ok)
+	}
+}

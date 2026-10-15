@@ -114,10 +114,18 @@ func (m *Manager) Submit(model string, tokens, count int64, callbackURL string) 
 }
 
 // Restore re-registers batches that were mid-flight (status=processing)
-// when the previous process died: without their in-memory batchState, the
-// OnTerminal hook finds no batch, counts freeze at the crash-time values,
-// and the batch never completes. Carries the persisted counts forward so
-// the remaining terminal events finish the batch exactly.
+// when the previous process died. Batch counters are RECOMPUTED from the
+// request rows (row truth), not trusted from the persisted batch row — the
+// persisted counters can lag (crash between a terminal write and the count
+// write) and the status write itself can be lost (all rows terminal but
+// the batch still reads processing). Three crash windows handled:
+//
+// (a) stale persisted counters → reconciled from rows before registering;
+// (b) all rows terminal, status write lost → batch completed here (+ callback
+//     dispatched — Resume() only scans completed batches, so this is where
+//     the delivery promise is kept);
+// (c) batch row persisted but request rows never bulk-inserted → marked
+//     failed (it can never progress).
 func (m *Manager) Restore() error {
 	rows, err := m.st.ProcessingBatches()
 	if err != nil {
@@ -129,17 +137,67 @@ func (m *Manager) Restore() error {
 		if _, ok := m.batches[b.ID]; ok {
 			continue
 		}
-		terminal := b.Counts.Successful + b.Counts.Failed + b.Counts.Expired + b.Counts.Rejected
+		scs, err := m.st.BatchRequestStates(b.ID)
+		if err != nil {
+			return err
+		}
+		var successful, failed, expired, rejected, terminal, rowCount int64
+		for _, sc := range scs {
+			rowCount += sc.N
+			switch sc.State {
+			case "completed":
+				terminal += sc.N
+				if sc.Outcome == "success" {
+					successful += sc.N
+				} else {
+					failed += sc.N
+				}
+			case "expired":
+				terminal += sc.N
+				expired += sc.N
+			case "rejected":
+				terminal += sc.N
+				rejected += sc.N
+			}
+		}
+		counts := store.Counts{
+			Total:      b.Counts.Total,
+			Successful: successful,
+			Failed:     failed,
+			Expired:    expired,
+			Rejected:   rejected,
+		}
+
+		switch {
+		case rowCount == 0 && b.Counts.Total > 0:
+			// window (c): rows never persisted; the batch can never progress
+			_ = m.st.SetBatchStatus(b.ID, "failed")
+			if b.CallbackURL != "" {
+				go m.deliver(b.ID, b.CallbackURL)
+			}
+			continue
+		case terminal >= b.Counts.Total:
+			// window (b): every request terminal but the status write was lost
+			_ = m.st.UpdateBatchCounts(b.ID, counts)
+			_ = m.st.SetBatchStatus(b.ID, "completed")
+			if b.CallbackURL != "" {
+				go m.deliver(b.ID, b.CallbackURL)
+			}
+			continue
+		}
+
+		// mid-flight: register with row-truth counts; the recovered
+		// non-terminal rows will fire the remaining terminals
 		bs := &batchState{
 			id:          b.ID,
 			total:       b.Counts.Total,
 			callbackURL: b.CallbackURL,
 		}
 		bs.terminal.Store(terminal)
-		bs.successful.Store(b.Counts.Successful)
-		bs.failed.Store(b.Counts.Failed)
-		bs.expired.Store(b.Counts.Expired)
-		bs.rejected.Store(b.Counts.Rejected)
+		bs.successful.Store(successful)
+		bs.failed.Store(failed)
+		bs.expired.Store(expired)
+		bs.rejected.Store(rejected)
 		m.batches[b.ID] = bs
 	}
 	return nil

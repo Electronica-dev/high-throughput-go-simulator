@@ -64,8 +64,8 @@ func TestRequestLifecycle(t *testing.T) {
 	if err != nil || len(need) != 1 || need[0].ID != "r-1" {
 		t.Fatalf("recovery should find the in_flight request, got %+v err=%v", need, err)
 	}
-	if err := s.UpdateRequestTerminal("r-1", "success", 950); err != nil {
-		t.Fatalf("UpdateRequestTerminal: %v", err)
+	if err := s.SetRequestFinal("r-1", "completed", "success", 950); err != nil {
+		t.Fatalf("SetRequestFinal: %v", err)
 	}
 	need, _ = s.RequestsNeedingRecovery()
 	if len(need) != 0 {

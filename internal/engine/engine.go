@@ -209,10 +209,11 @@ func (e *Engine) submit(r *ledger.Request, persist bool) {
 
 	p, ok := e.pipes[r.Model]
 	if !ok {
-		e.ld.Transition(r, ledger.Rejected)
-		e.cRejected.Add(1)
-		if e.mode == modeReal {
-			e.realTerminal(r, "rejected", 0)
+		if e.ld.Transition(r, ledger.Rejected) == nil {
+			e.cRejected.Add(1)
+			if e.mode == modeReal {
+				e.realTerminal(r, "rejected", 0)
+			}
 		}
 		return
 	}
@@ -234,19 +235,21 @@ func (e *Engine) submit(r *ledger.Request, persist bool) {
 		res := e.drawCall(p, r, now)
 		e.schedule(p, r, res, now, 0)
 	case adm.OverTPMBudget:
-		e.ld.Transition(r, ledger.Rejected)
-		e.cRejected.Add(1)
-		if e.mode == modeReal {
-			e.realTerminal(r, "rejected", 0)
+		if e.ld.Transition(r, ledger.Rejected) == nil {
+			e.cRejected.Add(1)
+			if e.mode == modeReal {
+				e.realTerminal(r, "rejected", 0)
+			}
 		}
 	default:
 		// OverRate: bounded wait queue with expiry
 		e.cOverflow.Add(1)
 		if !p.q.Push(r, now) {
-			e.ld.Transition(r, ledger.Rejected)
-			e.cRejected.Add(1)
-			if e.mode == modeReal {
-				e.realTerminal(r, "rejected", 0)
+			if e.ld.Transition(r, ledger.Rejected) == nil {
+				e.cRejected.Add(1)
+				if e.mode == modeReal {
+					e.realTerminal(r, "rejected", 0)
+				}
 			}
 		}
 	}

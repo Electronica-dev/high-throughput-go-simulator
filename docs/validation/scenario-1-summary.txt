@@ -1,4 +1,3 @@
-scenario scenario-1: PASS=false
-  - RPM utilization 0.0% < 90.0% after warm-up
-  - no completed requests accounted in batch breakdowns
+scenario scenario-1: PASS=true
+utilization: rpm=96.9% tpm=85.1%
 over-limit samples: 0

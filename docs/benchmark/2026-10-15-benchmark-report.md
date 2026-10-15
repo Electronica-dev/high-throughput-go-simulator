@@ -41,7 +41,7 @@ raising the simulated limits for the high-throughput benchmarks):
 
 `-batch 50` means the pacer submits 50 requests per tick slot (6,000
 submissions/sec at the required rate); pacing is split across worker
-goroutines, one per ~50K/sec, each with a nanosecond carry accumulator.
+goroutines, one per ~50K/sec.
 
 ## Achieved throughput
 
@@ -68,9 +68,7 @@ End-to-end per request (submission → final provider state), per model:
 
 - p50 sits within ~5% of the configured 50ms provider median.
 - **The distribution is identical at 3.3× the load** — the p95/p99 tail is
-  the configured lognormal provider latency (σ 0.3), not system queueing.
-  Queueing latency at 1M/sec is, for practical purposes, unmeasurable in
-  the tail.
+  the configured lognormal provider latency, not system queueing.
 
 ## Failures
 
@@ -105,23 +103,6 @@ measured numbers. The real-mode system (`serve`/`simulator` over HTTP,
 SQLite durability) exists to demonstrate the API surface, limits, batches,
 callbacks, and crash recovery — its rates are HTTP-bound by design.
 
-**What was the bottleneck during development (measured, then fixed):**
-
-1. **The token bookkeeping was eating 12% of the CPU.** Every finished
-   request had to settle its token refund through the same shared counters,
-   so hot requests kept stepping on each other. We reworked that accounting
-   so requests no longer queue behind each other — a big part of how 278K
-   became 300K/sec.
-2. **After a stall, the timer wheel needed 8.3 seconds to catch up** on
-   roughly a million requests that were already due — it replayed them
-   gently, so everything fired late. It now catches up in one pass: 0.34s
-   (which is also why the runs above drain in a flat 0.35s).
-3. **About 1% of submissions were silently lost.** The load pacer counted
-   its budget in whole time slices and threw away the leftover fraction
-   each time. It now carries the exact remainder over and pays off whatever
-   is owed at the end of the run — every submitted request is accounted
-   for, which is what makes the headline number trustworthy.
-
 **What limits the current number:** the pacer (one goroutine saturates near
 280K submissions/sec, hence the worker split), the 1ms wheel tick, and the
 default GC target. At 1M/sec the latency distribution is unchanged from 300K/sec, so
@@ -138,7 +119,6 @@ real LLM inference.
 
 Everything above under Achieved throughput / Latency / Failures is
 **measured** from the two JSON run reports. The only projections in this
-report are the HTTP ceiling estimate (~100–200K/sec) and the 10-billion/
-minute scaling analysis (`docs/planning-toward-10b.md`). The two are never
+report are the HTTP ceiling estimate (~100–200K/sec) and the 10-billion/minute scaling analysis (`docs/planning-toward-10b.md`). The two are never
 mixed: the in-process pipeline is the measured benchmark environment; the
 HTTP path and the 10B path are labeled projections.

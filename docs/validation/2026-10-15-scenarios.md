@@ -125,7 +125,7 @@ executed" and "system recorded" cannot double-charge or double-complete.
 - drain 0.34s; the ~2.1% `failed` are the simulated provider's permanent
   failures, as configured
 
-Report: `docs/benchmark/run-300k-regression.json`.
+Report: `docs/benchmark/2026-10-15-benchmark-report.md`.
 
 ## How to reproduce
 

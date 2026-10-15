@@ -13,8 +13,7 @@ Headline numbers, measured on a 16-core laptop (Go 1.27, AC power):
 - exact terminal accounting in both runs; validation scenarios 1–3 all PASS
 
 Benchmark report (environment, configuration, throughput, latency,
-failures, bottlenecks): `docs/benchmark/2026-10-15-benchmark-report.md`.
-Full run history and method: `docs/benchmark/2026-10-13-run-results.md`;
+failures, bottlenecks): `docs/benchmark/2026-10-15-benchmark-report.md`;
 scenario evidence: `docs/validation/`.
 
 ---

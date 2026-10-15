@@ -4,3 +4,6 @@ tmp/
 *.db-shm
 *.db-wal
 
+docs/benchmark/run-*.json
+docs/benchmark/2026-10-13-run-results.md
+docs/validation/scenario-1.json

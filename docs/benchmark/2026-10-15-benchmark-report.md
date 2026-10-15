@@ -1,8 +1,8 @@
 # Benchmark report
 
-Measured **2026-10-15**; raw run reports (`run-300k-final.json`,
-`run-1m-final.json`) sit next to this file, and every number below is copied
-from them. Projections are labeled as such and kept in their own section.
+Measured **2026-10-15**, from the two runs listed under Configuration; every
+number below comes from those runs. Projections are labeled as such and kept
+in their own section.
 
 ## Test environment
 
@@ -36,8 +36,8 @@ raising the simulated limits for the high-throughput benchmarks):
 
 | Run | Command (abridged) |
 |---|---|
-| Required | `benchmark -config configs/benchmark-300k.yaml -rate 300000 -duration 60s -batch 50 -report docs/benchmark/run-300k-final.json` |
-| Stretch | `benchmark -config configs/benchmark-1m.yaml -rate 1000000 -duration 30s -batch 50 -report docs/benchmark/run-1m-final.json` |
+| Required | `benchmark -config configs/benchmark-300k.yaml -rate 300000 -duration 60s -batch 50` |
+| Stretch | `benchmark -config configs/benchmark-1m.yaml -rate 1000000 -duration 30s -batch 50` |
 
 `-batch 50` means the pacer submits 50 requests per tick slot (6,000
 submissions/sec at the required rate); pacing is split across worker
@@ -118,7 +118,7 @@ real LLM inference.
 ## Measured vs projected
 
 Everything above under Achieved throughput / Latency / Failures is
-**measured** from the two JSON run reports. The only projections in this
+**measured** from the two runs above. The only projections in this
 report are the HTTP ceiling estimate (~100–200K/sec) and the 10-billion/minute scaling analysis (`docs/planning-toward-10b.md`). The two are never
 mixed: the in-process pipeline is the measured benchmark environment; the
 HTTP path and the 10B path are labeled projections.

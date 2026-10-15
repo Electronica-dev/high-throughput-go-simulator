@@ -256,10 +256,10 @@ func (m *Manager) Status(id string) (store.Batch, bool) {
 
 // ResultRow is one request's outcome inside a batch.
 type ResultRow struct {
-	ID     string
-	State  string
-	Outcome string
-	Tokens int64
+	ID      string `json:"requestId"`
+	State   string `json:"state"`
+	Outcome string `json:"outcome"`
+	Tokens  int64  `json:"tokens"`
 }
 
 // Results lists a batch's per-request outcomes.

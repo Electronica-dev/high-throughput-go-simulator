@@ -103,7 +103,7 @@ bin/consuma.exe serve -config configs/system.yaml -addr 127.0.0.1:9000 -simulato
 | `POST /requests` | one request, synchronous — returns `outcome` and **`tokens_charged` = the provider's actual charge** (the admission reservation used the estimate; the difference is reconciled back at the terminal transition) |
 | `POST /batches` | async batch — `202 {batch_id}` immediately (bulk-persisted, well under 1s for 10K); process asynchronously |
 | `GET /batches/{id}` | status + per-outcome breakdown (`processing` → `completed` once every request is terminal) |
-| `GET /batches/{id}/results` | every request id exactly once, with state, outcome, and actual tokens |
+| `GET /batches/{id}/results` | every request id exactly once — keys are camelCase: `requestId`, `state`, `outcome`, `tokens` |
 | `GET /limits/{model}` · `POST /limits/{model}` | read / change a model's RPM+TPM live — no restart; enforcement applies to new admissions immediately |
 | `GET /metrics/{model}` | observed vs configured rolling windows (what the scenario runners sample) |
 | `GET /health` | liveness |
@@ -162,7 +162,15 @@ bin/consuma.exe scenario2 -out docs/validation                  # live 30K→5K�
 bin/consuma.exe scenario3 -out docs/validation                  # durable 10K batches, reject-first callback sink, delivery recovery, id uniqueness
 ```
 
-All three PASS; evidence: `docs/validation/2026-10-15-scenarios.md`.
+All three PASS. Each runner prints its steps as they happen (S2's limit
+changes, S3's batch acks with ids, sink delivery attempts, verification
+verdicts), and S1/S2 additionally render **SVG timeline charts** — observed
+throughput against the configured limit, over time — into the `-out` dir
+(`scenario-{1,2}-{rpm,tpm}.svg`), matching the report's
+"configured limits and observed throughput over time" requirement. Evidence
+JSONs + summaries live alongside.
+
+Evidence: `docs/validation/2026-10-15-scenarios.md`.
 
 ## Configure models / change limits
 

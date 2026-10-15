@@ -31,6 +31,10 @@ func RunScenario3(systemURL, callbackURL string, sc Config, outDir string) (*Res
 
 	var ackWorst time.Duration
 	var ids []string
+	runStart := time.Now()
+	stepf := func(format string, args ...any) {
+		fmt.Printf("[s3 +%.1fs] %s\n", time.Since(runStart).Seconds(), fmt.Sprintf(format, args...))
+	}
 	for _, model := range []string{sc.Model, sc.SecondModel} {
 		start := time.Now()
 		var out struct {
@@ -46,11 +50,14 @@ func RunScenario3(systemURL, callbackURL string, sc Config, outDir string) (*Res
 			ackWorst = ack
 		}
 		ids = append(ids, out.BatchID)
+		stepf("acknowledgement returned in %v with batch id: %s (%s, %d requests) — within 1s: %v",
+			ack, out.BatchID, model, sc.BatchCount, ack <= time.Second)
 	}
 	if ackWorst > time.Second {
 		res.Pass = false
 		res.Reasons = append(res.Reasons, fmt.Sprintf("batch ack took %v, want < 1s", ackWorst))
 	}
+	stepf("submitted; the callback dispatcher fires only after EVERY request is terminal — watching the sink")
 
 	// await completion via polling each batch id directly (the callback
 	// firing itself is asserted by the sink's counters, which the operator
@@ -73,6 +80,9 @@ func RunScenario3(systemURL, callbackURL string, sc Config, outDir string) (*Res
 	if completed != len(ids) {
 		res.Pass = false
 		res.Reasons = append(res.Reasons, fmt.Sprintf("completed %d of %d batches", completed, len(ids)))
+	}
+	if completed > 0 {
+		stepf("all %d/%d batches terminal — callback dispatcher gate passed; sink saw %d delivery attempt(s) so far", completed, len(ids), sinkHits(sink))
 	}
 
 	sums, err := fetchSummaries(client, systemURL, ids)
@@ -101,6 +111,9 @@ func RunScenario3(systemURL, callbackURL string, sc Config, outDir string) (*Res
 		res.Pass = false
 		res.Reasons = append(res.Reasons, "no requests accounted")
 	}
+	if okN > 0 {
+		stepf("results verified: %d requests accounted, ids unique per batch: %v", okN, allUnique(sums))
+	}
 
 	// managed-sink verification: delivery happened, and the callback summary
 	// agrees with the API's batch status
@@ -108,7 +121,10 @@ func RunScenario3(systemURL, callbackURL string, sc Config, outDir string) (*Res
 		if !sink.AwaitDelivery(3 * time.Minute) {
 			res.Pass = false
 			res.Reasons = append(res.Reasons, fmt.Sprintf("callback never delivered in %d attempts", sink.Hits()))
+		} else {
+			stepf("callback delivered after %d attempt(s) (sink rejected the first %d, retry/backoff recovered)", sink.Hits(), sc.CallbackFails)
 		}
+		agree := true
 		for _, id := range ids {
 			var bs batchStatus
 			if err := getJSON(client, systemURL+"/batches/"+id, &bs); err != nil {
@@ -122,11 +138,15 @@ func RunScenario3(systemURL, callbackURL string, sc Config, outDir string) (*Res
 			}
 			if p.Status != bs.Status || p.Successful != bs.Successful || p.Failed != bs.Failed ||
 				p.Expired != bs.Expired || p.Rejected != bs.Rejected {
+				agree = false
 				res.Pass = false
 				res.Reasons = append(res.Reasons, fmt.Sprintf("callback summary != API status for %s: callback(%s,%d,%d,%d,%d) api(%s,%d,%d,%d,%d)",
 					id, p.Status, p.Successful, p.Failed, p.Expired, p.Rejected,
 					bs.Status, bs.Successful, bs.Failed, bs.Expired, bs.Rejected))
 			}
+		}
+		if agree && len(ids) > 0 {
+			stepf("callback summary == API batch status for all %d batch(es): true", len(ids))
 		}
 	}
 
@@ -135,6 +155,24 @@ func RunScenario3(systemURL, callbackURL string, sc Config, outDir string) (*Res
 		return nil, err
 	}
 	return res, nil
+}
+
+// sinkHits is a nil-safe Hits for the managed sink (external sinks have none).
+func sinkHits(sink *CallbackSink) int {
+	if sink == nil {
+		return 0
+	}
+	return sink.Hits()
+}
+
+// allUnique reports whether every batch's result ids appear exactly once.
+func allUnique(sums []BatchSummary) bool {
+	for _, b := range sums {
+		if !b.UniqueIDs {
+			return false
+		}
+	}
+	return true
 }
 
 // postDecode POSTs JSON and decodes the response body.

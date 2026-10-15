@@ -65,15 +65,26 @@ func (s *CallbackSink) handle(w http.ResponseWriter, r *http.Request) {
 		s.payloads[p.BatchID] = p
 	}
 	s.mu.Unlock()
-	if hit <= s.failFirst {
-		w.WriteHeader(http.StatusInternalServerError)
+	accepted := hit > s.failFirst
+	fmt.Printf("[s3 sink] delivery attempt %d for batch %s -> %s (HTTP %d)\n",
+		hit, p.BatchID, map[bool]string{true: "accepted", false: "rejected"}[accepted], statusFor(hit, s.failFirst))
+	if accepted {
+		w.WriteHeader(http.StatusOK)
+		select {
+		case s.deliveredCh <- struct{}{}:
+		default:
+		}
 		return
 	}
-	w.WriteHeader(http.StatusOK)
-	select {
-	case s.deliveredCh <- struct{}{}:
-	default:
+	w.WriteHeader(http.StatusInternalServerError)
+}
+
+// statusFor mirrors the sink's response code for logging.
+func statusFor(hit, failFirst int) int {
+	if hit <= failFirst {
+		return 500
 	}
+	return 200
 }
 
 // URL returns the sink's callback URL (empty if the listener failed).

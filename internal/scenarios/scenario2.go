@@ -34,11 +34,16 @@ func RunScenario2(systemURL string, sc Config, outDir string) (*Result, error) {
 	// phase 1: pin the scenario's baseline limit explicitly (the scenario is
 	// self-contained regardless of what the system started with)
 	phase.Store("p1")
+	runStart := time.Now()
+	stepf := func(format string, args ...any) {
+		fmt.Printf("[s2 +%.1fs] %s\n", time.Since(runStart).Seconds(), fmt.Sprintf(format, args...))
+	}
 	if err := postJSON(client, systemURL+"/limits/"+sc.Model, map[string]any{"rpm": sc.Phase1RPM, "tpm": sc.Phase1RPM * sc.Tokens}); err != nil {
 		close(stop)
 		close(stopB)
 		return nil, fmt.Errorf("limit set to %d: %w", sc.Phase1RPM, err)
 	}
+	stepf("phase p1: %s limit pinned to %d RPM via POST /limits (no restart); load incoming", sc.Model, sc.Phase1RPM)
 	sc1 := sc
 	sc1.DurationSec = sc.Phase1Sec
 	sc1.RatePerSec = sc.Phase1RPM*94/6000 // 94% of capacity: retry attempts also consume RPM slots, so submitting at capacity would pin the window and expire retry deferrals
@@ -56,6 +61,7 @@ func RunScenario2(systemURL string, sc Config, outDir string) (*Result, error) {
 		close(stopB)
 		return nil, fmt.Errorf("limit change to %d: %w", sc.Phase2RPM, err)
 	}
+	stepf("phase p2: %s limit changed LIVE to %d RPM (no restart) — expect the observed window to decay to the new ceiling within one 60s window", sc.Model, sc.Phase2RPM)
 	sc2 := sc
 	sc2.DurationSec = sc.Phase2Sec
 	sc2.RatePerSec = sc.Phase2RPM*94/6000 // 94% of the phase's capacity
@@ -71,6 +77,7 @@ func RunScenario2(systemURL string, sc Config, outDir string) (*Result, error) {
 		close(stopB)
 		return nil, fmt.Errorf("limit restore to %d: %w", sc.Phase1RPM, err)
 	}
+	stepf("phase p3: %s limit restored to %d RPM; second model %s sampled throughout (must stay untouched)", sc.Model, sc.Phase1RPM, sc.SecondModel)
 	sc3 := sc
 	sc3.DurationSec = sc.Phase3Sec
 	sc3.RatePerSec = sc.Phase1RPM*94/6000 // 94% of capacity
@@ -83,19 +90,8 @@ func RunScenario2(systemURL string, sc Config, outDir string) (*Result, error) {
 	close(stopB)
 
 	res := &Result{Pass: true}
-	mu.Lock()
-	res.TimeSeries = append(res.TimeSeries, series...)
-	mu.Unlock()
 	// per-phase configured-vs-observed: phase windows must track their limits
 	for _, p := range []string{"p1", "p2", "p3"} {
-		var samples []WindowSample
-		mu.Lock()
-		for _, tp := range series {
-			if tp.Phase == p {
-				samples = append(samples, tp.Sample)
-			}
-		}
-		mu.Unlock()
 		limit := sc.Phase1RPM
 		if p == "p2" {
 			limit = sc.Phase2RPM
@@ -131,6 +127,15 @@ func RunScenario2(systemURL string, sc Config, outDir string) (*Result, error) {
 		res.Pass = false
 		res.Reasons = append(res.Reasons, fmt.Sprintf("model %s observed over its limits in %d window(s)", sc.SecondModel, overB))
 	}
+
+	mu.Lock()
+	res.TimeSeries = series
+	mu.Unlock()
+	charts, err := writeTimelineCharts(outDir, "scenario-2", series)
+	if err != nil {
+		return nil, err
+	}
+	res.Charts = charts
 	if err := writeEvidence(outDir, "scenario-2", res); err != nil {
 		return nil, err
 	}

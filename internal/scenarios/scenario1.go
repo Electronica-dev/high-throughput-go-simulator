@@ -36,6 +36,11 @@ func RunScenario1(systemURL string, sc Config, outDir string) (*Result, error) {
 	mu.Unlock()
 	res.Batches = sums
 	res.TimeSeries = series
+	charts, err := writeTimelineCharts(outDir, "scenario-1", series)
+	if err != nil {
+		return nil, err
+	}
+	res.Charts = charts
 	if err := writeEvidence(outDir, "scenario-1", res); err != nil {
 		return nil, err
 	}

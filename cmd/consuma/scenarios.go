@@ -88,6 +88,9 @@ func runScenarioN(n string, argv []string, run func(systemURL, callbackURL strin
 		os.Exit(1)
 	}
 	fmt.Printf("scenario %s: PASS=%v (evidence in %s)\n", n, res.Pass, out)
+	for _, c := range res.Charts {
+		fmt.Println("  chart:", c)
+	}
 	for _, r := range res.Reasons {
 		fmt.Println("  -", r)
 	}

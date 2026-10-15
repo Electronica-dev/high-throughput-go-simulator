@@ -30,10 +30,10 @@ type WindowSample struct {
 
 // ResultRow is one batch result row (id + terminal state + outcome).
 type ResultRow struct {
-	ID      string `json:"ID"`
-	State   string `json:"State"`
-	Outcome string `json:"Outcome"`
-	Tokens  int64  `json:"Tokens"`
+	ID      string `json:"requestId"`
+	State   string `json:"state"`
+	Outcome string `json:"outcome"`
+	Tokens  int64  `json:"tokens"`
 }
 
 // Utilization is the mean observed window as a percentage of its limit.
@@ -125,6 +125,7 @@ type Result struct {
 	OverLimitN int            `json:"over_limit_samples"`
 	TimeSeries []TimePoint    `json:"time_series,omitempty"`
 	Batches    []BatchSummary `json:"batches,omitempty"`
+	Charts     []string       `json:"charts,omitempty"`
 }
 
 // TimePoint is one configured-vs-observed sample with its phase label.
@@ -184,6 +185,45 @@ type batchStatus struct {
 	Expired    int64  `json:"expired"`
 	Rejected   int64  `json:"rejected"`
 	Total      int64  `json:"total"`
+}
+
+// writeTimelineCharts renders the sampled configured-vs-observed windows as
+// standalone SVG charts (one per metric) — the PDF's scenario-2 evidence,
+// "configured limits and observed throughput over time", made graphical.
+// Runs without samples (S3) produce no charts.
+func writeTimelineCharts(outDir, name string, series []TimePoint) ([]string, error) {
+	if len(series) == 0 {
+		return nil, nil
+	}
+	var charts []string
+	for _, m := range []struct {
+		key, label, file string
+	}{
+		{"rpm", "requests/minute", name + "-rpm.svg"},
+		{"tpm", "tokens/minute", name + "-tpm.svg"},
+	} {
+		observed := ChartSeries{Label: "observed " + m.key, Color: "#2563eb"}
+		configured := ChartSeries{Label: "configured limit", Color: "#dc2626", Dashed: true}
+		for _, tp := range series {
+			x := ChartPoint{X: tp.AtSec}
+			switch m.key {
+			case "rpm":
+				x.Y = float64(tp.Sample.ObservedRPM)
+				observed.Points = append(observed.Points, x)
+				configured.Points = append(configured.Points, ChartPoint{X: tp.AtSec, Y: float64(tp.Sample.ConfiguredRPM)})
+			default:
+				x.Y = float64(tp.Sample.ObservedTPM)
+				observed.Points = append(observed.Points, x)
+				configured.Points = append(configured.Points, ChartPoint{X: tp.AtSec, Y: float64(tp.Sample.ConfiguredTPM)})
+			}
+		}
+		path := filepath.Join(outDir, m.file)
+		if err := WriteTimelineSVG(path, name+" — "+m.label+" over time (observed vs configured)", m.label, []ChartSeries{observed, configured}); err != nil {
+			return charts, err
+		}
+		charts = append(charts, path)
+	}
+	return charts, nil
 }
 
 // sampler samples a model's windows every interval, labelling each point

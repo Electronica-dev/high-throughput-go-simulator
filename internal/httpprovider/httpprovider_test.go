@@ -1,6 +1,7 @@
 package httpprovider
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -76,5 +77,35 @@ func TestTimeoutIsTransient(t *testing.T) {
 	p := New(srv.URL, &http.Client{Timeout: 20 * time.Millisecond})
 	if res := p.Call(mkReq("r-1"), time.Now()); res.Outcome != provider.TransientFailure {
 		t.Fatalf("timeout should map to TransientFailure, got %d", res.Outcome)
+	}
+}
+
+// TestRequestBodyUsesExternalID: the simulator's request_id is the
+// idempotency key — it must be the request's ExternalID (a JSON string), not
+// the internal uint64 id (whose JSON encoding is a number and fails the
+// simulator's body validation).
+func TestRequestBodyUsesExternalID(t *testing.T) {
+	var gotReqID string
+	var gotModel string
+	var gotTokens float64
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var in struct {
+			RequestID       string  `json:"request_id"`
+			Model           string  `json:"model"`
+			EstimatedTokens float64 `json:"estimated_tokens"`
+		}
+		_ = json.NewDecoder(r.Body).Decode(&in)
+		gotReqID, gotModel, gotTokens = in.RequestID, in.Model, in.EstimatedTokens
+		w.Write([]byte(`{"outcome":"success","actual_tokens":10}`))
+	}))
+	defer srv.Close()
+
+	p := New(srv.URL, srv.Client())
+	p.Call(&ledger.Request{ID: 7, ExternalID: "ext-uuid-9", Model: "m", EstimateTokens: 1000}, time.Now())
+	if gotReqID != "ext-uuid-9" {
+		t.Fatalf("request_id must be the ExternalID string, got %q", gotReqID)
+	}
+	if gotModel != "m" || gotTokens != 1000 {
+		t.Fatalf("model/tokens mismatch: %q %v", gotModel, gotTokens)
 	}
 }

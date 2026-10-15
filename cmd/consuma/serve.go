@@ -64,6 +64,18 @@ func (s *systemDeps) ObservedWindows(model string) (api.WindowSample, error) {
 	}, nil
 }
 
+func (s *systemDeps) BatchStatus(id string) (api.BatchStatus, bool) {
+	b, ok := s.mgr.Status(id)
+	if !ok {
+		return api.BatchStatus{}, false
+	}
+	return api.BatchStatus{
+		ID: b.ID, Status: b.Status,
+		Successful: b.Counts.Successful, Failed: b.Counts.Failed,
+		Expired: b.Counts.Expired, Rejected: b.Counts.Rejected, Total: b.Counts.Total,
+	}, true
+}
+
 func (s *systemDeps) BatchResults(id string) ([]api.ResultRow, bool) {
 	rows, ok := s.mgr.Results(id)
 	if !ok {

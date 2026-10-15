@@ -35,8 +35,21 @@ type Deps interface {
 	CreateBatch(model string, tokens, count int64, callbackURL string) (string, error)
 	// ObservedWindows snapshots a model's rolling windows (scenario sampling).
 	ObservedWindows(model string) (WindowSample, error)
+	// BatchStatus reports a batch's persisted record.
+	BatchStatus(id string) (BatchStatus, bool)
 	// BatchResults lists a batch's per-request outcomes.
 	BatchResults(id string) ([]ResultRow, bool)
+}
+
+// BatchStatus is one batch's persisted completion record.
+type BatchStatus struct {
+	ID         string `json:"batch_id"`
+	Status     string `json:"status"`
+	Successful int64  `json:"successful"`
+	Failed     int64  `json:"failed"`
+	Expired    int64  `json:"expired"`
+	Rejected   int64  `json:"rejected"`
+	Total      int64  `json:"total"`
 }
 
 // WindowSample is one snapshot of a model's rolling windows (60s windows).
@@ -76,6 +89,7 @@ func (s *Server) Handler() http.Handler {
 	})
 	mux.HandleFunc("POST /requests", s.handleRequest)
 	mux.HandleFunc("POST /batches", s.handleBatch)
+	mux.HandleFunc("GET /batches/{id}", s.handleBatchStatus)
 	mux.HandleFunc("GET /batches/{id}/results", s.handleBatchResults)
 	mux.HandleFunc("GET /limits/{model}", s.handleGetLimits)
 	mux.HandleFunc("POST /limits/{model}", s.handleSetLimits)
@@ -206,4 +220,16 @@ func (s *Server) handleBatchResults(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, http.StatusOK, rows)
+}
+
+// handleBatchStatus reports a batch's persisted completion record (the load
+// generator and scenario runners poll this for completion evidence).
+func (s *Server) handleBatchStatus(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	bs, ok := s.d.BatchStatus(id)
+	if !ok {
+		writeJSON(w, http.StatusNotFound, map[string]string{"error": "unknown batch"})
+		return
+	}
+	writeJSON(w, http.StatusOK, bs)
 }

@@ -162,3 +162,40 @@ func TestOnTerminalFiresPerRequest(t *testing.T) {
 		t.Fatalf("OnTerminal want 4 fires, got %d", fired.Load())
 	}
 }
+
+// TestRealModeRetryTerminatesWithBoundedAttempts: a permanently transient
+// caller must terminate the request as failed after MaxRetries attempts —
+// and the RPM window must see ONE admission plus at most MaxRetries-1
+// ChargeRetry reservations (an unbounded retry loop floods RPM at thousands
+// of reservations per second and starves every other request).
+func TestRealModeRetryTerminatesWithBoundedAttempts(t *testing.T) {
+	st := openStore(t)
+	fc := &fakeCaller{res: provider.CallResult{Outcome: provider.TransientFailure, ActualTokens: 0}}
+	cfg := realConfig()
+	cfg.MaxRetries = 3
+	e, err := NewReal(cfg, fc, st)
+	if err != nil {
+		t.Fatalf("NewReal: %v", err)
+	}
+	defer e.Stop()
+
+	r := &ledger.Request{ExternalID: "ext-retry", Model: "model-a", EstimateTokens: 1000}
+	outcome, _, err := e.SubmitAndWait(r, 5*time.Second)
+	if err != nil {
+		t.Fatalf("SubmitAndWait: %v", err)
+	}
+	if outcome != "failed" {
+		t.Fatalf("outcome want failed, got %q", outcome)
+	}
+	if got := r.Attempts.Load(); got != 3 {
+		t.Fatalf("attempts want 3, got %d", got)
+	}
+	if calls := fc.calls.Load(); calls != 3 {
+		t.Fatalf("provider calls want 3, got %d", calls)
+	}
+	// bounded RPM: 1 admission + 2 ChargeRetry = 3 reservations, never a flood
+	l := e.Limiter("model-a")
+	if rpm := l.ObservedRPM(time.Now()); rpm > 10 {
+		t.Fatalf("RPM reservations want <= 10, got %d (retry loop is unbounded)", rpm)
+	}
+}

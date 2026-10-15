@@ -27,6 +27,12 @@ func main() {
 		cmdSimulator(os.Args[2:])
 	case "serve":
 		cmdServe(os.Args[2:])
+	case "scenario1":
+		cmdScenario1(os.Args[2:])
+	case "scenario2":
+		cmdScenario2(os.Args[2:])
+	case "scenario3":
+		cmdScenario3(os.Args[2:])
 	default:
 		usage()
 		os.Exit(2)
@@ -35,8 +41,11 @@ func main() {
 
 func usage() {
 	fmt.Fprintln(os.Stderr, `usage:
-  consuma benchmark -config <yaml> -rate N -duration 60s [-models name:share,...] [-batch N] [-tokens N] [-report out.json]
-  consuma limits    -config <yaml> -model <name> -rpm N -tpm N`)
+  consuma benchmark  -config <yaml> -rate N -duration 60s [-models name:share,...] [-batch N] [-tokens N] [-report out.json] [-target URL]
+  consuma limits     -config <yaml> -model <name> -rpm N -tpm N
+  consuma serve      [-config configs/system.yaml] [-addr 127.0.0.1:9000] [-simulator URL] [-db path]
+  consuma simulator  [-config configs/simulator.yaml] [-addr 127.0.0.1:9001]
+  consuma scenario1|2|3 [-system URL] [-simulator URL] [-out dir] [overrides]`)
 }
 
 // validateRunArgs rejects nonsensical run parameters before any engine starts.

@@ -199,6 +199,13 @@ func (f *fakeDeps) ObservedWindows(model string) (WindowSample, error) {
 	return f.sample, nil
 }
 
+func (f *fakeDeps) BatchStatus(id string) (BatchStatus, bool) {
+	if id != f.batchID {
+		return BatchStatus{}, false
+	}
+	return BatchStatus{ID: id, Status: "completed", Successful: 7, Failed: 1, Expired: 1, Rejected: 1, Total: 10}, true
+}
+
 func (f *fakeDeps) BatchResults(id string) ([]ResultRow, bool) {
 	if id != f.batchID {
 		return nil, false
@@ -248,6 +255,28 @@ func TestBatchResultsEndpoint(t *testing.T) {
 		t.Fatalf("GET results: %d %+v", resp.StatusCode, rows)
 	}
 	resp2, _ := http.Get(srv.URL + "/batches/nope/results")
+	if resp2.StatusCode != 404 {
+		t.Fatalf("unknown batch want 404, got %d", resp2.StatusCode)
+	}
+	resp2.Body.Close()
+}
+
+func TestBatchStatusEndpoint(t *testing.T) {
+	d := &fakeDeps{known: map[string]bool{"model-a": true}, batchID: "b-9"}
+	srv := apiSrv(t, d)
+	resp, err := http.Get(srv.URL + "/batches/b-9")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp.Body.Close()
+	var got BatchStatus
+	if err := json.NewDecoder(resp.Body).Decode(&got); err != nil {
+		t.Fatal(err)
+	}
+	if resp.StatusCode != 200 || got.Status != "completed" || got.Successful != 7 {
+		t.Fatalf("GET /batches/b-9: %d %+v", resp.StatusCode, got)
+	}
+	resp2, _ := http.Get(srv.URL + "/batches/nope")
 	if resp2.StatusCode != 404 {
 		t.Fatalf("unknown batch want 404, got %d", resp2.StatusCode)
 	}

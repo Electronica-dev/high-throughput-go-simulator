@@ -96,6 +96,10 @@ func (e *Engine) processOne(r *ledger.Request) {
 	if e.ld.Transition(r, ledger.InFlight) != nil {
 		return
 	}
+	// count the attempt BEFORE the call (schedule() does this on the wheel
+	// path; real mode has no schedule) — without it the retry decision in
+	// finalizeOne never sees attempts grow and retries forever
+	r.Attempts.Add(1)
 	res := e.caller.Call(r, now)
 	e.cProvLatency.Add(int64(res.Latency))
 	okN, failN, compN := e.finalizeOne(p, r, res, now, now.UnixNano())

@@ -1,0 +1,23 @@
+# Simulator config for scenario 1: model-a only, limits = system.yaml ×
+# headroom (10×, the scenario parameter) so the SIMULATOR never throttles
+# what the SYSTEM is being tested to enforce.
+models:
+  - name: model-a
+    rpm: 300000
+    tpm: 5000000
+    estimate_tokens: 100
+    actual_token_mean: 100
+    latency:
+      kind: lognormal
+      mean_ms: 50
+      sigma: 0.3
+    outcome:
+      success_pct: 93
+      transient_pct: 5
+      permanent_pct: 2
+max_wait_ms: 2000
+queue_depth: 64000
+wheel_shards: 2
+wheel_buckets: 1024
+wheel_tick_ms: 1
+max_retries: 3

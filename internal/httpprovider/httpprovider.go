@@ -5,8 +5,8 @@ package httpprovider
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
+	"encoding/json"
 	"net/http"
 	"time"
 
@@ -42,7 +42,7 @@ type callResponse struct {
 // 429 → ProviderRejected; 5xx/timeout/network error → TransientFailure.
 func (h *HTTPProvider) Call(r *ledger.Request, now time.Time) provider.CallResult {
 	body, _ := json.Marshal(map[string]any{
-		"request_id":      r.ID,
+		"request_id":      r.ExternalID,
 		"model":           r.Model,
 		"estimated_tokens": r.EstimateTokens,
 	})

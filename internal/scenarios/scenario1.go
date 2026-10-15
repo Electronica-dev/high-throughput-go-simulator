@@ -58,6 +58,23 @@ func assessScenario1(sc Config, series []TimePoint, sums []BatchSummary, elapsed
 		res.Pass = false
 		res.Reasons = append(res.Reasons, fmt.Sprintf("RPM utilization %.1f%% < %.1f%% after warm-up", res.Util.RPM, sc.MinUtilPct))
 	}
+	// ≥90% of allowed capacity COMPLETED: successful vs (configured RPM/60)
+	// × the measured window span
+	if len(measured) > 0 && measured[len(measured)-1].ConfiguredRPM > 0 {
+		spanSec := 0.0
+		if len(series) > 0 {
+			spanSec = series[len(series)-1].AtSec - warmupAt
+		}
+		allowed := float64(measured[len(measured)-1].ConfiguredRPM) / 60 * spanSec
+		var okN int64
+		for _, b := range sums {
+			okN += b.Successful
+		}
+		if allowed > 0 && float64(okN) < 0.9*allowed {
+			res.Pass = false
+			res.Reasons = append(res.Reasons, fmt.Sprintf("completed %d < 90%% of allowed capacity %.0f", okN, 0.9*allowed))
+		}
+	}
 	if overs := OverLimit(measured, 0.005); len(overs) > 0 {
 		res.Pass = false
 		res.OverLimitN = len(overs)

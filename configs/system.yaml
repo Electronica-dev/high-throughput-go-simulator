@@ -13,10 +13,23 @@ models:
       success_pct: 93
       transient_pct: 5
       permanent_pct: 2
+  - name: model-b
+    rpm: 30000
+    tpm: 500000
+    estimate_tokens: 100
+    actual_token_mean: 100
+    latency:
+      kind: lognormal
+      mean_ms: 50
+      sigma: 0.3
+    outcome:
+      success_pct: 93
+      transient_pct: 5
+      permanent_pct: 2
 max_wait_ms: 2000
 queue_depth: 64000
 wheel_shards: 2
-wheel_buckets: 256
+wheel_buckets: 1024
 wheel_tick_ms: 1
 max_retries: 3
 workers: 64

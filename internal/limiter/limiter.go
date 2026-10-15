@@ -147,6 +147,21 @@ func (limiter *Limiter) Reconcile(reserved, actual, admittedSec int64, now time.
 	limiter.roll(sec)
 	if admittedSec >= limiter.wheelBase && refund > 0 {
 		limiter.tpmUsed -= refund
+		// net the refund into the ADMISSION slot as well: the later window
+		// eviction subtracts slot.tpm, and it must subtract the post-refund
+		// residual — not the original estimate. Without this, refund +
+		// eviction double-subtract (net per request = actual - estimate,
+		// negative for failed requests), tpmUsed bleeds toward zero, and TPM
+		// enforcement silently stops binding while ObservedTPM reports noise.
+		admitSlot := limiter.slotFor(admittedSec)
+		admitSlot.mu.Lock()
+		if admitSlot.sec == admittedSec {
+			admitSlot.tpm -= refund
+			if admitSlot.tpm < 0 {
+				admitSlot.tpm = 0
+			}
+		}
+		admitSlot.mu.Unlock()
 		if limiter.tpmUsed < 0 {
 			limiter.tpmUsed = 0 // defensive: never let refunds mint headroom
 		}
@@ -162,9 +177,10 @@ func (limiter *Limiter) Reconcile(reserved, actual, admittedSec int64, now time.
 	limiter.actualMu.Unlock()
 }
 
-// ChargeRetry counts one retry attempt against the rolling RPM window (and
-// its estimated tokens against TPM) like a fresh admission, without passing
-// through the queue/overflow path.
+// ChargeRetry counts one retry attempt against the rolling RPM window like a
+// fresh admission. TPM is NOT re-charged: the request's original reservation
+// is still outstanding in its admission slot, so one request reserves its
+// estimate exactly once regardless of how many attempts it takes.
 func (limiter *Limiter) ChargeRetry(now time.Time) bool {
 	return limiter.TryAdmit(0, now).OK
 }

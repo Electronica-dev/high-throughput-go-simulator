@@ -270,3 +270,39 @@ func TestObservedWindows(t *testing.T) {
 		t.Fatalf("ObservedTPM want 8000 reserved, got %d", got)
 	}
 }
+
+// TestRefundThenEvictDoesNotDoubleSubtract: a reconciled refund must be
+// netted into the admission slot, so the later window eviction subtracts the
+// post-refund residual — not the original estimate. Refund + eviction used to
+// double-subtract (net per request = actual - estimate, negative for failed
+// requests), bleeding tpmUsed toward zero and silently disabling TPM
+// enforcement while ObservedTPM reported garbage.
+func TestRefundThenEvictDoesNotDoubleSubtract(t *testing.T) {
+	limiter := New(&config.ModelConfig{RPM: 1 << 20, TPM: 1 << 30})
+	t0 := time.Unix(100000, 0)
+	// admit 10 requests x 1000 tokens
+	for i := 0; i < 10; i++ {
+		if res := limiter.TryAdmit(1000, t0); !res.OK {
+			t.Fatalf("admit %d: %+v", i, res)
+		}
+	}
+	// reconcile every one at actual 500 (refund 1000-500=500 each)
+	for i := 0; i < 10; i++ {
+		limiter.Reconcile(1000, 500, t0.Unix(), t0)
+	}
+	if got := limiter.ObservedTPM(t0); got != 5000 {
+		t.Fatalf("after reconcile want 5000 outstanding, got %d", got)
+	}
+	// a full window later: the old second is evicted. The eviction must
+	// subtract only the reconciled residual (500 each) — the new window's
+	// 10 fresh 1000-token admissions are then the only outstanding tokens.
+	t1 := t0.Add(61 * time.Second)
+	for i := 0; i < 10; i++ {
+		if res := limiter.TryAdmit(1000, t1); !res.OK {
+			t.Fatalf("admit after eviction %d: %+v", i, res)
+		}
+	}
+	if got := limiter.ObservedTPM(t1); got != 10000 {
+		t.Fatalf("after eviction want 10000 (fresh reservations only), got %d — eviction double-subtracted the refunded reservations", got)
+	}
+}

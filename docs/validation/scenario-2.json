@@ -7,5127 +7,5017 @@
   "over_limit_samples": 0,
   "time_series": [
     {
-      "at_sec": 1.0005057,
+      "at_sec": 1.0013823,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 456,
-        "observed_tpm": 831994,
+        "observed_rpm": 187,
+        "observed_tpm": 332987,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 2.0001995,
+      "at_sec": 2.0005443,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 959,
-        "observed_tpm": 1732139,
+        "observed_rpm": 961,
+        "observed_tpm": 1763161,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 3.0005139,
+      "at_sec": 3.0002041,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 1427,
-        "observed_tpm": 2537880,
+        "observed_rpm": 1437,
+        "observed_tpm": 2549282,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 4.0017407,
+      "at_sec": 4.00026,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 1927,
-        "observed_tpm": 3428762,
+        "observed_rpm": 1948,
+        "observed_tpm": 3415405,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 5.0004107,
+      "at_sec": 5.0002785,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 2407,
-        "observed_tpm": 4252806,
+        "observed_rpm": 2430,
+        "observed_tpm": 4240284,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 6.0007611,
+      "at_sec": 6.0000559,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 2844,
-        "observed_tpm": 5000493,
+        "observed_rpm": 2882,
+        "observed_tpm": 5039237,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 7.0007456,
+      "at_sec": 7.000237,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 3257,
-        "observed_tpm": 5787215,
+        "observed_rpm": 3316,
+        "observed_tpm": 5803941,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 8.0001054,
+      "at_sec": 8.0003702,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 3867,
-        "observed_tpm": 6852829,
+        "observed_rpm": 3880,
+        "observed_tpm": 6827302,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 9.0005302,
+      "at_sec": 9.000185,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 4319,
-        "observed_tpm": 7619682,
+        "observed_rpm": 4331,
+        "observed_tpm": 7592630,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 10.0001309,
+      "at_sec": 10.0002299,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 4764,
-        "observed_tpm": 8382926,
+        "observed_rpm": 4584,
+        "observed_tpm": 8038577,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 11.0009137,
+      "at_sec": 11.0005346,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 5295,
-        "observed_tpm": 9344839,
+        "observed_rpm": 5313,
+        "observed_tpm": 9355225,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 12.0007974,
+      "at_sec": 12.00044,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 5746,
-        "observed_tpm": 10174576,
+        "observed_rpm": 5792,
+        "observed_tpm": 10161904,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 13.0001135,
+      "at_sec": 13.0000232,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 6253,
-        "observed_tpm": 11086053,
+        "observed_rpm": 6246,
+        "observed_tpm": 10935730,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 14.0000758,
+      "at_sec": 14.0003837,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 6747,
-        "observed_tpm": 11958178,
+        "observed_rpm": 6805,
+        "observed_tpm": 11942561,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 15.0004548,
+      "at_sec": 15.0004476,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 7216,
-        "observed_tpm": 12747111,
+        "observed_rpm": 7260,
+        "observed_tpm": 12743425,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 16.0001644,
+      "at_sec": 16.0002213,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 7726,
-        "observed_tpm": 13656495,
+        "observed_rpm": 7775,
+        "observed_tpm": 13633260,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 17.0038893,
+      "at_sec": 17.0006804,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 8221,
-        "observed_tpm": 14520405,
+        "observed_rpm": 8202,
+        "observed_tpm": 14370716,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 18.0001796,
+      "at_sec": 18.0004279,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 8682,
-        "observed_tpm": 15328417,
+        "observed_rpm": 8738,
+        "observed_tpm": 15312071,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 19.0002228,
+      "at_sec": 19.0004068,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 9193,
-        "observed_tpm": 16216577,
+        "observed_rpm": 9253,
+        "observed_tpm": 16223206,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 20.0004862,
+      "at_sec": 20.0003606,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 9626,
-        "observed_tpm": 16986856,
+        "observed_rpm": 9683,
+        "observed_tpm": 16992262,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 21.0000601,
+      "at_sec": 21.0000594,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 10151,
-        "observed_tpm": 17897984,
+        "observed_rpm": 10201,
+        "observed_tpm": 17914001,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 22.0076794,
+      "at_sec": 22.0001691,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 10614,
-        "observed_tpm": 18734978,
+        "observed_rpm": 10510,
+        "observed_tpm": 18461568,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 23.0007144,
+      "at_sec": 23.0005546,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 11133,
-        "observed_tpm": 19694949,
+        "observed_rpm": 10692,
+        "observed_tpm": 18785749,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 24.0004131,
+      "at_sec": 24.0001432,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 11616,
-        "observed_tpm": 20539098,
+        "observed_rpm": 11638,
+        "observed_tpm": 20594851,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 25.0005388,
+      "at_sec": 25.00017,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 12127,
-        "observed_tpm": 21413532,
+        "observed_rpm": 12150,
+        "observed_tpm": 21457854,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 26.0005972,
+      "at_sec": 26.0003749,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 12619,
-        "observed_tpm": 22254382,
+        "observed_rpm": 12602,
+        "observed_tpm": 22223834,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 27.0003547,
+      "at_sec": 27.0003674,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 13095,
-        "observed_tpm": 23080985,
+        "observed_rpm": 13108,
+        "observed_tpm": 23103014,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 28.0003736,
+      "at_sec": 28.0001972,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 13607,
-        "observed_tpm": 23987675,
+        "observed_rpm": 13632,
+        "observed_tpm": 23988488,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 29.0003227,
+      "at_sec": 29.0002354,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 14092,
-        "observed_tpm": 24822222,
+        "observed_rpm": 14160,
+        "observed_tpm": 24881396,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 30.0007338,
+      "at_sec": 30.000465,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 14386,
-        "observed_tpm": 25322540,
+        "observed_rpm": 14654,
+        "observed_tpm": 25742645,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 31.0001577,
+      "at_sec": 31.0005285,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 14608,
-        "observed_tpm": 25728214,
+        "observed_rpm": 15143,
+        "observed_tpm": 26564633,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 32.0004638,
+      "at_sec": 32.0004627,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 14780,
-        "observed_tpm": 26026672,
+        "observed_rpm": 15328,
+        "observed_tpm": 26891175,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 33.0006166,
+      "at_sec": 33.0005259,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 15758,
-        "observed_tpm": 27917141,
+        "observed_rpm": 16045,
+        "observed_tpm": 28276858,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 34.0009979,
+      "at_sec": 34.0002543,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 16415,
-        "observed_tpm": 29131938,
+        "observed_rpm": 16592,
+        "observed_tpm": 29211168,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 35.0005231,
+      "at_sec": 35.0004182,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 16978,
-        "observed_tpm": 30163214,
+        "observed_rpm": 17085,
+        "observed_tpm": 30049886,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 36.0003053,
+      "at_sec": 36.0004576,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 17464,
-        "observed_tpm": 31025336,
+        "observed_rpm": 17578,
+        "observed_tpm": 30894517,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 37.0002651,
+      "at_sec": 37.0002424,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 17955,
-        "observed_tpm": 31904355,
+        "observed_rpm": 18079,
+        "observed_tpm": 31737108,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 38.0004239,
+      "at_sec": 38.0005284,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 18446,
-        "observed_tpm": 32760315,
+        "observed_rpm": 18444,
+        "observed_tpm": 32363238,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 39.0005233,
+      "at_sec": 39.0001981,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 18954,
-        "observed_tpm": 33648434,
+        "observed_rpm": 19069,
+        "observed_tpm": 33478283,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 40.0002866,
+      "at_sec": 40.0001535,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 19467,
-        "observed_tpm": 34551878,
+        "observed_rpm": 19542,
+        "observed_tpm": 34316791,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 41.0006715,
+      "at_sec": 41.0003243,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 19838,
-        "observed_tpm": 35175984,
+        "observed_rpm": 20035,
+        "observed_tpm": 35199173,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 42.0004921,
+      "at_sec": 42.0005011,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 20426,
-        "observed_tpm": 36219467,
+        "observed_rpm": 20542,
+        "observed_tpm": 36065120,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 43.0002048,
+      "at_sec": 43.000453,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 20962,
-        "observed_tpm": 37136344,
+        "observed_rpm": 20965,
+        "observed_tpm": 36795983,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 44.0000643,
+      "at_sec": 44.000317,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 21471,
-        "observed_tpm": 38035216,
+        "observed_rpm": 21559,
+        "observed_tpm": 37886121,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 45.0002411,
+      "at_sec": 45.000145,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 21966,
-        "observed_tpm": 38867913,
+        "observed_rpm": 22045,
+        "observed_tpm": 38723943,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 46.0002144,
+      "at_sec": 46.0001053,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 22494,
-        "observed_tpm": 39777005,
+        "observed_rpm": 22564,
+        "observed_tpm": 39628851,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 47.0005475,
+      "at_sec": 47.0003835,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 22961,
-        "observed_tpm": 40592109,
+        "observed_rpm": 23017,
+        "observed_tpm": 40480514,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 48.0000421,
+      "at_sec": 48.0003584,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 23475,
-        "observed_tpm": 41488637,
+        "observed_rpm": 23535,
+        "observed_tpm": 41378662,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 49.0005079,
+      "at_sec": 49.0001654,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 23971,
-        "observed_tpm": 42355547,
+        "observed_rpm": 24032,
+        "observed_tpm": 42234657,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 50.00035,
+      "at_sec": 50.0004945,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 24432,
-        "observed_tpm": 43140046,
+        "observed_rpm": 24525,
+        "observed_tpm": 43079890,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 51.0000721,
+      "at_sec": 51.000544,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 24940,
-        "observed_tpm": 44051322,
+        "observed_rpm": 24798,
+        "observed_tpm": 43546143,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 52.0001106,
+      "at_sec": 52.0005068,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 25451,
-        "observed_tpm": 44967792,
+        "observed_rpm": 25520,
+        "observed_tpm": 44868956,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 53.0006718,
+      "at_sec": 53.000527,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 25966,
-        "observed_tpm": 45876614,
+        "observed_rpm": 26037,
+        "observed_tpm": 45765418,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 54.0002435,
+      "at_sec": 54.000102,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 26405,
-        "observed_tpm": 46663441,
+        "observed_rpm": 26545,
+        "observed_tpm": 46636397,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 55.0005022,
+      "at_sec": 55.0005159,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 26947,
-        "observed_tpm": 47635033,
+        "observed_rpm": 27027,
+        "observed_tpm": 47487190,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 56.0001254,
+      "at_sec": 56.0000501,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 27445,
-        "observed_tpm": 48533063,
+        "observed_rpm": 27521,
+        "observed_tpm": 48380857,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 57.000231,
+      "at_sec": 57.0003116,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 27936,
-        "observed_tpm": 49382944,
+        "observed_rpm": 28043,
+        "observed_tpm": 49274327,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 58.0003812,
+      "at_sec": 58.0003005,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 28442,
-        "observed_tpm": 50272192,
+        "observed_rpm": 28529,
+        "observed_tpm": 50097033,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 59.0004032,
+      "at_sec": 59.0004581,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 28936,
-        "observed_tpm": 51145505,
+        "observed_rpm": 28648,
+        "observed_tpm": 50313139,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 60.0001315,
+      "at_sec": 60.0005901,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 29259,
-        "observed_tpm": 51697041,
+        "observed_rpm": 28767,
+        "observed_tpm": 50514898,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 61.0002545,
+      "at_sec": 61.0004219,
+      "phase": "p1",
+      "model": "model-a",
+      "sample": {
+        "observed_rpm": 28775,
+        "observed_tpm": 50534504,
+        "configured_rpm": 30000,
+        "configured_tpm": 60000000
+      }
+    },
+    {
+      "at_sec": 62.0004766,
+      "phase": "p1",
+      "model": "model-a",
+      "sample": {
+        "observed_rpm": 28458,
+        "observed_tpm": 50047952,
+        "configured_rpm": 30000,
+        "configured_tpm": 60000000
+      }
+    },
+    {
+      "at_sec": 63.0001249,
+      "phase": "p1",
+      "model": "model-a",
+      "sample": {
+        "observed_rpm": 29344,
+        "observed_tpm": 51828192,
+        "configured_rpm": 30000,
+        "configured_tpm": 60000000
+      }
+    },
+    {
+      "at_sec": 64.0002324,
+      "phase": "p1",
+      "model": "model-a",
+      "sample": {
+        "observed_rpm": 29345,
+        "observed_tpm": 51837436,
+        "configured_rpm": 30000,
+        "configured_tpm": 60000000
+      }
+    },
+    {
+      "at_sec": 65.0001333,
+      "phase": "p1",
+      "model": "model-a",
+      "sample": {
+        "observed_rpm": 29405,
+        "observed_tpm": 51906969,
+        "configured_rpm": 30000,
+        "configured_tpm": 60000000
+      }
+    },
+    {
+      "at_sec": 66.0001859,
       "phase": "p1",
       "model": "model-a",
       "sample": {
         "observed_rpm": 29267,
-        "observed_tpm": 51627950,
+        "observed_tpm": 51626899,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 62.0010679,
+      "at_sec": 67.000172,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 29179,
-        "observed_tpm": 51384467,
+        "observed_rpm": 29516,
+        "observed_tpm": 52087460,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 63.000288,
+      "at_sec": 68.0004667,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 29249,
-        "observed_tpm": 51448341,
+        "observed_rpm": 29392,
+        "observed_tpm": 51833705,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 64.0004087,
+      "at_sec": 69.0001238,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 29268,
-        "observed_tpm": 51395932,
+        "observed_rpm": 29509,
+        "observed_tpm": 52014376,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 65.0009378,
+      "at_sec": 70.000203,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 29249,
-        "observed_tpm": 51287123,
+        "observed_rpm": 29537,
+        "observed_tpm": 52019459,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 66.0001572,
+      "at_sec": 71.0004424,
+      "phase": "p1",
+      "model": "model-a",
+      "sample": {
+        "observed_rpm": 29465,
+        "observed_tpm": 51897656,
+        "configured_rpm": 30000,
+        "configured_tpm": 60000000
+      }
+    },
+    {
+      "at_sec": 72.0002411,
+      "phase": "p1",
+      "model": "model-a",
+      "sample": {
+        "observed_rpm": 29502,
+        "observed_tpm": 51953824,
+        "configured_rpm": 30000,
+        "configured_tpm": 60000000
+      }
+    },
+    {
+      "at_sec": 73.0003167,
       "phase": "p1",
       "model": "model-a",
       "sample": {
         "observed_rpm": 29473,
-        "observed_tpm": 51644981,
+        "observed_tpm": 51868655,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 67.0001806,
+      "at_sec": 74.0004573,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 29302,
-        "observed_tpm": 51254006,
+        "observed_rpm": 29420,
+        "observed_tpm": 51736395,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 68.0003886,
+      "at_sec": 75.0002829,
       "phase": "p1",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 29284,
-        "observed_tpm": 51198972,
+        "observed_rpm": 29474,
+        "observed_tpm": 51819406,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 69.0004909,
-      "phase": "p1",
-      "model": "model-a",
-      "sample": {
-        "observed_rpm": 29356,
-        "observed_tpm": 51265271,
-        "configured_rpm": 30000,
-        "configured_tpm": 60000000
-      }
-    },
-    {
-      "at_sec": 70.0004884,
-      "phase": "p1",
-      "model": "model-a",
-      "sample": {
-        "observed_rpm": 29411,
-        "observed_tpm": 51309436,
-        "configured_rpm": 30000,
-        "configured_tpm": 60000000
-      }
-    },
-    {
-      "at_sec": 71.0005136,
-      "phase": "p1",
-      "model": "model-a",
-      "sample": {
-        "observed_rpm": 29373,
-        "observed_tpm": 51137556,
-        "configured_rpm": 30000,
-        "configured_tpm": 60000000
-      }
-    },
-    {
-      "at_sec": 72.0003468,
-      "phase": "p1",
-      "model": "model-a",
-      "sample": {
-        "observed_rpm": 29401,
-        "observed_tpm": 51095836,
-        "configured_rpm": 30000,
-        "configured_tpm": 60000000
-      }
-    },
-    {
-      "at_sec": 73.0003264,
-      "phase": "p1",
-      "model": "model-a",
-      "sample": {
-        "observed_rpm": 29395,
-        "observed_tpm": 51023397,
-        "configured_rpm": 30000,
-        "configured_tpm": 60000000
-      }
-    },
-    {
-      "at_sec": 74.0002551,
-      "phase": "p1",
-      "model": "model-a",
-      "sample": {
-        "observed_rpm": 29324,
-        "observed_tpm": 50818388,
-        "configured_rpm": 30000,
-        "configured_tpm": 60000000
-      }
-    },
-    {
-      "at_sec": 75.000279,
-      "phase": "p1",
-      "model": "model-a",
-      "sample": {
-        "observed_rpm": 29378,
-        "observed_tpm": 50847407,
-        "configured_rpm": 30000,
-        "configured_tpm": 60000000
-      }
-    },
-    {
-      "at_sec": 76.0000074,
-      "phase": "p1",
-      "model": "model-a",
-      "sample": {
-        "observed_rpm": 28895,
-        "observed_tpm": 49794521,
-        "configured_rpm": 30000,
-        "configured_tpm": 60000000
-      }
-    },
-    {
-      "at_sec": 77.0008154,
-      "phase": "p1",
-      "model": "model-a",
-      "sample": {
-        "observed_rpm": 28429,
-        "observed_tpm": 48765028,
-        "configured_rpm": 30000,
-        "configured_tpm": 60000000
-      }
-    },
-    {
-      "at_sec": 78.0001156,
+      "at_sec": 76.0001931,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 27912,
-        "observed_tpm": 47771777,
+        "observed_rpm": 28993,
+        "observed_tpm": 50909326,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 79.0004005,
+      "at_sec": 77.0001477,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 27471,
-        "observed_tpm": 46935777,
+        "observed_rpm": 28503,
+        "observed_tpm": 50052953,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 80.0006374,
+      "at_sec": 78.0002977,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 26965,
-        "observed_tpm": 45969777,
+        "observed_rpm": 28043,
+        "observed_tpm": 49263950,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 81.0014647,
+      "at_sec": 79.0004848,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 26553,
-        "observed_tpm": 45197777,
+        "observed_rpm": 27519,
+        "observed_tpm": 48327559,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 82.000382,
+      "at_sec": 80.0003631,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 26011,
-        "observed_tpm": 44141777,
+        "observed_rpm": 27041,
+        "observed_tpm": 47463610,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 83.0004421,
+      "at_sec": 81.0001598,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 25506,
-        "observed_tpm": 43169777,
+        "observed_rpm": 26566,
+        "observed_tpm": 46627676,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 84.0005226,
+      "at_sec": 82.0002972,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 25028,
-        "observed_tpm": 42273777,
+        "observed_rpm": 26346,
+        "observed_tpm": 46233603,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 85.0008889,
+      "at_sec": 83.0002602,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 24520,
-        "observed_tpm": 41321777,
+        "observed_rpm": 26195,
+        "observed_tpm": 45967604,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 86.0004376,
+      "at_sec": 84.0003294,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 24106,
-        "observed_tpm": 40549777,
+        "observed_rpm": 25132,
+        "observed_tpm": 44038968,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 87.0003001,
+      "at_sec": 85.0001398,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 23548,
-        "observed_tpm": 39487777,
+        "observed_rpm": 24620,
+        "observed_tpm": 43159717,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 88.0010117,
+      "at_sec": 86.0005459,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 23025,
-        "observed_tpm": 38489777,
+        "observed_rpm": 24120,
+        "observed_tpm": 42278847,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 89.001204,
+      "at_sec": 87.0002535,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 22548,
-        "observed_tpm": 37591777,
+        "observed_rpm": 23655,
+        "observed_tpm": 41479581,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 90.0007635,
+      "at_sec": 88.0003472,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 22377,
-        "observed_tpm": 37263777,
+        "observed_rpm": 23107,
+        "observed_tpm": 40540764,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 91.0010847,
+      "at_sec": 89.0006339,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 22165,
-        "observed_tpm": 36853777,
+        "observed_rpm": 22595,
+        "observed_tpm": 39664477,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 92.000264,
+      "at_sec": 90.0009449,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 21994,
-        "observed_tpm": 36519777,
+        "observed_rpm": 22111,
+        "observed_tpm": 38821396,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 93.000968,
+      "at_sec": 91.0003454,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 20645,
-        "observed_tpm": 33855777,
+        "observed_rpm": 21712,
+        "observed_tpm": 38132703,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 94.0005781,
+      "at_sec": 92.0004641,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 20235,
-        "observed_tpm": 33071777,
+        "observed_rpm": 21592,
+        "observed_tpm": 37915639,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 95.0019235,
+      "at_sec": 93.000059,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 19676,
-        "observed_tpm": 31995777,
+        "observed_rpm": 20689,
+        "observed_tpm": 36273304,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 96.0004071,
+      "at_sec": 94.0002466,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 19263,
-        "observed_tpm": 31207777,
+        "observed_rpm": 20174,
+        "observed_tpm": 35384896,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 97.0006593,
+      "at_sec": 95.000186,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 18674,
-        "observed_tpm": 30083777,
+        "observed_rpm": 19669,
+        "observed_tpm": 34510498,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 98.00084,
+      "at_sec": 96.0003623,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 18165,
-        "observed_tpm": 29111777,
+        "observed_rpm": 19170,
+        "observed_tpm": 33658949,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 99.0005411,
+      "at_sec": 97.0003671,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 17680,
-        "observed_tpm": 28185777,
+        "observed_rpm": 18682,
+        "observed_tpm": 32801892,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 100.0000964,
+      "at_sec": 98.0004272,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 17210,
-        "observed_tpm": 27297777,
+        "observed_rpm": 18199,
+        "observed_tpm": 31950223,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 101.0006704,
+      "at_sec": 99.0003817,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 16711,
-        "observed_tpm": 26343777,
+        "observed_rpm": 17692,
+        "observed_tpm": 31048260,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 102.0002983,
+      "at_sec": 100.0002709,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 16198,
-        "observed_tpm": 25391777,
+        "observed_rpm": 17193,
+        "observed_tpm": 30155368,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 103.0010038,
+      "at_sec": 101.0002197,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 15690,
-        "observed_tpm": 24441777,
+        "observed_rpm": 16689,
+        "observed_tpm": 29285476,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 104.0004535,
+      "at_sec": 102.0003464,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 15151,
-        "observed_tpm": 23421777,
+        "observed_rpm": 16217,
+        "observed_tpm": 28469397,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 105.0013063,
+      "at_sec": 103.0005393,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 14671,
-        "observed_tpm": 22523777,
+        "observed_rpm": 15692,
+        "observed_tpm": 27530152,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 106.0007551,
+      "at_sec": 104.0004524,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 14144,
-        "observed_tpm": 21533777,
+        "observed_rpm": 15186,
+        "observed_tpm": 26640491,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 107.0010392,
+      "at_sec": 105.0004972,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 13680,
-        "observed_tpm": 20645777,
+        "observed_rpm": 14723,
+        "observed_tpm": 25825951,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 108.0004466,
+      "at_sec": 106.0002764,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 13171,
-        "observed_tpm": 19681777,
+        "observed_rpm": 14324,
+        "observed_tpm": 25123326,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 109.0006557,
+      "at_sec": 107.0000908,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 12658,
-        "observed_tpm": 18711777,
+        "observed_rpm": 13740,
+        "observed_tpm": 24081752,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 110.0001885,
+      "at_sec": 108.0000639,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 12168,
-        "observed_tpm": 17779777,
+        "observed_rpm": 13221,
+        "observed_tpm": 23175828,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 111.0005322,
+      "at_sec": 109.000399,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 11663,
-        "observed_tpm": 16801777,
+        "observed_rpm": 12723,
+        "observed_tpm": 22293916,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 112.0003196,
+      "at_sec": 110.0005135,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 11165,
-        "observed_tpm": 15853777,
+        "observed_rpm": 12247,
+        "observed_tpm": 21479335,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 113.0003273,
+      "at_sec": 111.0004081,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 10673,
-        "observed_tpm": 14923777,
+        "observed_rpm": 11719,
+        "observed_tpm": 20520612,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 114.0013628,
+      "at_sec": 112.0004413,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 10207,
-        "observed_tpm": 14029777,
+        "observed_rpm": 11211,
+        "observed_tpm": 19632638,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 115.0008206,
+      "at_sec": 113.0005176,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 9662,
-        "observed_tpm": 12971777,
+        "observed_rpm": 10758,
+        "observed_tpm": 18850315,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 116.0003904,
+      "at_sec": 114.0004755,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 9223,
-        "observed_tpm": 12157777,
+        "observed_rpm": 10220,
+        "observed_tpm": 17903136,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 117.0007173,
+      "at_sec": 115.0003851,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 8672,
-        "observed_tpm": 11107777,
+        "observed_rpm": 9706,
+        "observed_tpm": 16979552,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 118.002471,
+      "at_sec": 116.000178,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 8174,
-        "observed_tpm": 10149777,
+        "observed_rpm": 9242,
+        "observed_tpm": 16185291,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 119.0006803,
+      "at_sec": 117.0003796,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 7690,
-        "observed_tpm": 9219777,
+        "observed_rpm": 8719,
+        "observed_tpm": 15274689,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 120.0004234,
+      "at_sec": 118.0001311,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 7239,
-        "observed_tpm": 8359777,
+        "observed_rpm": 8357,
+        "observed_tpm": 14653579,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 121.0003922,
+      "at_sec": 119.0000366,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 6760,
-        "observed_tpm": 7447777,
+        "observed_rpm": 8206,
+        "observed_tpm": 14380766,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 122.0004976,
+      "at_sec": 120.0000499,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 6238,
-        "observed_tpm": 6453777,
+        "observed_rpm": 8023,
+        "observed_tpm": 14068065,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 123.0003603,
+      "at_sec": 121.0004904,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 5783,
-        "observed_tpm": 5599777,
+        "observed_rpm": 7889,
+        "observed_tpm": 13834208,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 124.000613,
+      "at_sec": 122.0006703,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 5233,
-        "observed_tpm": 4565777,
+        "observed_rpm": 6836,
+        "observed_tpm": 11924868,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 125.0003043,
+      "at_sec": 123.0002219,
+      "phase": "p2",
+      "model": "model-a",
+      "sample": {
+        "observed_rpm": 5861,
+        "observed_tpm": 10176564,
+        "configured_rpm": 5000,
+        "configured_tpm": 60000000
+      }
+    },
+    {
+      "at_sec": 124.0003095,
+      "phase": "p2",
+      "model": "model-a",
+      "sample": {
+        "observed_rpm": 5312,
+        "observed_tpm": 9214352,
+        "configured_rpm": 5000,
+        "configured_tpm": 60000000
+      }
+    },
+    {
+      "at_sec": 125.0003428,
       "phase": "p2",
       "model": "model-a",
       "sample": {
         "observed_rpm": 5000,
-        "observed_tpm": 4093431,
+        "observed_tpm": 8689732,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 126.0005019,
+      "at_sec": 126.0005212,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 4804,
-        "observed_tpm": 3667785,
+        "observed_rpm": 4851,
+        "observed_tpm": 8444138,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 127.0011345,
+      "at_sec": 127.0010793,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 4360,
-        "observed_tpm": 2803590,
+        "observed_rpm": 4416,
+        "observed_tpm": 7668618,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 128.0005742,
+      "at_sec": 128.0002334,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 3977,
-        "observed_tpm": 2062578,
+        "observed_rpm": 4014,
+        "observed_tpm": 6968074,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 129.001021,
+      "at_sec": 129.0003378,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 3542,
-        "observed_tpm": 1197796,
+        "observed_rpm": 3568,
+        "observed_tpm": 6196292,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 130.0004468,
+      "at_sec": 130.0005421,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 3124,
-        "observed_tpm": 390966,
+        "observed_rpm": 3120,
+        "observed_tpm": 5427490,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 131.0002356,
+      "at_sec": 131.0001494,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 2715,
-        "observed_tpm": 43578,
+        "observed_rpm": 2724,
+        "observed_tpm": 4747709,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 132.0002055,
+      "at_sec": 132.000359,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 2301,
-        "observed_tpm": 72226,
+        "observed_rpm": 2255,
+        "observed_tpm": 3928389,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 133.0012106,
+      "at_sec": 133.000315,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 1892,
-        "observed_tpm": 44847,
+        "observed_rpm": 1891,
+        "observed_tpm": 3318565,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 134.0009854,
+      "at_sec": 134.000363,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 1513,
-        "observed_tpm": 58425,
+        "observed_rpm": 1510,
+        "observed_tpm": 2664993,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 135.0003887,
+      "at_sec": 135.0009734,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 1263,
-        "observed_tpm": 25582,
+        "observed_rpm": 1241,
+        "observed_tpm": 2201666,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 136.0000728,
+      "at_sec": 136.0001356,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 1344,
-        "observed_tpm": 222338,
+        "observed_rpm": 1325,
+        "observed_tpm": 2359569,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 137.0005008,
+      "at_sec": 137.0004634,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 1410,
-        "observed_tpm": 363699,
+        "observed_rpm": 1392,
+        "observed_tpm": 2465498,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 138.0005451,
+      "at_sec": 138.0005934,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 1487,
-        "observed_tpm": 502474,
+        "observed_rpm": 1460,
+        "observed_tpm": 2585499,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 139.0001866,
+      "at_sec": 139.0005581,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 1572,
-        "observed_tpm": 647506,
+        "observed_rpm": 1525,
+        "observed_tpm": 2701838,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 140.0005623,
+      "at_sec": 140.0003826,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 1629,
-        "observed_tpm": 741926,
+        "observed_rpm": 1636,
+        "observed_tpm": 2900960,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 141.0004463,
+      "at_sec": 141.0003861,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 1730,
-        "observed_tpm": 918398,
+        "observed_rpm": 1709,
+        "observed_tpm": 3026490,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 142.0005906,
+      "at_sec": 142.0002195,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 1791,
-        "observed_tpm": 1025421,
+        "observed_rpm": 1781,
+        "observed_tpm": 3160561,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 143.0002667,
+      "at_sec": 143.0003238,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 1863,
-        "observed_tpm": 1152119,
+        "observed_rpm": 1844,
+        "observed_tpm": 3267473,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 144.0009808,
+      "at_sec": 144.0001499,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 1938,
-        "observed_tpm": 1280389,
+        "observed_rpm": 1940,
+        "observed_tpm": 3444912,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 145.0004639,
+      "at_sec": 145.0000197,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 2037,
-        "observed_tpm": 1463655,
+        "observed_rpm": 2021,
+        "observed_tpm": 3572366,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 146.0003576,
+      "at_sec": 146.0003802,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 2111,
-        "observed_tpm": 1589589,
+        "observed_rpm": 2100,
+        "observed_tpm": 3711936,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 147.0005319,
+      "at_sec": 147.0002022,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 2200,
-        "observed_tpm": 1745455,
+        "observed_rpm": 2187,
+        "observed_tpm": 3865308,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 148.0005313,
+      "at_sec": 148.0000596,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 2299,
-        "observed_tpm": 1904853,
+        "observed_rpm": 2293,
+        "observed_tpm": 4060278,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 149.0003903,
+      "at_sec": 149.0003926,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 2392,
-        "observed_tpm": 2070524,
+        "observed_rpm": 2344,
+        "observed_tpm": 4143607,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 150.0003929,
+      "at_sec": 150.000334,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 2478,
-        "observed_tpm": 2214192,
+        "observed_rpm": 2429,
+        "observed_tpm": 4288104,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 151.0008574,
+      "at_sec": 151.0000627,
       "phase": "p2",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 2547,
-        "observed_tpm": 2335556,
+        "observed_rpm": 2506,
+        "observed_tpm": 4419144,
         "configured_rpm": 5000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 152.0066693,
-      "phase": "p2",
+      "at_sec": 152.0002328,
+      "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 2628,
-        "observed_tpm": 2476960,
-        "configured_rpm": 5000,
+        "observed_rpm": 2757,
+        "observed_tpm": 4866142,
+        "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 153.0004546,
+      "at_sec": 153.0005618,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 2663,
-        "observed_tpm": 2534670,
+        "observed_rpm": 3148,
+        "observed_tpm": 5604723,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 154.0084403,
+      "at_sec": 154.0003812,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 3056,
-        "observed_tpm": 3247693,
+        "observed_rpm": 3694,
+        "observed_tpm": 6583471,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 155.0000678,
+      "at_sec": 155.0002448,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 3633,
-        "observed_tpm": 4260683,
+        "observed_rpm": 4209,
+        "observed_tpm": 7469747,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 156.0010646,
+      "at_sec": 156.0003549,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 4128,
-        "observed_tpm": 5152167,
+        "observed_rpm": 4691,
+        "observed_tpm": 8310300,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 157.0003269,
+      "at_sec": 157.0000452,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 4534,
-        "observed_tpm": 5879867,
+        "observed_rpm": 5155,
+        "observed_tpm": 9113234,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 158.0004583,
+      "at_sec": 158.0009992,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 5069,
-        "observed_tpm": 6843050,
+        "observed_rpm": 5653,
+        "observed_tpm": 9964821,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 159.000068,
+      "at_sec": 159.0005007,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 5520,
-        "observed_tpm": 7666936,
+        "observed_rpm": 6129,
+        "observed_tpm": 10786204,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 160.0004516,
+      "at_sec": 160.0004204,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 6019,
-        "observed_tpm": 8564518,
+        "observed_rpm": 6504,
+        "observed_tpm": 11432228,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 161.0008203,
+      "at_sec": 161.0003116,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 6470,
-        "observed_tpm": 9326650,
+        "observed_rpm": 6673,
+        "observed_tpm": 11732566,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 162.0014784,
+      "at_sec": 162.0004641,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 6888,
-        "observed_tpm": 10072543,
+        "observed_rpm": 6848,
+        "observed_tpm": 12042637,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 163.0019726,
+      "at_sec": 163.0004662,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 7337,
-        "observed_tpm": 10899784,
+        "observed_rpm": 6970,
+        "observed_tpm": 12255432,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 164.0005241,
+      "at_sec": 164.0000788,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 7946,
-        "observed_tpm": 12031187,
+        "observed_rpm": 8495,
+        "observed_tpm": 15222235,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 165.0002683,
+      "at_sec": 165.0001263,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 8408,
-        "observed_tpm": 12839899,
+        "observed_rpm": 8996,
+        "observed_tpm": 16070306,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 166.0004938,
+      "at_sec": 166.0003226,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 8880,
-        "observed_tpm": 13667627,
+        "observed_rpm": 9493,
+        "observed_tpm": 16926153,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 167.0001094,
+      "at_sec": 167.0002406,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 9366,
-        "observed_tpm": 14520427,
+        "observed_rpm": 9976,
+        "observed_tpm": 17746992,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 168.0004469,
+      "at_sec": 168.0009539,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 9872,
-        "observed_tpm": 15411673,
+        "observed_rpm": 10455,
+        "observed_tpm": 18579767,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 169.0001726,
+      "at_sec": 169.0002421,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 10383,
-        "observed_tpm": 16313741,
+        "observed_rpm": 10961,
+        "observed_tpm": 19463830,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 170.0005068,
+      "at_sec": 170.0000635,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 10885,
-        "observed_tpm": 17189408,
+        "observed_rpm": 11476,
+        "observed_tpm": 20358101,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 171.0000222,
+      "at_sec": 171.0010449,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 11354,
-        "observed_tpm": 17988302,
+        "observed_rpm": 11925,
+        "observed_tpm": 21110773,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 172.0000664,
+      "at_sec": 172.000409,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 11861,
-        "observed_tpm": 18899183,
+        "observed_rpm": 12438,
+        "observed_tpm": 22025447,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 173.0007218,
+      "at_sec": 173.0001427,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 12270,
-        "observed_tpm": 19619950,
+        "observed_rpm": 12924,
+        "observed_tpm": 22912316,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 174.0000293,
+      "at_sec": 174.0004262,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 12824,
-        "observed_tpm": 20597029,
+        "observed_rpm": 13385,
+        "observed_tpm": 23741029,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 175.0011247,
+      "at_sec": 175.0001541,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 13311,
-        "observed_tpm": 21490284,
+        "observed_rpm": 13897,
+        "observed_tpm": 24646583,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 176.0010398,
+      "at_sec": 176.0002832,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 13775,
-        "observed_tpm": 22325689,
+        "observed_rpm": 14400,
+        "observed_tpm": 25541823,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 177.0002083,
+      "at_sec": 177.0004319,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 14286,
-        "observed_tpm": 23218749,
+        "observed_rpm": 14859,
+        "observed_tpm": 26353273,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 178.0006673,
+      "at_sec": 178.0001695,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 14754,
-        "observed_tpm": 24045548,
+        "observed_rpm": 15364,
+        "observed_tpm": 27238019,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 179.0010648,
+      "at_sec": 179.0001166,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 15185,
-        "observed_tpm": 24781847,
+        "observed_rpm": 15861,
+        "observed_tpm": 28091883,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 180.0006129,
+      "at_sec": 180.0000373,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 15712,
-        "observed_tpm": 25755401,
+        "observed_rpm": 16378,
+        "observed_tpm": 28971733,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 181.0003703,
+      "at_sec": 181.0001867,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 16243,
-        "observed_tpm": 26729805,
+        "observed_rpm": 16872,
+        "observed_tpm": 29846842,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 182.0004255,
+      "at_sec": 182.0000882,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 16757,
-        "observed_tpm": 27654814,
+        "observed_rpm": 17370,
+        "observed_tpm": 30709523,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 183.0003841,
+      "at_sec": 183.0000672,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 17237,
-        "observed_tpm": 28507519,
+        "observed_rpm": 17835,
+        "observed_tpm": 31501774,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 184.0003451,
+      "at_sec": 184.0004453,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 17717,
-        "observed_tpm": 29337984,
+        "observed_rpm": 18343,
+        "observed_tpm": 32385265,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 185.0008977,
+      "at_sec": 185.0001536,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 17964,
-        "observed_tpm": 29707058,
+        "observed_rpm": 18699,
+        "observed_tpm": 32992388,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 186.0003824,
+      "at_sec": 186.0001882,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 18125,
-        "observed_tpm": 29928258,
+        "observed_rpm": 18774,
+        "observed_tpm": 33103349,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 187.0004987,
+      "at_sec": 187.0004307,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 18494,
-        "observed_tpm": 30556885,
+        "observed_rpm": 19208,
+        "observed_tpm": 33862670,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 188.0003197,
+      "at_sec": 188.0002924,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 18959,
-        "observed_tpm": 31406156,
+        "observed_rpm": 19642,
+        "observed_tpm": 34610097,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 189.0010499,
+      "at_sec": 189.000212,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 19373,
-        "observed_tpm": 32123893,
+        "observed_rpm": 20027,
+        "observed_tpm": 35260490,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 190.0004247,
+      "at_sec": 190.0002269,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 19787,
-        "observed_tpm": 32850665,
+        "observed_rpm": 20467,
+        "observed_tpm": 36019476,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 191.001639,
+      "at_sec": 191.0002603,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 20150,
-        "observed_tpm": 33497615,
+        "observed_rpm": 20871,
+        "observed_tpm": 36717593,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 192.0007686,
+      "at_sec": 192.0003561,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 20593,
-        "observed_tpm": 34278231,
+        "observed_rpm": 21289,
+        "observed_tpm": 37447756,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 193.001266,
+      "at_sec": 193.0000674,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 21032,
-        "observed_tpm": 35042339,
+        "observed_rpm": 21680,
+        "observed_tpm": 38123690,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 194.0006907,
+      "at_sec": 194.0000137,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 21469,
-        "observed_tpm": 35816666,
+        "observed_rpm": 22135,
+        "observed_tpm": 38937111,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 195.0001988,
+      "at_sec": 195.0001905,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 21840,
-        "observed_tpm": 36467559,
+        "observed_rpm": 22555,
+        "observed_tpm": 39651728,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 196.0000933,
+      "at_sec": 196.0003099,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 22287,
-        "observed_tpm": 37263580,
+        "observed_rpm": 23001,
+        "observed_tpm": 40415663,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 197.0010608,
+      "at_sec": 197.0001588,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 22703,
-        "observed_tpm": 37997341,
+        "observed_rpm": 23408,
+        "observed_tpm": 41135407,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 198.0003618,
+      "at_sec": 198.0002401,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 23098,
-        "observed_tpm": 38686214,
+        "observed_rpm": 23782,
+        "observed_tpm": 41789299,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 199.0009615,
+      "at_sec": 199.0004768,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 23485,
-        "observed_tpm": 39362375,
+        "observed_rpm": 24280,
+        "observed_tpm": 42657248,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 200.0008515,
+      "at_sec": 200.0000706,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 23953,
-        "observed_tpm": 40161144,
+        "observed_rpm": 24671,
+        "observed_tpm": 43332662,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 201.0003689,
+      "at_sec": 201.0004,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 24350,
-        "observed_tpm": 40858862,
+        "observed_rpm": 25077,
+        "observed_tpm": 44045679,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 202.0007146,
+      "at_sec": 202.00004,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 24790,
-        "observed_tpm": 41645186,
+        "observed_rpm": 25527,
+        "observed_tpm": 44829325,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 203.0004727,
+      "at_sec": 203.000268,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 25233,
-        "observed_tpm": 42423156,
+        "observed_rpm": 25836,
+        "observed_tpm": 45358275,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 204.000111,
+      "at_sec": 204.0005178,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 25628,
-        "observed_tpm": 43107971,
+        "observed_rpm": 26342,
+        "observed_tpm": 46290151,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 205.0003534,
+      "at_sec": 205.0001627,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 26064,
-        "observed_tpm": 43876229,
+        "observed_rpm": 26780,
+        "observed_tpm": 47064007,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 206.0001677,
+      "at_sec": 206.0000273,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 26473,
-        "observed_tpm": 44587048,
+        "observed_rpm": 27198,
+        "observed_tpm": 47780616,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 207.000374,
+      "at_sec": 207.0000598,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 26900,
-        "observed_tpm": 45330493,
+        "observed_rpm": 27595,
+        "observed_tpm": 48460701,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 208.0007563,
+      "at_sec": 208.0002749,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 27310,
-        "observed_tpm": 46054241,
+        "observed_rpm": 28014,
+        "observed_tpm": 49195156,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 209.0001955,
+      "at_sec": 209.0001639,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 27709,
-        "observed_tpm": 46769311,
+        "observed_rpm": 28486,
+        "observed_tpm": 50009405,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 210.0004869,
+      "at_sec": 210.0003974,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 28068,
-        "observed_tpm": 47397106,
+        "observed_rpm": 28865,
+        "observed_tpm": 50678230,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 211.0000278,
+      "at_sec": 211.0008731,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 28555,
-        "observed_tpm": 48239751,
+        "observed_rpm": 29292,
+        "observed_tpm": 51484901,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 212.0003102,
+      "at_sec": 212.0004787,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 28935,
-        "observed_tpm": 48893924,
+        "observed_rpm": 29429,
+        "observed_tpm": 51721348,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 213.0008141,
+      "at_sec": 213.0006464,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 29243,
-        "observed_tpm": 49399368,
+        "observed_rpm": 29356,
+        "observed_tpm": 51522437,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 214.0006308,
+      "at_sec": 214.0000847,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 29213,
-        "observed_tpm": 49276723,
+        "observed_rpm": 29440,
+        "observed_tpm": 51671936,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 215.0002249,
+      "at_sec": 215.0005473,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 29226,
-        "observed_tpm": 49268719,
+        "observed_rpm": 29409,
+        "observed_tpm": 51623641,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 216.0000122,
+      "at_sec": 216.0003858,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 29221,
-        "observed_tpm": 49156588,
+        "observed_rpm": 29426,
+        "observed_tpm": 51632747,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 217.0005181,
+      "at_sec": 217.0003722,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 29212,
-        "observed_tpm": 49041994,
+        "observed_rpm": 29163,
+        "observed_tpm": 51186208,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 218.0010636,
+      "at_sec": 218.0004931,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 29224,
-        "observed_tpm": 48999707,
+        "observed_rpm": 29419,
+        "observed_tpm": 51721621,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 219.0002912,
+      "at_sec": 219.0004641,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 29274,
-        "observed_tpm": 49016854,
+        "observed_rpm": 29420,
+        "observed_tpm": 51709799,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 220.0000972,
+      "at_sec": 220.0011003,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 29387,
-        "observed_tpm": 49178928,
+        "observed_rpm": 29695,
+        "observed_tpm": 52194264,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 221.0005224,
+      "at_sec": 221.0000221,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 29380,
-        "observed_tpm": 49097293,
+        "observed_rpm": 30000,
+        "observed_tpm": 52759192,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 222.0002214,
+      "at_sec": 222.0002205,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 29404,
-        "observed_tpm": 49083892,
+        "observed_rpm": 30000,
+        "observed_tpm": 52725108,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 223.0002692,
+      "at_sec": 223.000504,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 29511,
-        "observed_tpm": 49207361,
+        "observed_rpm": 30000,
+        "observed_tpm": 52707738,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 224.000273,
+      "at_sec": 224.0004403,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 29370,
-        "observed_tpm": 48861716,
+        "observed_rpm": 29482,
+        "observed_tpm": 51892195,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 225.0004349,
+      "at_sec": 225.0004876,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 29400,
-        "observed_tpm": 48865815,
+        "observed_rpm": 29519,
+        "observed_tpm": 51972598,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 226.0003494,
+      "at_sec": 226.0002461,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 29334,
-        "observed_tpm": 48663637,
+        "observed_rpm": 29538,
+        "observed_tpm": 52017904,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 227.0004975,
+      "at_sec": 227.0010561,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 29330,
-        "observed_tpm": 48575354,
+        "observed_rpm": 29287,
+        "observed_tpm": 51519835,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 228.0003787,
+      "at_sec": 228.0000965,
       "phase": "p3",
       "model": "model-a",
       "sample": {
-        "observed_rpm": 29357,
-        "observed_tpm": 48546250,
+        "observed_rpm": 28849,
+        "observed_tpm": 50628233,
         "configured_rpm": 30000,
         "configured_tpm": 60000000
       }
     },
     {
-      "at_sec": 229.000024,
-      "phase": "p3",
-      "model": "model-a",
+      "at_sec": 1.0008714,
+      "phase": "p1",
+      "model": "model-b",
       "sample": {
-        "observed_rpm": 28911,
-        "observed_tpm": 47566309,
-        "configured_rpm": 30000,
-        "configured_tpm": 60000000
+        "observed_rpm": 107,
+        "observed_tpm": 188029,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 230.0015409,
-      "phase": "p3",
-      "model": "model-a",
+      "at_sec": 2.0000334,
+      "phase": "p1",
+      "model": "model-b",
       "sample": {
-        "observed_rpm": 28436,
-        "observed_tpm": 46542807,
-        "configured_rpm": 30000,
-        "configured_tpm": 60000000
+        "observed_rpm": 650,
+        "observed_tpm": 1202746,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 231.0000855,
-      "phase": "p3",
-      "model": "model-a",
+      "at_sec": 3.0004096,
+      "phase": "p1",
+      "model": "model-b",
       "sample": {
-        "observed_rpm": 27945,
-        "observed_tpm": 45496892,
-        "configured_rpm": 30000,
-        "configured_tpm": 60000000
+        "observed_rpm": 988,
+        "observed_tpm": 1756869,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 232.0002868,
-      "phase": "p3",
-      "model": "model-a",
+      "at_sec": 4.000292,
+      "phase": "p1",
+      "model": "model-b",
       "sample": {
-        "observed_rpm": 27539,
-        "observed_tpm": 44583286,
-        "configured_rpm": 30000,
-        "configured_tpm": 60000000
+        "observed_rpm": 1326,
+        "observed_tpm": 2340742,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 233.0004543,
-      "phase": "p3",
-      "model": "model-a",
+      "at_sec": 5.0002969,
+      "phase": "p1",
+      "model": "model-b",
       "sample": {
-        "observed_rpm": 27122,
-        "observed_tpm": 43666464,
-        "configured_rpm": 30000,
-        "configured_tpm": 60000000
+        "observed_rpm": 1690,
+        "observed_tpm": 2969353,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 6.0000555,
+      "phase": "p1",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 2015,
+        "observed_tpm": 3559990,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 7.0002394,
+      "phase": "p1",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 2333,
+        "observed_tpm": 4124857,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 8.0004156,
+      "phase": "p1",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 2679,
+        "observed_tpm": 4771962,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 1.0010238,
+      "at_sec": 9.0002088,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 323,
-        "observed_tpm": 587333,
+        "observed_rpm": 3030,
+        "observed_tpm": 5352170,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 2.0001995,
+      "at_sec": 10.0002509,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 658,
-        "observed_tpm": 1181171,
+        "observed_rpm": 3249,
+        "observed_tpm": 5725870,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 3.0005139,
+      "at_sec": 11.0000237,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 984,
-        "observed_tpm": 1746460,
+        "observed_rpm": 3725,
+        "observed_tpm": 6581427,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 4.0017407,
+      "at_sec": 12.0004443,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 1318,
-        "observed_tpm": 2343973,
+        "observed_rpm": 4051,
+        "observed_tpm": 7140537,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 5.0004107,
+      "at_sec": 13.000035,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 1678,
-        "observed_tpm": 2985520,
+        "observed_rpm": 4350,
+        "observed_tpm": 7658512,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 6.0007611,
+      "at_sec": 14.0003918,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 1959,
-        "observed_tpm": 3473338,
+        "observed_rpm": 4723,
+        "observed_tpm": 8333870,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 7.0007456,
+      "at_sec": 15.0004557,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 2300,
-        "observed_tpm": 4122086,
+        "observed_rpm": 5053,
+        "observed_tpm": 8928435,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 8.0001054,
+      "at_sec": 16.0002981,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 2681,
-        "observed_tpm": 4779533,
+        "observed_rpm": 5393,
+        "observed_tpm": 9499765,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 9.0005302,
+      "at_sec": 17.0001695,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 3029,
-        "observed_tpm": 5365498,
+        "observed_rpm": 5703,
+        "observed_tpm": 10033016,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 10.0001309,
+      "at_sec": 18.0004867,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 3433,
-        "observed_tpm": 6048621,
+        "observed_rpm": 6059,
+        "observed_tpm": 10665953,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 11.0009137,
+      "at_sec": 19.00046,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 3733,
-        "observed_tpm": 6581980,
+        "observed_rpm": 6390,
+        "observed_tpm": 11252815,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 12.0002572,
+      "at_sec": 20.0009044,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 4054,
-        "observed_tpm": 7153760,
+        "observed_rpm": 6747,
+        "observed_tpm": 11859874,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 13.0001135,
+      "at_sec": 21.0000649,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 4381,
-        "observed_tpm": 7743582,
+        "observed_rpm": 7070,
+        "observed_tpm": 12418634,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 14.0000758,
+      "at_sec": 22.0001737,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 4728,
-        "observed_tpm": 8353971,
+        "observed_rpm": 7272,
+        "observed_tpm": 12767812,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 15.0004548,
+      "at_sec": 23.0000437,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 5068,
-        "observed_tpm": 8926660,
+        "observed_rpm": 7393,
+        "observed_tpm": 12982628,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 16.0001644,
+      "at_sec": 24.0001684,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 5394,
-        "observed_tpm": 9499946,
+        "observed_rpm": 8044,
+        "observed_tpm": 14221604,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 17.0038893,
+      "at_sec": 25.0002229,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 5736,
-        "observed_tpm": 10098644,
+        "observed_rpm": 8388,
+        "observed_tpm": 14807915,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 18.0001796,
+      "at_sec": 26.0003771,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 6070,
-        "observed_tpm": 10666453,
+        "observed_rpm": 8728,
+        "observed_tpm": 15396554,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 19.0002228,
+      "at_sec": 27.0003887,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 6402,
-        "observed_tpm": 11244576,
+        "observed_rpm": 9066,
+        "observed_tpm": 15975090,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 20.001018,
+      "at_sec": 28.0002012,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 6766,
-        "observed_tpm": 11892698,
+        "observed_rpm": 9396,
+        "observed_tpm": 16543679,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 21.0000601,
+      "at_sec": 29.0002382,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 7069,
-        "observed_tpm": 12411422,
+        "observed_rpm": 9729,
+        "observed_tpm": 17111058,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 22.0061012,
+      "at_sec": 30.0004897,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 7363,
-        "observed_tpm": 12948518,
+        "observed_rpm": 10025,
+        "observed_tpm": 17639535,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 23.0014215,
+      "at_sec": 31.0000176,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 7728,
-        "observed_tpm": 13597238,
+        "observed_rpm": 10375,
+        "observed_tpm": 18235911,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 24.0004131,
+      "at_sec": 32.0004667,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 8059,
-        "observed_tpm": 14177992,
+        "observed_rpm": 10498,
+        "observed_tpm": 18452853,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 25.0005388,
+      "at_sec": 33.000015,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 8401,
-        "observed_tpm": 14774105,
+        "observed_rpm": 10999,
+        "observed_tpm": 19405018,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 26.000085,
+      "at_sec": 34.0002555,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 8744,
-        "observed_tpm": 15353747,
+        "observed_rpm": 11376,
+        "observed_tpm": 20058314,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 27.0003547,
+      "at_sec": 35.0004307,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 9083,
-        "observed_tpm": 15957370,
+        "observed_rpm": 11724,
+        "observed_tpm": 20681161,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 28.0003736,
+      "at_sec": 36.000461,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 9419,
-        "observed_tpm": 16536983,
+        "observed_rpm": 12029,
+        "observed_tpm": 21187030,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 29.0003227,
+      "at_sec": 37.0002451,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 9746,
-        "observed_tpm": 17108901,
+        "observed_rpm": 12385,
+        "observed_tpm": 21786003,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 30.0007338,
+      "at_sec": 38.0000175,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 9909,
-        "observed_tpm": 17376454,
+        "observed_rpm": 12606,
+        "observed_tpm": 22155010,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 31.0001577,
+      "at_sec": 39.0002057,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 10030,
-        "observed_tpm": 17586663,
+        "observed_rpm": 13026,
+        "observed_tpm": 22894013,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 32.0004638,
+      "at_sec": 40.0001632,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 10192,
-        "observed_tpm": 17868757,
+        "observed_rpm": 13351,
+        "observed_tpm": 23463961,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 33.001132,
+      "at_sec": 41.0003482,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 10888,
-        "observed_tpm": 19211057,
+        "observed_rpm": 13675,
+        "observed_tpm": 24037199,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 34.0009979,
+      "at_sec": 42.0005138,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 11309,
-        "observed_tpm": 19992310,
+        "observed_rpm": 14015,
+        "observed_tpm": 24642113,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 35.0010785,
+      "at_sec": 43.0004874,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 11730,
-        "observed_tpm": 20760680,
+        "observed_rpm": 14258,
+        "observed_tpm": 25054788,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 36.0003053,
+      "at_sec": 44.0003713,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 12030,
-        "observed_tpm": 21289519,
+        "observed_rpm": 14618,
+        "observed_tpm": 25705829,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 37.0002651,
+      "at_sec": 45.0002254,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 12375,
-        "observed_tpm": 21896861,
+        "observed_rpm": 14979,
+        "observed_tpm": 26336217,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 38.0004239,
+      "at_sec": 46.0001127,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 12705,
-        "observed_tpm": 22475973,
+        "observed_rpm": 15296,
+        "observed_tpm": 26885307,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 39.0005233,
+      "at_sec": 47.0004021,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 13011,
-        "observed_tpm": 23014778,
+        "observed_rpm": 15607,
+        "observed_tpm": 27475220,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 40.0002866,
+      "at_sec": 48.0003835,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 13335,
-        "observed_tpm": 23593216,
+        "observed_rpm": 15936,
+        "observed_tpm": 28041846,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 41.0006715,
+      "at_sec": 49.0001894,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 13616,
-        "observed_tpm": 24078397,
+        "observed_rpm": 16290,
+        "observed_tpm": 28636141,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 42.0004921,
+      "at_sec": 50.0005007,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 14008,
-        "observed_tpm": 24772495,
+        "observed_rpm": 16596,
+        "observed_tpm": 29168772,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 43.0002048,
+      "at_sec": 51.0000331,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 14321,
-        "observed_tpm": 25324228,
+        "observed_rpm": 16752,
+        "observed_tpm": 29436407,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 44.0000643,
+      "at_sec": 52.0005177,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 14602,
-        "observed_tpm": 25816623,
+        "observed_rpm": 17216,
+        "observed_tpm": 30288892,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 45.0002411,
+      "at_sec": 53.0000161,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 14966,
-        "observed_tpm": 26455052,
+        "observed_rpm": 17544,
+        "observed_tpm": 30858570,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 46.0002144,
+      "at_sec": 54.0001078,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 15285,
-        "observed_tpm": 27018568,
+        "observed_rpm": 17880,
+        "observed_tpm": 31446627,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 47.0005475,
+      "at_sec": 55.000005,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 15611,
-        "observed_tpm": 27572941,
+        "observed_rpm": 18170,
+        "observed_tpm": 31941758,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 48.0000421,
+      "at_sec": 56.0000737,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 15945,
-        "observed_tpm": 28143083,
+        "observed_rpm": 18503,
+        "observed_tpm": 32541336,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 49.0005079,
+      "at_sec": 57.0008375,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 16292,
-        "observed_tpm": 28747972,
+        "observed_rpm": 18850,
+        "observed_tpm": 33142272,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 50.00035,
+      "at_sec": 58.0003743,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 16565,
-        "observed_tpm": 29203234,
+        "observed_rpm": 19187,
+        "observed_tpm": 33726449,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 51.0005959,
+      "at_sec": 59.0005565,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 16899,
-        "observed_tpm": 29801497,
+        "observed_rpm": 19243,
+        "observed_tpm": 33811027,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 52.0006337,
+      "at_sec": 60.0000792,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 17220,
-        "observed_tpm": 30381543,
+        "observed_rpm": 19348,
+        "observed_tpm": 34005551,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 53.0001463,
+      "at_sec": 61.0004264,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 17535,
-        "observed_tpm": 30922581,
+        "observed_rpm": 19338,
+        "observed_tpm": 33987179,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 54.0007673,
+      "at_sec": 62.0004929,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 17844,
-        "observed_tpm": 31474509,
+        "observed_rpm": 19123,
+        "observed_tpm": 33644554,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 55.0010271,
+      "at_sec": 63.0001383,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 18169,
-        "observed_tpm": 32057812,
+        "observed_rpm": 19727,
+        "observed_tpm": 34870258,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 56.0001254,
+      "at_sec": 64.0002587,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 18522,
-        "observed_tpm": 32696763,
+        "observed_rpm": 19691,
+        "observed_tpm": 34805306,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 57.0007489,
+      "at_sec": 65.0001562,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 18831,
-        "observed_tpm": 33238680,
+        "observed_rpm": 19724,
+        "observed_tpm": 34855530,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 58.0003812,
+      "at_sec": 66.0002065,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 19159,
-        "observed_tpm": 33828314,
+        "observed_rpm": 19628,
+        "observed_tpm": 34618440,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 59.0004032,
+      "at_sec": 67.0001951,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 19505,
-        "observed_tpm": 34442509,
+        "observed_rpm": 19802,
+        "observed_tpm": 34930074,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 60.0001315,
+      "at_sec": 68.0004823,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 19748,
-        "observed_tpm": 34862620,
+        "observed_rpm": 19668,
+        "observed_tpm": 34663151,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 61.0002545,
+      "at_sec": 69.0006809,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 19772,
-        "observed_tpm": 34848111,
+        "observed_rpm": 19640,
+        "observed_tpm": 34615394,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 62.0004944,
+      "at_sec": 70.0007503,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 19638,
-        "observed_tpm": 34528171,
+        "observed_rpm": 19611,
+        "observed_tpm": 34543569,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 63.000288,
+      "at_sec": 71.0004551,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 19699,
-        "observed_tpm": 34591561,
+        "observed_rpm": 19594,
+        "observed_tpm": 34495177,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 64.0004087,
+      "at_sec": 72.0002613,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 19716,
-        "observed_tpm": 34563749,
+        "observed_rpm": 19614,
+        "observed_tpm": 34543467,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 65.0009378,
+      "at_sec": 73.0003189,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 19683,
-        "observed_tpm": 34446369,
+        "observed_rpm": 19655,
+        "observed_tpm": 34592746,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 66.0001572,
+      "at_sec": 74.0010198,
       "phase": "p1",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 19825,
-        "observed_tpm": 34659157,
+        "observed_rpm": 19630,
+        "observed_tpm": 34510678,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 67.0001806,
+      "at_sec": 75.0003442,
       "phase": "p1",
       "model": "model-b",
       "sample": {
         "observed_rpm": 19679,
-        "observed_tpm": 34309270,
+        "observed_tpm": 34594142,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 68.0003886,
-      "phase": "p1",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19629,
-        "observed_tpm": 34194910,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 69.0004909,
-      "phase": "p1",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19610,
-        "observed_tpm": 34115646,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 70.0004884,
-      "phase": "p1",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19609,
-        "observed_tpm": 34085870,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 71.0005136,
-      "phase": "p1",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19577,
-        "observed_tpm": 33963684,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 72.0003468,
-      "phase": "p1",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19590,
-        "observed_tpm": 33931196,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 73.0003264,
-      "phase": "p1",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19662,
-        "observed_tpm": 34033109,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 74.0002551,
-      "phase": "p1",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19601,
-        "observed_tpm": 33878986,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 75.000279,
-      "phase": "p1",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19644,
-        "observed_tpm": 33929571,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 76.0006755,
-      "phase": "p1",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19307,
-        "observed_tpm": 33211429,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 77.0008154,
-      "phase": "p1",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18987,
-        "observed_tpm": 32512340,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 78.0001156,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18847,
-        "observed_tpm": 32236098,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 79.0004005,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18825,
-        "observed_tpm": 32150130,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 80.0006374,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18799,
-        "observed_tpm": 32038001,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 81.0014647,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18916,
-        "observed_tpm": 32221350,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 82.000382,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18808,
-        "observed_tpm": 31948739,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 83.0004421,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18812,
-        "observed_tpm": 31902862,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 84.0005226,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18828,
-        "observed_tpm": 31891809,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 85.0003587,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18733,
-        "observed_tpm": 31691662,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 86.0004376,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18823,
-        "observed_tpm": 31813940,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 87.0008367,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18793,
-        "observed_tpm": 31710915,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 88.0010117,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18814,
-        "observed_tpm": 31693327,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 89.0006348,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18843,
-        "observed_tpm": 31682797,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 90.0007635,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19083,
-        "observed_tpm": 32111436,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 91.0010847,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19299,
-        "observed_tpm": 32477181,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 92.000264,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19438,
-        "observed_tpm": 32682787,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 93.000968,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18847,
-        "observed_tpm": 31440510,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 94.0005781,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18827,
-        "observed_tpm": 31364513,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 95.0024597,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18904,
-        "observed_tpm": 31414888,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 96.0004071,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18962,
-        "observed_tpm": 31491770,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 97.000135,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18898,
-        "observed_tpm": 31309446,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 98.0003186,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18861,
-        "observed_tpm": 31190578,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 99.0005411,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18893,
-        "observed_tpm": 31204694,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 100.0000964,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18886,
-        "observed_tpm": 31123532,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 101.0006704,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18873,
-        "observed_tpm": 31061042,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 102.0002983,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18885,
-        "observed_tpm": 31052617,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 103.0010038,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18885,
-        "observed_tpm": 31007150,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 104.0004535,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18915,
-        "observed_tpm": 31025219,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 105.0007932,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18877,
-        "observed_tpm": 30898587,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 106.0007551,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18858,
-        "observed_tpm": 30808999,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 107.0005047,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18926,
-        "observed_tpm": 30903199,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 108.0004466,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18934,
-        "observed_tpm": 30892493,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 109.0001305,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18891,
-        "observed_tpm": 30781016,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 110.000699,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18913,
-        "observed_tpm": 30789972,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 111.0005322,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18944,
-        "observed_tpm": 30772744,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 112.0008556,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18937,
-        "observed_tpm": 30704467,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 113.0003273,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18980,
-        "observed_tpm": 30737079,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 114.0008467,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18735,
-        "observed_tpm": 30232506,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 115.0002998,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18803,
-        "observed_tpm": 30299381,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 116.0003904,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18867,
-        "observed_tpm": 30410353,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 117.0002026,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18990,
-        "observed_tpm": 30548702,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 118.0030078,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18998,
-        "observed_tpm": 30509002,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 119.0006803,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18981,
-        "observed_tpm": 30429460,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 120.0004234,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18979,
-        "observed_tpm": 30361814,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 121.0003922,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18940,
-        "observed_tpm": 30243189,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 122.0004976,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18973,
-        "observed_tpm": 30258046,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 123.0003603,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18964,
-        "observed_tpm": 30204518,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 124.0000824,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18990,
-        "observed_tpm": 30176842,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 125.0003043,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18994,
-        "observed_tpm": 30156088,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 126.0005019,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18960,
-        "observed_tpm": 30053165,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 127.0005416,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18990,
-        "observed_tpm": 30068032,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 128.0005742,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18994,
-        "observed_tpm": 30038897,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 129.0004768,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19009,
-        "observed_tpm": 30020500,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 130.0008831,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19003,
-        "observed_tpm": 29958464,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 131.0002356,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18992,
-        "observed_tpm": 29885554,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 132.0002055,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18997,
-        "observed_tpm": 29865655,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 133.0005807,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18942,
-        "observed_tpm": 29683787,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 134.0004817,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18941,
-        "observed_tpm": 29624695,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 135.0003887,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 18981,
-        "observed_tpm": 29689125,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 136.0000728,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19438,
-        "observed_tpm": 30534410,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 137.0005008,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19722,
-        "observed_tpm": 31039225,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 138.0005451,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19710,
-        "observed_tpm": 30970016,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 139.0001866,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19759,
-        "observed_tpm": 30999674,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 140.0010711,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19697,
-        "observed_tpm": 30812903,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 141.0004463,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19767,
-        "observed_tpm": 30905262,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 142.0001441,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19686,
-        "observed_tpm": 30727137,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 143.0007795,
-      "phase": "p2",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19704,
-        "observed_tpm": 30688824,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 144.0004556,
+      "at_sec": 76.0002017,
       "phase": "p2",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 19746,
-        "observed_tpm": 30722759,
+        "observed_rpm": 19393,
+        "observed_tpm": 34071759,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 145.0004639,
+      "at_sec": 77.0002098,
       "phase": "p2",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 19822,
-        "observed_tpm": 30829601,
+        "observed_rpm": 19356,
+        "observed_tpm": 33989825,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 146.0003576,
+      "at_sec": 78.0003005,
       "phase": "p2",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 19782,
-        "observed_tpm": 30689384,
+        "observed_rpm": 19435,
+        "observed_tpm": 34140193,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 147.0010863,
+      "at_sec": 79.0005088,
       "phase": "p2",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 19788,
-        "observed_tpm": 30639863,
+        "observed_rpm": 19381,
+        "observed_tpm": 34045269,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 148.0005313,
+      "at_sec": 80.0003793,
       "phase": "p2",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 19732,
-        "observed_tpm": 30498971,
+        "observed_rpm": 19367,
+        "observed_tpm": 34021833,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 149.0003903,
+      "at_sec": 81.0001863,
       "phase": "p2",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 19716,
-        "observed_tpm": 30441607,
+        "observed_rpm": 19337,
+        "observed_tpm": 33979036,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 150.0003929,
+      "at_sec": 82.0002931,
       "phase": "p2",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 19756,
-        "observed_tpm": 30467187,
+        "observed_rpm": 19485,
+        "observed_tpm": 34245958,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 151.0008574,
+      "at_sec": 83.0002678,
       "phase": "p2",
       "model": "model-b",
       "sample": {
         "observed_rpm": 19760,
-        "observed_tpm": 30433809,
+        "observed_tpm": 34731046,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 152.007187,
+      "at_sec": 84.0003508,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19384,
+        "observed_tpm": 34035984,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 85.0002329,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19383,
+        "observed_tpm": 34025173,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 86.000035,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19372,
+        "observed_tpm": 34022094,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 87.0007877,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19376,
+        "observed_tpm": 34024325,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 88.0003575,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19402,
+        "observed_tpm": 34081213,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 89.000123,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19355,
+        "observed_tpm": 34006731,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 90.000434,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19309,
+        "observed_tpm": 33908683,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 91.0003736,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19166,
+        "observed_tpm": 33665043,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 92.0004822,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19450,
+        "observed_tpm": 34166585,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 93.0000847,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19392,
+        "observed_tpm": 34060905,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 94.0007608,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19416,
+        "observed_tpm": 34080740,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 95.0007354,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19374,
+        "observed_tpm": 33992424,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 96.0003958,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19412,
+        "observed_tpm": 34082297,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 97.0004336,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19378,
+        "observed_tpm": 34042515,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 98.0004423,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19389,
+        "observed_tpm": 34073003,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 99.0004429,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19363,
+        "observed_tpm": 34045604,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 100.0008635,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19279,
+        "observed_tpm": 33875148,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 101.000231,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19365,
+        "observed_tpm": 34051928,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 102.0004127,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19353,
+        "observed_tpm": 34027905,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 103.0000284,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19387,
+        "observed_tpm": 34078187,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 104.0004451,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19433,
+        "observed_tpm": 34159129,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 105.0005423,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19405,
+        "observed_tpm": 34102731,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 106.000295,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19426,
+        "observed_tpm": 34133560,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 107.0001124,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19443,
+        "observed_tpm": 34155281,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 108.0000842,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19433,
+        "observed_tpm": 34147554,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 109.0004185,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19438,
+        "observed_tpm": 34150943,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 110.0000026,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19507,
+        "observed_tpm": 34271088,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 111.0014596,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19494,
+        "observed_tpm": 34231493,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 112.0004944,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19462,
+        "observed_tpm": 34160344,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 113.0000067,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19500,
+        "observed_tpm": 34231516,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 114.0004948,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19493,
+        "observed_tpm": 34204124,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 115.0004049,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19513,
+        "observed_tpm": 34229127,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 116.0001845,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19524,
+        "observed_tpm": 34254409,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 117.000471,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19409,
+        "observed_tpm": 34056361,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 118.0001474,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19597,
+        "observed_tpm": 34408719,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 119.0000762,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19813,
+        "observed_tpm": 34796489,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 120.0001147,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19997,
+        "observed_tpm": 35127548,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 121.000565,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 20000,
+        "observed_tpm": 35142853,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 122.0006766,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19894,
+        "observed_tpm": 34901266,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 123.0002245,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19510,
+        "observed_tpm": 34193521,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 124.0003145,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19457,
+        "observed_tpm": 34110104,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 125.0009065,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19514,
+        "observed_tpm": 34208725,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 126.0000103,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19507,
+        "observed_tpm": 34210278,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 127.0000457,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19528,
+        "observed_tpm": 34247999,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 128.0002485,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19506,
+        "observed_tpm": 34213590,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 129.000376,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19517,
+        "observed_tpm": 34250601,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 130.0000312,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19475,
+        "observed_tpm": 34180913,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 131.0001505,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19490,
+        "observed_tpm": 34216765,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 132.0003634,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19246,
+        "observed_tpm": 33782254,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 133.0003266,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19515,
+        "observed_tpm": 34259228,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 134.0004142,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19467,
+        "observed_tpm": 34186342,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 135.0004625,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19521,
+        "observed_tpm": 34281224,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 136.0001406,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19755,
+        "observed_tpm": 34706803,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 137.0005081,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19752,
+        "observed_tpm": 34707172,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 138.0000825,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19706,
+        "observed_tpm": 34616387,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 139.0000472,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19627,
+        "observed_tpm": 34489565,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 140.0003889,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19703,
+        "observed_tpm": 34647190,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 141.000402,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19772,
+        "observed_tpm": 34756628,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 142.0002235,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19807,
+        "observed_tpm": 34838178,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 143.0003331,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19774,
+        "observed_tpm": 34773888,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 144.0001502,
       "phase": "p2",
       "model": "model-b",
       "sample": {
         "observed_rpm": 19753,
-        "observed_tpm": 30390782,
+        "observed_tpm": 34751004,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 153.0004546,
+      "at_sec": 145.0000364,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19722,
+        "observed_tpm": 34665792,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 146.0003835,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19760,
+        "observed_tpm": 34740919,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 147.0001946,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19748,
+        "observed_tpm": 34738367,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 148.0000679,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19735,
+        "observed_tpm": 34697233,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 149.0004473,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19711,
+        "observed_tpm": 34645587,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 150.0003745,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19918,
+        "observed_tpm": 35014047,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 151.0000595,
+      "phase": "p2",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19940,
+        "observed_tpm": 35065357,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 152.0002324,
       "phase": "p3",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 19650,
-        "observed_tpm": 30158995,
+        "observed_rpm": 19611,
+        "observed_tpm": 34480625,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 154.0084403,
+      "at_sec": 153.0000509,
       "phase": "p3",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 19543,
-        "observed_tpm": 29944323,
+        "observed_rpm": 19478,
+        "observed_tpm": 34272591,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 155.0000678,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19532,
-        "observed_tpm": 29886865,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 156.0010646,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19584,
-        "observed_tpm": 29925494,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 157.0003269,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19504,
-        "observed_tpm": 29747524,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 158.0004583,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19585,
-        "observed_tpm": 29859087,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 159.0006952,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19575,
-        "observed_tpm": 29832715,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 160.0004516,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19615,
-        "observed_tpm": 29877967,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 161.0008203,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19570,
-        "observed_tpm": 29742655,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 162.0014784,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19579,
-        "observed_tpm": 29707976,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 163.0009148,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19630,
-        "observed_tpm": 29789856,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 164.0005241,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19658,
-        "observed_tpm": 29820821,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 165.0002683,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19663,
-        "observed_tpm": 29758418,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 166.0004938,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19636,
-        "observed_tpm": 29652132,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 167.0001094,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19655,
-        "observed_tpm": 29631557,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 168.0004469,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19675,
-        "observed_tpm": 29619724,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 169.0001726,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19718,
-        "observed_tpm": 29658959,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 170.0005068,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19651,
-        "observed_tpm": 29479247,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 171.0000222,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19666,
-        "observed_tpm": 29456126,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 172.0000664,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19699,
-        "observed_tpm": 29483171,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 173.0002003,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19780,
-        "observed_tpm": 29600841,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 174.0000293,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19887,
-        "observed_tpm": 29772923,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 175.0011247,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 20000,
-        "observed_tpm": 29933085,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 176.0005236,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19677,
-        "observed_tpm": 29286880,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 177.0002083,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19746,
-        "observed_tpm": 29381260,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 178.0006673,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19682,
-        "observed_tpm": 29220602,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 179.0010648,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19674,
-        "observed_tpm": 29163502,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 180.0006129,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19649,
-        "observed_tpm": 29095854,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 181.0003703,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19694,
-        "observed_tpm": 29161364,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 182.0004255,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19700,
-        "observed_tpm": 29143632,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 183.0003841,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19668,
-        "observed_tpm": 29031285,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 184.0008638,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19666,
-        "observed_tpm": 28994028,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 185.0003658,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19684,
-        "observed_tpm": 28995503,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 186.0003824,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19713,
-        "observed_tpm": 29001435,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 187.0010534,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19640,
-        "observed_tpm": 28807713,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 188.0003197,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19681,
-        "observed_tpm": 28852149,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 189.0010499,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19677,
-        "observed_tpm": 28799170,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 190.0004247,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19686,
-        "observed_tpm": 28793561,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 191.0011345,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19672,
-        "observed_tpm": 28716444,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 192.0007686,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19594,
-        "observed_tpm": 28545851,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 193.001266,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19628,
-        "observed_tpm": 28559032,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 194.0006907,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19648,
-        "observed_tpm": 28543266,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 195.0001988,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19651,
-        "observed_tpm": 28506405,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 196.0000933,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19633,
-        "observed_tpm": 28432949,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 197.0005194,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19581,
-        "observed_tpm": 28306330,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 198.0003618,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19631,
-        "observed_tpm": 28358838,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 199.0004314,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19530,
-        "observed_tpm": 28128769,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 200.0008515,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19602,
-        "observed_tpm": 28229586,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 201.0009454,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19564,
-        "observed_tpm": 28113381,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 202.0001795,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19555,
-        "observed_tpm": 28077032,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 203.0004727,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19563,
-        "observed_tpm": 28045261,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 204.0006518,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19624,
-        "observed_tpm": 28110342,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 205.0003534,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19516,
-        "observed_tpm": 27871332,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 206.0001677,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19521,
-        "observed_tpm": 27826258,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 207.000374,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19524,
-        "observed_tpm": 27787663,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 208.0007563,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19491,
-        "observed_tpm": 27683545,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 209.0001955,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19506,
-        "observed_tpm": 27665199,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 210.0004869,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19476,
-        "observed_tpm": 27553902,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 211.0000278,
+      "at_sec": 154.0003985,
       "phase": "p3",
       "model": "model-b",
       "sample": {
         "observed_rpm": 19523,
-        "observed_tpm": 27589947,
+        "observed_tpm": 34369948,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 212.0003102,
+      "at_sec": 155.0002501,
       "phase": "p3",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 19502,
-        "observed_tpm": 27514751,
+        "observed_rpm": 19562,
+        "observed_tpm": 34442016,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 213.0008141,
+      "at_sec": 156.0003587,
       "phase": "p3",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 19712,
-        "observed_tpm": 27858117,
+        "observed_rpm": 19543,
+        "observed_tpm": 34409267,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 214.0006308,
+      "at_sec": 157.0005916,
       "phase": "p3",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 19686,
-        "observed_tpm": 27761765,
+        "observed_rpm": 19587,
+        "observed_tpm": 34462005,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 215.0002249,
+      "at_sec": 158.0004883,
       "phase": "p3",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 19630,
-        "observed_tpm": 27635311,
+        "observed_rpm": 19612,
+        "observed_tpm": 34485881,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 216.0000122,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19680,
-        "observed_tpm": 27661362,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 217.0005181,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19628,
-        "observed_tpm": 27518642,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 218.0005131,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19639,
-        "observed_tpm": 27475192,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 219.0002912,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19651,
-        "observed_tpm": 27437801,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 220.0000972,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19730,
-        "observed_tpm": 27539027,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 221.0005224,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19659,
-        "observed_tpm": 27360301,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 222.0002214,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19588,
-        "observed_tpm": 27166605,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 223.0002692,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19620,
-        "observed_tpm": 27176799,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 224.000273,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19552,
-        "observed_tpm": 26997464,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 225.0004349,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19554,
-        "observed_tpm": 26974443,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 226.0008654,
-      "phase": "p3",
-      "model": "model-b",
-      "sample": {
-        "observed_rpm": 19590,
-        "observed_tpm": 26961521,
-        "configured_rpm": 20000,
-        "configured_tpm": 40000000
-      }
-    },
-    {
-      "at_sec": 227.0004975,
+      "at_sec": 159.0005295,
       "phase": "p3",
       "model": "model-b",
       "sample": {
         "observed_rpm": 19591,
-        "observed_tpm": 26920797,
+        "observed_tpm": 34418276,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 228.0003787,
+      "at_sec": 160.0004129,
       "phase": "p3",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 19593,
-        "observed_tpm": 26887891,
+        "observed_rpm": 19556,
+        "observed_tpm": 34349475,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 229.000024,
+      "at_sec": 161.0003131,
       "phase": "p3",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 19307,
-        "observed_tpm": 26254678,
+        "observed_rpm": 19358,
+        "observed_tpm": 33997449,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 230.0010208,
+      "at_sec": 162.0004719,
       "phase": "p3",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 18983,
-        "observed_tpm": 25569630,
+        "observed_rpm": 19196,
+        "observed_tpm": 33714889,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 231.0000855,
+      "at_sec": 163.0009646,
       "phase": "p3",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 18665,
-        "observed_tpm": 24896702,
+        "observed_rpm": 18985,
+        "observed_tpm": 33348312,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 232.0002868,
+      "at_sec": 164.0000816,
       "phase": "p3",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 18330,
-        "observed_tpm": 24179897,
+        "observed_rpm": 19667,
+        "observed_tpm": 34754438,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }
     },
     {
-      "at_sec": 233.0004543,
+      "at_sec": 165.0001328,
       "phase": "p3",
       "model": "model-b",
       "sample": {
-        "observed_rpm": 18038,
-        "observed_tpm": 23547948,
+        "observed_rpm": 19640,
+        "observed_tpm": 34705390,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 166.000332,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19729,
+        "observed_tpm": 34853555,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 167.0002602,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19616,
+        "observed_tpm": 34656607,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 168.000443,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19602,
+        "observed_tpm": 34634606,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 169.0007656,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19636,
+        "observed_tpm": 34685265,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 170.0000674,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19630,
+        "observed_tpm": 34669042,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 171.0010476,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19646,
+        "observed_tpm": 34694629,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 172.0004309,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19632,
+        "observed_tpm": 34683694,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 173.0006761,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19641,
+        "observed_tpm": 34721368,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 174.0004325,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19664,
+        "observed_tpm": 34783226,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 175.000162,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19625,
+        "observed_tpm": 34732733,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 176.0008129,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19639,
+        "observed_tpm": 34759555,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 177.0004836,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19839,
+        "observed_tpm": 35115697,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 178.0001917,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19637,
+        "observed_tpm": 34731548,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 179.0001348,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19684,
+        "observed_tpm": 34789187,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 180.0005898,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19767,
+        "observed_tpm": 34888326,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 181.000194,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19998,
+        "observed_tpm": 35289848,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 182.0001002,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19665,
+        "observed_tpm": 34730977,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 183.0000768,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19661,
+        "observed_tpm": 34738454,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 184.0004605,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19662,
+        "observed_tpm": 34724060,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 185.0001528,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19699,
+        "observed_tpm": 34774704,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 186.0007033,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19703,
+        "observed_tpm": 34758576,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 187.0004389,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19700,
+        "observed_tpm": 34740221,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 188.0003107,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19726,
+        "observed_tpm": 34782305,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 189.0002412,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19671,
+        "observed_tpm": 34674947,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 190.0002345,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19654,
+        "observed_tpm": 34635330,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 191.0002973,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19718,
+        "observed_tpm": 34741826,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 192.0003621,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19682,
+        "observed_tpm": 34662310,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 193.0000724,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19665,
+        "observed_tpm": 34636617,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 194.0000145,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19660,
+        "observed_tpm": 34643166,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 195.0002212,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19617,
+        "observed_tpm": 34573555,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 196.0003266,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19639,
+        "observed_tpm": 34618269,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 197.0001733,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19647,
+        "observed_tpm": 34613212,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 198.0002657,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19590,
+        "observed_tpm": 34512510,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 199.0004843,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19740,
+        "observed_tpm": 34773178,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 200.0000736,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19622,
+        "observed_tpm": 34534755,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 201.0004502,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19630,
+        "observed_tpm": 34557901,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 202.0000464,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19604,
+        "observed_tpm": 34500444,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 203.0002741,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19501,
+        "observed_tpm": 34326177,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 204.0000069,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19568,
+        "observed_tpm": 34478164,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 205.0001704,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19548,
+        "observed_tpm": 34424633,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 206.0000522,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19571,
+        "observed_tpm": 34445465,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 207.0000755,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19581,
+        "observed_tpm": 34452494,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 208.0002891,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19600,
+        "observed_tpm": 34491943,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 209.0001862,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19568,
+        "observed_tpm": 34424406,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 210.0004229,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19568,
+        "observed_tpm": 34424007,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 211.0003622,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19706,
+        "observed_tpm": 34699696,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 212.0004916,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19792,
+        "observed_tpm": 34835029,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 213.0001355,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19735,
+        "observed_tpm": 34697313,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 214.0001539,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19755,
+        "observed_tpm": 34744820,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 215.0000364,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19774,
+        "observed_tpm": 34745302,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 216.000401,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19728,
+        "observed_tpm": 34662629,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 217.0003797,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19550,
+        "observed_tpm": 34371656,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 218.0005168,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19708,
+        "observed_tpm": 34708962,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 219.0004787,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19674,
+        "observed_tpm": 34648666,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 220.0005894,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19787,
+        "observed_tpm": 34838783,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 221.0000372,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19975,
+        "observed_tpm": 35210866,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 222.0002283,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 20000,
+        "observed_tpm": 35246716,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 223.0005469,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 20000,
+        "observed_tpm": 35231268,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 224.0004575,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19579,
+        "observed_tpm": 34570100,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 225.0004935,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19645,
+        "observed_tpm": 34695802,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 226.00027,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19673,
+        "observed_tpm": 34738231,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 227.0000239,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19500,
+        "observed_tpm": 34383173,
+        "configured_rpm": 20000,
+        "configured_tpm": 40000000
+      }
+    },
+    {
+      "at_sec": 228.000111,
+      "phase": "p3",
+      "model": "model-b",
+      "sample": {
+        "observed_rpm": 19167,
+        "observed_tpm": 33705547,
         "configured_rpm": 20000,
         "configured_tpm": 40000000
       }

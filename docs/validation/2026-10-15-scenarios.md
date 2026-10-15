@@ -14,8 +14,9 @@ success/transient/permanent outcome mix, 2s wait-queue max wait, 3 retries.
 
 - submitted 540 req/s × 300s (measured at 94% of the 500 req/s budget the
   limit allows — the margin absorbs retry re-admissions, see "capacity note")
-- **RPM utilization 96.5% of the configured 30,000** (mean of the sampled
-  60s rolling windows), TPM utilization 70.5%
+- **RPM utilization 96.9% of the configured 30,000** (mean of the sampled
+  60s rolling windows), TPM utilization 85.1% (2.55M of the 3M ceiling —
+  actual charged tokens, net of reservation refunds)
 - **zero over-limit samples** across all 1/s window samples
 - every request accounted: per-batch breakdowns sum to the submitted count
   (completed + failed + expired + rejected = total; evidence JSON lists every
@@ -26,7 +27,7 @@ success/transient/permanent outcome mix, 2s wait-queue max wait, 3 retries.
 Capacity note: submitting exactly 500 req/s (the RPM/60 budget) plus the
 ~5% transient-retry re-admissions exceeds the window and turns the retry
 deferral path into expiries; 94% of budget keeps the same saturated window
-(96.5% observed) without penalizing the retry design. This is the scenario
+(96.9% observed) without penalizing the retry design. This is the scenario
 parameter, not a limiter limitation — the limiter itself admitted every
 request the window allowed (utilization > 96%).
 

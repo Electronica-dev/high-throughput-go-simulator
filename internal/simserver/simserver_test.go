@@ -24,6 +24,10 @@ func testConfig() *config.Config {
 	}
 }
 
+func newServerT(t *testing.T, cfg *config.Config) (*Server, *httptest.Server) {
+	return newServer(t, cfg)
+}
+
 func newServer(t *testing.T, cfg *config.Config) (*Server, *httptest.Server) {
 	t.Helper()
 	st, err := store.Open(t.TempDir() + "/sim.db")
@@ -134,5 +138,25 @@ func TestRequestBodyValidation(t *testing.T) {
 	defer resp.Body.Close()
 	if resp.StatusCode != 400 {
 		t.Fatalf("malformed body want 400, got %d", resp.StatusCode)
+	}
+}
+
+// TestSeenKeyDoesNotMemoizeFailures: idempotency keys protect successful
+// work from double execution — a retry after a transient failure must
+// RE-EXECUTE (fresh draw), not replay the failure.
+func TestSeenKeyDoesNotMemoizeFailures(t *testing.T) {
+	cfg := testConfig()
+	cfg.Models[0].Outcome = config.OutcomeConfig{TransientPct: 100} // every execution fails
+	s, srv := newServerT(t, cfg)
+	_, out1 := call(t, srv.URL, "r-retry")
+	code, out2 := call(t, srv.URL, "r-retry")
+	if code != 200 {
+		t.Fatalf("status %d", code)
+	}
+	if out1["outcome"] != "transient_failure" || out2["outcome"] != "transient_failure" {
+		t.Fatalf("outcomes: %v %v", out1["outcome"], out2["outcome"])
+	}
+	if s.executed.Load() != 2 {
+		t.Fatalf("transient failure must re-execute on retry, executed %d", s.executed.Load())
 	}
 }

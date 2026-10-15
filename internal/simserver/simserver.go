@@ -150,9 +150,14 @@ func (s *Server) handleCall(w http.ResponseWriter, r *http.Request) {
 		LatencyMS:    latency.Milliseconds(),
 	}
 	body, _ := json.Marshal(resp)
-	// persist seen-key AFTER execution (crash between execute and persist is
-	// an at-least-once redelivery — acceptable and documented)
-	_ = s.store.PutSeenKey(cr.RequestID, string(body))
+	// persist the seen-key ONLY for successful executions: the idempotency
+	// key protects successful work from double execution (crash between
+	// execute and persist is an at-least-once redelivery). A transient or
+	// permanent failure did no provider work — a retry must re-execute with
+	// a fresh draw, not replay the failure forever.
+	if outcome.SuccessPct == 100 {
+		_ = s.store.PutSeenKey(cr.RequestID, string(body))
+	}
 	s.executed.Add(1)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(body)

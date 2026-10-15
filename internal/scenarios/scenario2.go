@@ -40,14 +40,14 @@ func RunScenario2(systemURL string, sc Config, outDir string) (*Result, error) {
 	}
 	sc1 := sc
 	sc1.DurationSec = sc.Phase1Sec
-	sc1.RatePerSec = sc.Phase1RPM/60 + sc.Phase1RPM/600 // capacity + 10%
+	sc1.RatePerSec = sc.Phase1RPM*94/6000 // 94% of capacity: retry attempts also consume RPM slots, so submitting at capacity would pin the window and expire retry deferrals
 	if _, err := runLoad(client, systemURL, &sc1, map[string]float64{sc.Model: 1.0}); err != nil {
 		close(stop)
 		close(stopB)
 		return nil, err
 	}
 	// phase 2: drop A's limit to Phase2RPM (no restart); the submitted rate
-	// tracks each phase's per-second capacity (RPM/60) plus ~10% pressure
+	// tracks each phase's per-second capacity (RPM/60) at 94%
 	phase.Store("p2")
 	if err := postJSON(client, systemURL+"/limits/"+sc.Model, map[string]any{"rpm": sc.Phase2RPM, "tpm": sc.Phase2RPM * sc.Tokens}); err != nil {
 		close(stop)
@@ -56,7 +56,7 @@ func RunScenario2(systemURL string, sc Config, outDir string) (*Result, error) {
 	}
 	sc2 := sc
 	sc2.DurationSec = sc.Phase2Sec
-	sc2.RatePerSec = sc.Phase2RPM/60 + sc.Phase2RPM/600 // capacity + 10%
+	sc2.RatePerSec = sc.Phase2RPM*94/6000 // 94% of the phase's capacity
 	if _, err := runLoad(client, systemURL, &sc2, map[string]float64{sc.Model: 1.0}); err != nil {
 		close(stop)
 		close(stopB)
@@ -71,7 +71,7 @@ func RunScenario2(systemURL string, sc Config, outDir string) (*Result, error) {
 	}
 	sc3 := sc
 	sc3.DurationSec = sc.Phase3Sec
-	sc3.RatePerSec = sc.Phase1RPM/60 + sc.Phase1RPM/600 // capacity + 10%
+	sc3.RatePerSec = sc.Phase1RPM*94/6000 // 94% of capacity
 	if _, err := runLoad(client, systemURL, &sc3, map[string]float64{sc.Model: 1.0}); err != nil {
 		close(stop)
 		close(stopB)

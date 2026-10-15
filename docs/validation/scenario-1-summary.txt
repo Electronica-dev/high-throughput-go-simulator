@@ -1,4 +1,4 @@
 scenario scenario-1: PASS=false
-  - completed 0 < 90% of allowed capacity 138150
-utilization: rpm=98.7% tpm=89.1%
+  - completed 118652 < 90% of allowed capacity 137250
+utilization: rpm=90.6% tpm=68.1%
 over-limit samples: 0

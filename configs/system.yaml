@@ -2,7 +2,7 @@
 models:
   - name: model-a
     rpm: 30000
-    tpm: 500000
+    tpm: 3000000
     estimate_tokens: 100
     actual_token_mean: 100
     latency:
@@ -15,7 +15,7 @@ models:
       permanent_pct: 2
   - name: model-b
     rpm: 30000
-    tpm: 500000
+    tpm: 3000000
     estimate_tokens: 100
     actual_token_mean: 100
     latency:
@@ -26,7 +26,7 @@ models:
       success_pct: 93
       transient_pct: 5
       permanent_pct: 2
-max_wait_ms: 2000
+max_wait_ms: 5000
 queue_depth: 64000
 wheel_shards: 2
 wheel_buckets: 1024

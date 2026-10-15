@@ -4,7 +4,7 @@
 models:
   - name: model-a
     rpm: 300000
-    tpm: 5000000
+    tpm: 30000000
     estimate_tokens: 100
     actual_token_mean: 100
     latency:

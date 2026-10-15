@@ -1,0 +1,23 @@
+meta {
+  name: simulator call (direct)
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{simUrl}}/call
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "request_id": "bruno-manual-1",
+    "model": "model-a",
+    "estimated_tokens": 100
+  }
+}

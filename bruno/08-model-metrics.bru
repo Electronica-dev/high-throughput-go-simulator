@@ -1,0 +1,15 @@
+meta {
+  name: model metrics (observed vs configured windows)
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/metrics/{{model}}
+  body: none
+  auth: none
+}
+
+vars:pre-request {
+  model: model-a
+}

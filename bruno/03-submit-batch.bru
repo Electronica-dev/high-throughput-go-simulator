@@ -1,0 +1,32 @@
+meta {
+  name: submit batch (async, 202)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/batches
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "model": "model-a",
+    "estimated_tokens": 100,
+    "count": 10000,
+    "callback_url": ""
+  }
+}
+
+script:post-response {
+  // capture the batch id so batch-status / batch-results can just be run
+  const body = res.getBody();
+  if (body && body.batch_id) {
+    bru.setEnvVar('batchId', body.batch_id);
+  }
+}

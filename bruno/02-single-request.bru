@@ -1,0 +1,22 @@
+meta {
+  name: single request (sync)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/requests
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "model": "model-a",
+    "estimated_tokens": 100
+  }
+}

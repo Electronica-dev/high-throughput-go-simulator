@@ -1,0 +1,15 @@
+meta {
+  name: batch status
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/batches/{{batchId}}
+  body: none
+  auth: none
+}
+
+script:post-response {
+  // run submit-batch first — it stores the id in the Local environment
+}

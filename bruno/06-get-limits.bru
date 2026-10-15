@@ -1,0 +1,15 @@
+meta {
+  name: get limits
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/limits/{{model}}
+  body: none
+  auth: none
+}
+
+vars:pre-request {
+  model: model-a
+}

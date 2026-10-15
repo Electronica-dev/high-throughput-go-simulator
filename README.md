@@ -59,12 +59,10 @@ internal/scenarios/ validation runners 1-3 (sampling, assertions, evidence)
 go build -o bin/consuma.exe ./cmd/consuma
 
 # required benchmark: 300K completed requests/second, 60s
-bin/consuma.exe benchmark -config configs/benchmark-300k.yaml \
-    -rate 300000 -duration 60s -batch 50 -report docs/benchmark/run-300k.json
+bin/consuma.exe benchmark -config configs/benchmark-300k.yaml -rate 300000 -duration 60s -batch 50 -report docs/benchmark/run-300k.json
 
 # stretch benchmark: 1M completed requests/second, 30s
-bin/consuma.exe benchmark -config configs/benchmark-1m.yaml \
-    -rate 1000000 -duration 30s -batch 50 -report docs/benchmark/run-1m.json
+bin/consuma.exe benchmark -config configs/benchmark-1m.yaml -rate 1000000 -duration 30s -batch 50 -report docs/benchmark/run-1m.json
 
 # quick smoke run
 bin/consuma.exe benchmark -config configs/benchmark.yaml -rate 10000 -duration 5s
@@ -94,9 +92,8 @@ a scenario parameter, sized with headroom over the system's limits so the
 simulator never masks what the system enforces):
 
 ```bash
-bin/consuma.exe simulator -config configs/scenario1.yaml -addr 127.0.0.1:9001 &
-bin/consuma.exe serve -config configs/system.yaml -addr 127.0.0.1:9000 \
-    -simulator http://127.0.0.1:9001 -db consuma.db
+bin/consuma.exe simulator -config configs/scenario1.yaml -addr 127.0.0.1:9001
+bin/consuma.exe serve -config configs/system.yaml -addr 127.0.0.1:9000 -simulator http://127.0.0.1:9001 -db consuma.db
 ```
 
 ### HTTP API
@@ -110,6 +107,16 @@ bin/consuma.exe serve -config configs/system.yaml -addr 127.0.0.1:9000 \
 | `GET /limits/{model}` · `POST /limits/{model}` | read / change a model's RPM+TPM live — no restart; enforcement applies to new admissions immediately |
 | `GET /metrics/{model}` | observed vs configured rolling windows (what the scenario runners sample) |
 | `GET /health` | liveness |
+
+### Bruno collection
+
+A ready-to-run [Bruno](https://www.usebruno.com) collection lives at
+[`bruno/`](bruno/) — open that folder in Bruno (Open Collection), pick the
+`Local` environment, and every endpoint above is a one-click request. The
+`submit batch` request stores the returned `batch_id` in the environment
+automatically, so `batch status` and `batch results` work right after it.
+Request bodies match the API field-for-field (`model`, `estimated_tokens`,
+`count`, `callback_url`, `rpm`, `tpm`).
 
 Request ids are **server-generated UUIDs** (`ExternalID`); the id is the
 idempotency key sent to the provider.

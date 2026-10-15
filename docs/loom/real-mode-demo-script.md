@@ -43,7 +43,7 @@ bin/consuma.exe serve -config configs/system.yaml -addr 127.0.0.1:9000 \
 **Screen:** right terminal. `curl` a single request:
 
 ```
-curl -s http://127.0.0.1:9000/requests -d '{"model":"model-a","tokens":100}' | jq
+curl -s http://127.0.0.1:9000/requests -d '{"model":"model-a","estimated_tokens":100}' | jq
 ```
 
 > "One request, synchronous. Outcome, latency — and the two token numbers

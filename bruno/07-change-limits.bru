@@ -1,0 +1,26 @@
+meta {
+  name: change limits (live)
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/limits/{{model}}
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+vars:pre-request {
+  model: model-a
+}
+
+body:json {
+  {
+    "rpm": 30000,
+    "tpm": 3000000
+  }
+}

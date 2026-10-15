@@ -61,12 +61,12 @@ func cmdBenchmark(argv []string) {
 		}
 		return
 	}
-	s, err := runBenchmark(*ra)
+	summary, err := runBenchmark(*ra)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "error:", err)
 		os.Exit(1)
 	}
-	printSummary(s)
+	printSummary(summary)
 }
 
 // runBenchmark executes one full benchmark run and returns the summary.
@@ -128,8 +128,8 @@ func runBenchmark(ra runArgs) (*engine.Summary, error) {
 	close(stop)
 	<-doneWatch
 
-	s := eng.Drain()
-	rep := report.Build(s, eng, cfg).WithRun(ra.Rate, ra.Duration)
+	summary := eng.Drain()
+	rep := report.Build(summary, eng, cfg).WithRun(ra.Rate, ra.Duration)
 	if ra.Report != "" {
 		f, err := os.Create(ra.Report)
 		if err != nil {
@@ -140,15 +140,15 @@ func runBenchmark(ra runArgs) (*engine.Summary, error) {
 			return nil, fmt.Errorf("write report %s: %w", ra.Report, err)
 		}
 	}
-	return &s, runErr
+	return &summary, runErr
 }
 
 // printSummary renders the human-readable run report to stdout.
-func printSummary(s *engine.Summary) {
+func printSummary(summary *engine.Summary) {
 	fmt.Printf("submitted=%d completed=%d ok=%d failed=%d expired=%d rejected=%d\n",
-		s.Submitted, s.Completed, s.OK, s.Failed, s.Expired, s.Rejected)
+		summary.Submitted, summary.Completed, summary.OK, summary.Failed, summary.Expired, summary.Rejected)
 	fmt.Printf("steady-state: %.0f/sec  whole-run avg: %.0f/sec  drain: %.2fs\n",
-		s.SteadyStatePerSec, s.WholeRunAvgPerSec, s.DrainSec)
+		summary.SteadyStatePerSec, summary.WholeRunAvgPerSec, summary.DrainSec)
 }
 
 // loadConfigFile and marshalConfig are the cmd-side config I/O helpers.

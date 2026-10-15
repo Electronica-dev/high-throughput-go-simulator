@@ -40,84 +40,84 @@ func NewReal(cfg *config.Config, c Caller, st *store.Store) (*Engine, error) {
 	if cfg.Workers <= 0 {
 		cfg.Workers = 64
 	}
-	e, err := NewWithCaller(cfg, c)
+	engine, err := NewWithCaller(cfg, c)
 	if err != nil {
 		return nil, err
 	}
-	e.mode = modeReal
-	e.st = st
-	e.workerCh = make(chan *ledger.Request, 1<<16)
-	e.doneChans = make(map[string]chan terminalResult)
-	e.recovering = make(map[string]bool)
+	engine.mode = modeReal
+	engine.st = st
+	engine.workerCh = make(chan *ledger.Request, 1<<16)
+	engine.doneChans = make(map[string]chan terminalResult)
+	engine.recovering = make(map[string]bool)
 	for i := 0; i < cfg.Workers; i++ {
-		e.workersWg.Add(1)
-		go e.workerLoop()
+		engine.workersWg.Add(1)
+		go engine.workerLoop()
 	}
-	return e, nil
+	return engine, nil
 }
 
 // dispatch hands an admitted request to the worker pool.
-func (e *Engine) dispatch(r *ledger.Request) {
-	e.workerCh <- r // buffered 64K; blocking beyond that means the system is 64K calls behind
+func (engine *Engine) dispatch(r *ledger.Request) {
+	engine.workerCh <- r // buffered 64K; blocking beyond that means the system is 64K calls behind
 }
 
 // workerLoop consumes admitted requests and drives each through one
 // (possibly retried) provider call to a terminal state.
-func (e *Engine) workerLoop() {
-	defer e.workersWg.Done()
+func (engine *Engine) workerLoop() {
+	defer engine.workersWg.Done()
 	for {
 		select {
-		case <-e.shutdown:
+		case <-engine.shutdown:
 			return
-		case r := <-e.workerCh:
-			e.processOne(r)
+		case r := <-engine.workerCh:
+			engine.processOne(r)
 		}
 	}
 }
 
 // processOne runs one blocking provider call for r and finalizes it.
-func (e *Engine) processOne(r *ledger.Request) {
-	p, ok := e.pipes[r.Model]
+func (engine *Engine) processOne(r *ledger.Request) {
+	p, ok := engine.pipes[r.Model]
 	if !ok {
 		// model vanished between submit and pickup: rejected, nothing charged
-		if e.ld.Transition(r, ledger.Rejected) == nil {
-			e.cRejected.Add(1)
-			e.realTerminal(r, "rejected", 0)
+		if engine.ld.Transition(r, ledger.Rejected) == nil {
+			engine.cRejected.Add(1)
+			engine.realTerminal(r, "rejected", 0)
 		}
 		return
 	}
 	now := time.Now()
-	if e.st != nil && r.ExternalID != "" {
-		_ = e.st.SetRequestState(r.ExternalID, "in_flight")
+	if engine.st != nil && r.ExternalID != "" {
+		_ = engine.st.SetRequestState(r.ExternalID, "in_flight")
 	}
 	// mirror the benchmark wheel path: Admitted→InFlight before the call; a
-	// failure means the request went terminal elsewhere (e.g. swept) and its
+	// failure means the request went terminal elsewhere (engine.g. swept) and its
 	// bookkeeping already happened
-	if e.ld.Transition(r, ledger.InFlight) != nil {
+	if engine.ld.Transition(r, ledger.InFlight) != nil {
 		return
 	}
 	// count the attempt BEFORE the call (schedule() does this on the wheel
 	// path; real mode has no schedule) — without it the retry decision in
 	// finalizeOne never sees attempts grow and retries forever
 	r.Attempts.Add(1)
-	res := e.caller.Call(r, now)
-	e.cProvLatency.Add(int64(res.Latency))
-	okN, failN, compN := e.finalizeOne(p, r, res, now, now.UnixNano())
+	res := engine.caller.Call(r, now)
+	engine.cProvLatency.Add(int64(res.Latency))
+	okN, failN, compN := engine.finalizeOne(p, r, res, now, now.UnixNano())
 	if okN > 0 {
-		e.cOK.Add(1)
+		engine.cOK.Add(1)
 	}
 	if failN > 0 {
-		e.cFailed.Add(1)
+		engine.cFailed.Add(1)
 	}
 	if compN > 0 {
-		e.cCompleted.Add(1)
+		engine.cCompleted.Add(1)
 	}
 }
 
 // realTerminal persists the final request state, fires the OnTerminal hook
 // (batch manager counts), and releases any synchronous waiter. Exactly-once
 // by construction: every caller is behind a successful CAS transition.
-func (e *Engine) realTerminal(r *ledger.Request, outcomeName string, tokens int64) {
+func (engine *Engine) realTerminal(r *ledger.Request, outcomeName string, tokens int64) {
 	dbState := "completed"
 	switch outcomeName {
 	case "expired":
@@ -125,40 +125,40 @@ func (e *Engine) realTerminal(r *ledger.Request, outcomeName string, tokens int6
 	case "rejected":
 		dbState = "rejected"
 	}
-	if e.st != nil && r.ExternalID != "" {
-		_ = e.st.SetRequestFinal(r.ExternalID, dbState, outcomeName, tokens)
+	if engine.st != nil && r.ExternalID != "" {
+		_ = engine.st.SetRequestFinal(r.ExternalID, dbState, outcomeName, tokens)
 	}
-	if h := e.OnTerminal; h != nil {
+	if h := engine.OnTerminal; h != nil {
 		h(r, outcomeName, tokens)
 	}
-	e.doneMu.Lock()
-	if ch, ok := e.doneChans[r.ExternalID]; ok {
-		delete(e.doneChans, r.ExternalID)
+	engine.doneMu.Lock()
+	if ch, ok := engine.doneChans[r.ExternalID]; ok {
+		delete(engine.doneChans, r.ExternalID)
 		ch <- terminalResult{Outcome: outcomeName, Tokens: tokens}
 	}
-	e.doneMu.Unlock()
+	engine.doneMu.Unlock()
 }
 
 // SubmitAndWait submits one request and blocks until it reaches a terminal
 // state (or the timeout expires). Real mode only.
-func (e *Engine) SubmitAndWait(r *ledger.Request, timeout time.Duration) (string, int64, error) {
-	if e.mode != modeReal {
+func (engine *Engine) SubmitAndWait(r *ledger.Request, timeout time.Duration) (string, int64, error) {
+	if engine.mode != modeReal {
 		return "", 0, fmt.Errorf("engine: SubmitAndWait requires real mode")
 	}
 	ch := make(chan terminalResult, 1)
-	e.doneMu.Lock()
-	e.doneChans[r.ExternalID] = ch
-	e.doneMu.Unlock()
+	engine.doneMu.Lock()
+	engine.doneChans[r.ExternalID] = ch
+	engine.doneMu.Unlock()
 
-	e.Submit(r)
+	engine.Submit(r)
 
 	select {
 	case res := <-ch:
 		return res.Outcome, res.Tokens, nil
 	case <-time.After(timeout):
-		e.doneMu.Lock()
-		delete(e.doneChans, r.ExternalID)
-		e.doneMu.Unlock()
+		engine.doneMu.Lock()
+		delete(engine.doneChans, r.ExternalID)
+		engine.doneMu.Unlock()
 		return "", 0, fmt.Errorf("engine: request %s did not finish in %v", r.ExternalID, timeout)
 	}
 }
@@ -166,11 +166,11 @@ func (e *Engine) SubmitAndWait(r *ledger.Request, timeout time.Duration) (string
 // Recover re-enqueues every persisted request that a crash caught before its
 // terminal state (submitted/queued/in_flight). Idempotent: a second run
 // finds nothing. Returns the number re-enqueued.
-func (e *Engine) Recover() (int, error) {
-	if e.mode != modeReal {
+func (engine *Engine) Recover() (int, error) {
+	if engine.mode != modeReal {
 		return 0, fmt.Errorf("engine: Recover requires real mode")
 	}
-	rows, err := e.st.RequestsNeedingRecovery()
+	rows, err := engine.st.RequestsNeedingRecovery()
 	if err != nil {
 		return 0, err
 	}
@@ -180,17 +180,17 @@ func (e *Engine) Recover() (int, error) {
 		// process is being processed; the DB row only leaves the recovery
 		// set at its terminal write. A crash between still finds it — the
 		// durable guarantee is unchanged.
-		e.recMu.Lock()
-		if e.recovering[row.ID] {
-			e.recMu.Unlock()
+		engine.recMu.Lock()
+		if engine.recovering[row.ID] {
+			engine.recMu.Unlock()
 			continue
 		}
-		e.recovering[row.ID] = true
-		e.recMu.Unlock()
+		engine.recovering[row.ID] = true
+		engine.recMu.Unlock()
 		requeued++
 
-		if _, ok := e.pipes[row.Model]; !ok {
-			_ = e.st.SetRequestFinal(row.ID, "rejected", "unknown_model", 0)
+		if _, ok := engine.pipes[row.Model]; !ok {
+			_ = engine.st.SetRequestFinal(row.ID, "rejected", "unknown_model", 0)
 			continue
 		}
 		r := &ledger.Request{
@@ -202,12 +202,12 @@ func (e *Engine) Recover() (int, error) {
 			BornNS:         time.Now().UnixNano(),
 			Recovered:      true,
 		}
-		e.ld.Submit(r)
-		if err := e.ld.Transition(r, ledger.Queued); err != nil {
+		engine.ld.Submit(r)
+		if err := engine.ld.Transition(r, ledger.Queued); err != nil {
 			return len(rows), fmt.Errorf("engine: recover transition %s: %w", row.ID, err)
 		}
-		_ = e.st.MarkRequestQueued(row.ID)
-		p := e.pipes[row.Model]
+		_ = engine.st.MarkRequestQueued(row.ID)
+		p := engine.pipes[row.Model]
 		for !p.q.PushRecovered(r, time.Now()) {
 			time.Sleep(2 * time.Millisecond) // queue full: wait for drain
 		}
@@ -217,4 +217,4 @@ func (e *Engine) Recover() (int, error) {
 
 // WheelPending exposes the wheel's outstanding-entry count (tests: real mode
 // must always report 0).
-func (e *Engine) WheelPending() int64 { return e.wheel.Pending() }
+func (engine *Engine) WheelPending() int64 { return engine.wheel.Pending() }

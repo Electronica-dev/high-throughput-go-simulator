@@ -4,10 +4,10 @@
 package loadgen
 
 import (
-	"sync"
 	"context"
 	"fmt"
 	"math/rand"
+	"sync"
 	"sync/atomic"
 	"time"
 

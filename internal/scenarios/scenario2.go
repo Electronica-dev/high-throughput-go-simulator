@@ -46,7 +46,7 @@ func RunScenario2(systemURL string, sc Config, outDir string) (*Result, error) {
 	stepf("phase p1: %s limit pinned to %d RPM via POST /limits (no restart); load incoming", sc.Model, sc.Phase1RPM)
 	sc1 := sc
 	sc1.DurationSec = sc.Phase1Sec
-	sc1.RatePerSec = sc.Phase1RPM*94/6000 // 94% of capacity: retry attempts also consume RPM slots, so submitting at capacity would pin the window and expire retry deferrals
+	sc1.RatePerSec = sc.Phase1RPM * 94 / 6000 // 94% of capacity: retry attempts also consume RPM slots, so submitting at capacity would pin the window and expire retry deferrals
 	if _, err := runLoad(client, systemURL, &sc1, map[string]float64{sc.Model: 1.0}); err != nil {
 		close(stop)
 		close(stopB)
@@ -64,7 +64,7 @@ func RunScenario2(systemURL string, sc Config, outDir string) (*Result, error) {
 	stepf("phase p2: %s limit changed LIVE to %d RPM (no restart) — expect the observed window to decay to the new ceiling within one 60s window", sc.Model, sc.Phase2RPM)
 	sc2 := sc
 	sc2.DurationSec = sc.Phase2Sec
-	sc2.RatePerSec = sc.Phase2RPM*94/6000 // 94% of the phase's capacity
+	sc2.RatePerSec = sc.Phase2RPM * 94 / 6000 // 94% of the phase's capacity
 	if _, err := runLoad(client, systemURL, &sc2, map[string]float64{sc.Model: 1.0}); err != nil {
 		close(stop)
 		close(stopB)
@@ -80,7 +80,7 @@ func RunScenario2(systemURL string, sc Config, outDir string) (*Result, error) {
 	stepf("phase p3: %s limit restored to %d RPM; second model %s sampled throughout (must stay untouched)", sc.Model, sc.Phase1RPM, sc.SecondModel)
 	sc3 := sc
 	sc3.DurationSec = sc.Phase3Sec
-	sc3.RatePerSec = sc.Phase1RPM*94/6000 // 94% of capacity
+	sc3.RatePerSec = sc.Phase1RPM * 94 / 6000 // 94% of capacity
 	if _, err := runLoad(client, systemURL, &sc3, map[string]float64{sc.Model: 1.0}); err != nil {
 		close(stop)
 		close(stopB)
@@ -109,8 +109,8 @@ func RunScenario2(systemURL string, sc Config, outDir string) (*Result, error) {
 			if p == "p2" && tp.AtSec < p2StartSec+61 {
 				continue
 			}
-			s := tp.Sample
-			if s.ConfiguredRPM > 0 && float64(s.ObservedRPM) > float64(s.ConfiguredRPM)*1.005 {
+			sink := tp.Sample
+			if sink.ConfiguredRPM > 0 && float64(sink.ObservedRPM) > float64(sink.ConfiguredRPM)*1.005 {
 				over++
 			}
 		}

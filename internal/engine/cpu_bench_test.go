@@ -1,8 +1,8 @@
 package engine
 
 import (
-	"runtime/pprof"
 	"os"
+	"runtime/pprof"
 	"testing"
 
 	"consuma/internal/config"
@@ -18,11 +18,11 @@ func BenchmarkEngineHot(b *testing.B) {
 			Outcome: config.OutcomeConfig{SuccessPct: 93, TransientPct: 5, PermanentPct: 2},
 		}},
 	}
-	e, err := New(cfg)
+	engine, err := New(cfg)
 	if err != nil {
 		b.Fatal(err)
 	}
-	defer e.Stop()
+	defer engine.Stop()
 	f, _ := os.Create("C:/Users/sammy/AppData/Local/hermes/cache/scratch/engine-cpu.prof")
 	pprof.StartCPUProfile(f)
 	defer func() {
@@ -30,10 +30,10 @@ func BenchmarkEngineHot(b *testing.B) {
 		f.Close()
 	}()
 	b.ResetTimer()
-	s := e.Drain  // avoid unused warning shape
+	s := engine.Drain // avoid unused warning shape
 	_ = s
 	for i := 0; i < b.N; i++ {
-		e.Submit(&ledger.Request{ID: uint64(i + 1), Model: "m", EstimateTokens: 1000, BornNS: 0})
+		engine.Submit(&ledger.Request{ID: uint64(i + 1), Model: "m", EstimateTokens: 1000, BornNS: 0})
 	}
-	e.Drain()
+	engine.Drain()
 }

@@ -118,11 +118,11 @@ CREATE TABLE IF NOT EXISTS seen_keys (
 }
 
 // Close closes the database.
-func (s *Store) Close() error { return s.db.Close() }
+func (store *Store) Close() error { return store.db.Close() }
 
 // CreateBatch inserts a new batch row.
-func (s *Store) CreateBatch(b Batch) error {
-	_, err := s.db.Exec(`INSERT INTO batches (id, status, callback_url, total, successful, failed, expired, rejected, created_at)
+func (store *Store) CreateBatch(b Batch) error {
+	_, err := store.db.Exec(`INSERT INTO batches (id, status, callback_url, total, successful, failed, expired, rejected, created_at)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		b.ID, b.Status, b.CallbackURL, b.Counts.Total, b.Counts.Successful, b.Counts.Failed, b.Counts.Expired, b.Counts.Rejected,
 		b.CreatedAt.Unix())
@@ -133,8 +133,8 @@ func (s *Store) CreateBatch(b Batch) error {
 }
 
 // GetBatch loads a batch by id.
-func (s *Store) GetBatch(id string) (Batch, bool, error) {
-	row := s.db.QueryRow(`SELECT status, callback_url, total, successful, failed, expired, rejected, created_at
+func (store *Store) GetBatch(id string) (Batch, bool, error) {
+	row := store.db.QueryRow(`SELECT status, callback_url, total, successful, failed, expired, rejected, created_at
 		FROM batches WHERE id = ?`, id)
 	var b Batch
 	var created int64
@@ -151,8 +151,8 @@ func (s *Store) GetBatch(id string) (Batch, bool, error) {
 }
 
 // UpdateBatchCounts rewrites the outcome breakdown.
-func (s *Store) UpdateBatchCounts(id string, c Counts) error {
-	_, err := s.db.Exec(`UPDATE batches SET total=?, successful=?, failed=?, expired=?, rejected=? WHERE id=?`,
+func (store *Store) UpdateBatchCounts(id string, c Counts) error {
+	_, err := store.db.Exec(`UPDATE batches SET total=?, successful=?, failed=?, expired=?, rejected=? WHERE id=?`,
 		c.Total, c.Successful, c.Failed, c.Expired, c.Rejected, id)
 	if err != nil {
 		return fmt.Errorf("store: UpdateBatchCounts %s: %w", id, err)
@@ -161,8 +161,8 @@ func (s *Store) UpdateBatchCounts(id string, c Counts) error {
 }
 
 // SetBatchStatus transitions a batch's status.
-func (s *Store) SetBatchStatus(id, status string) error {
-	_, err := s.db.Exec(`UPDATE batches SET status=? WHERE id=?`, status, id)
+func (store *Store) SetBatchStatus(id, status string) error {
+	_, err := store.db.Exec(`UPDATE batches SET status=? WHERE id=?`, status, id)
 	if err != nil {
 		return fmt.Errorf("store: SetBatchStatus %s: %w", id, err)
 	}
@@ -170,8 +170,8 @@ func (s *Store) SetBatchStatus(id, status string) error {
 }
 
 // InsertRequest persists a request row.
-func (s *Store) InsertRequest(r RequestRow) error {
-	_, err := s.db.Exec(`INSERT INTO requests (id, batch_id, model, state, outcome, tokens, admitted_sec)
+func (store *Store) InsertRequest(r RequestRow) error {
+	_, err := store.db.Exec(`INSERT INTO requests (id, batch_id, model, state, outcome, tokens, admitted_sec)
 		VALUES (?, ?, ?, ?, ?, ?, ?)`,
 		r.ID, r.BatchID, r.Model, r.State, r.Outcome, r.Tokens, r.AdmittedSec)
 	if err != nil {
@@ -182,8 +182,8 @@ func (s *Store) InsertRequest(r RequestRow) error {
 
 // RequestsNeedingRecovery returns rows in submitted/queued/in_flight state
 // (everything accepted but not yet terminal — crash-recovery candidates).
-func (s *Store) RequestsNeedingRecovery() ([]RequestRow, error) {
-	rows, err := s.db.Query(`SELECT id, batch_id, model, state, outcome, tokens, admitted_sec
+func (store *Store) RequestsNeedingRecovery() ([]RequestRow, error) {
+	rows, err := store.db.Query(`SELECT id, batch_id, model, state, outcome, tokens, admitted_sec
 		FROM requests WHERE state IN ('submitted', 'queued', 'in_flight')`)
 	if err != nil {
 		return nil, fmt.Errorf("store: RequestsNeedingRecovery: %w", err)
@@ -201,8 +201,8 @@ func (s *Store) RequestsNeedingRecovery() ([]RequestRow, error) {
 }
 
 // MarkRequestQueued sets a request's state to queued (recovery re-enqueue).
-func (s *Store) MarkRequestQueued(id string) error {
-	_, err := s.db.Exec(`UPDATE requests SET state='queued' WHERE id=?`, id)
+func (store *Store) MarkRequestQueued(id string) error {
+	_, err := store.db.Exec(`UPDATE requests SET state='queued' WHERE id=?`, id)
 	if err != nil {
 		return fmt.Errorf("store: MarkRequestQueued %s: %w", id, err)
 	}
@@ -210,8 +210,8 @@ func (s *Store) MarkRequestQueued(id string) error {
 }
 
 // GetRequest loads one request row.
-func (s *Store) GetRequest(id string) (RequestRow, bool, error) {
-	row := s.db.QueryRow(`SELECT batch_id, model, state, outcome, tokens, admitted_sec FROM requests WHERE id=?`, id)
+func (store *Store) GetRequest(id string) (RequestRow, bool, error) {
+	row := store.db.QueryRow(`SELECT batch_id, model, state, outcome, tokens, admitted_sec FROM requests WHERE id=?`, id)
 	var r RequestRow
 	err := row.Scan(&r.BatchID, &r.Model, &r.State, &r.Outcome, &r.Tokens, &r.AdmittedSec)
 	switch {
@@ -225,8 +225,8 @@ func (s *Store) GetRequest(id string) (RequestRow, bool, error) {
 }
 
 // SetRequestState updates a request's lifecycle state.
-func (s *Store) SetRequestState(id, state string) error {
-	_, err := s.db.Exec(`UPDATE requests SET state=? WHERE id=?`, state, id)
+func (store *Store) SetRequestState(id, state string) error {
+	_, err := store.db.Exec(`UPDATE requests SET state=? WHERE id=?`, state, id)
 	if err != nil {
 		return fmt.Errorf("store: SetRequestState %s: %w", id, err)
 	}
@@ -235,8 +235,8 @@ func (s *Store) SetRequestState(id, state string) error {
 
 // SetRequestFinal records a request's terminal state, outcome, and charged
 // tokens (state: completed|expired|rejected).
-func (s *Store) SetRequestFinal(id, state, outcome string, tokens int64) error {
-	_, err := s.db.Exec(`UPDATE requests SET state=?, outcome=?, tokens=? WHERE id=?`, state, outcome, tokens, id)
+func (store *Store) SetRequestFinal(id, state, outcome string, tokens int64) error {
+	_, err := store.db.Exec(`UPDATE requests SET state=?, outcome=?, tokens=? WHERE id=?`, state, outcome, tokens, id)
 	if err != nil {
 		return fmt.Errorf("store: SetRequestFinal %s: %w", id, err)
 	}
@@ -244,8 +244,8 @@ func (s *Store) SetRequestFinal(id, state, outcome string, tokens int64) error {
 }
 
 // RequestsByBatch lists a batch's request rows (batch results endpoint).
-func (s *Store) RequestsByBatch(batchID string) ([]RequestRow, error) {
-	rows, err := s.db.Query(`SELECT id, batch_id, model, state, outcome, tokens, admitted_sec
+func (store *Store) RequestsByBatch(batchID string) ([]RequestRow, error) {
+	rows, err := store.db.Query(`SELECT id, batch_id, model, state, outcome, tokens, admitted_sec
 		FROM requests WHERE batch_id=?`, batchID)
 	if err != nil {
 		return nil, fmt.Errorf("store: RequestsByBatch %s: %w", batchID, err)
@@ -265,11 +265,11 @@ func (s *Store) RequestsByBatch(batchID string) ([]RequestRow, error) {
 // BulkInsertRequests persists many request rows in one transaction (the
 // batch manager's submit path must ack in well under a second for large
 // batches; per-row transactions would need ~10s for 10K rows).
-func (s *Store) BulkInsertRequests(rows []RequestRow) error {
+func (store *Store) BulkInsertRequests(rows []RequestRow) error {
 	if len(rows) == 0 {
 		return nil
 	}
-	tx, err := s.db.Begin()
+	tx, err := store.db.Begin()
 	if err != nil {
 		return fmt.Errorf("store: BulkInsertRequests begin: %w", err)
 	}
@@ -293,8 +293,8 @@ func (s *Store) BulkInsertRequests(rows []RequestRow) error {
 }
 
 // RecordCallbackAttempt appends one delivery attempt.
-func (s *Store) RecordCallbackAttempt(batchID string, at time.Time, statusCode int, outcome string) error {
-	_, err := s.db.Exec(`INSERT INTO callback_attempts (batch_id, at, status_code, outcome) VALUES (?, ?, ?, ?)`,
+func (store *Store) RecordCallbackAttempt(batchID string, at time.Time, statusCode int, outcome string) error {
+	_, err := store.db.Exec(`INSERT INTO callback_attempts (batch_id, at, status_code, outcome) VALUES (?, ?, ?, ?)`,
 		batchID, at.Unix(), statusCode, outcome)
 	if err != nil {
 		return fmt.Errorf("store: RecordCallbackAttempt %s: %w", batchID, err)
@@ -303,8 +303,8 @@ func (s *Store) RecordCallbackAttempt(batchID string, at time.Time, statusCode i
 }
 
 // CallbackAttempts lists a batch's delivery attempts in order.
-func (s *Store) CallbackAttempts(batchID string) ([]Attempt, error) {
-	rows, err := s.db.Query(`SELECT at, status_code, outcome FROM callback_attempts WHERE batch_id=? ORDER BY id`, batchID)
+func (store *Store) CallbackAttempts(batchID string) ([]Attempt, error) {
+	rows, err := store.db.Query(`SELECT at, status_code, outcome FROM callback_attempts WHERE batch_id=? ORDER BY id`, batchID)
 	if err != nil {
 		return nil, fmt.Errorf("store: CallbackAttempts %s: %w", batchID, err)
 	}
@@ -323,8 +323,8 @@ func (s *Store) CallbackAttempts(batchID string) ([]Attempt, error) {
 }
 
 // UndeliveredBatches lists completed batches with no successful delivery.
-func (s *Store) UndeliveredBatches() ([]string, error) {
-	rows, err := s.db.Query(`SELECT b.id FROM batches b
+func (store *Store) UndeliveredBatches() ([]string, error) {
+	rows, err := store.db.Query(`SELECT b.id FROM batches b
 		WHERE b.status = 'completed'
 		AND NOT EXISTS (SELECT 1 FROM callback_attempts a WHERE a.batch_id = b.id AND a.outcome = 'delivered')`)
 	if err != nil {
@@ -343,9 +343,9 @@ func (s *Store) UndeliveredBatches() ([]string, error) {
 }
 
 // SeenKey looks up an idempotency key.
-func (s *Store) SeenKey(k string) (string, bool, error) {
+func (store *Store) SeenKey(k string) (string, bool, error) {
 	var res string
-	err := s.db.QueryRow(`SELECT result FROM seen_keys WHERE key=?`, k).Scan(&res)
+	err := store.db.QueryRow(`SELECT result FROM seen_keys WHERE key=?`, k).Scan(&res)
 	switch {
 	case err == sql.ErrNoRows:
 		return "", false, nil
@@ -356,8 +356,8 @@ func (s *Store) SeenKey(k string) (string, bool, error) {
 }
 
 // PutSeenKey records an executed idempotency key.
-func (s *Store) PutSeenKey(k, result string) error {
-	_, err := s.db.Exec(`INSERT INTO seen_keys (key, result) VALUES (?, ?)`, k, result)
+func (store *Store) PutSeenKey(k, result string) error {
+	_, err := store.db.Exec(`INSERT INTO seen_keys (key, result) VALUES (?, ?)`, k, result)
 	if err != nil {
 		return fmt.Errorf("store: PutSeenKey %s: %w", k, err)
 	}
@@ -366,8 +366,8 @@ func (s *Store) PutSeenKey(k, result string) error {
 
 // ProcessingBatches lists every batch still in the processing state (the
 // batch manager's crash-recovery restore set).
-func (s *Store) ProcessingBatches() ([]Batch, error) {
-	rows, err := s.db.Query(`SELECT id, status, callback_url, total, successful, failed, expired, rejected, created_at
+func (store *Store) ProcessingBatches() ([]Batch, error) {
+	rows, err := store.db.Query(`SELECT id, status, callback_url, total, successful, failed, expired, rejected, created_at
 		FROM batches WHERE status='processing'`)
 	if err != nil {
 		return nil, fmt.Errorf("store: ProcessingBatches: %w", err)
@@ -397,8 +397,8 @@ type StateCount struct {
 // BatchRequestStates groups a batch's request rows by (state, outcome) —
 // the startup reconcile recomputes batch counters from this row truth
 // (persisted batch counters can lag or miss the terminal crash window).
-func (s *Store) BatchRequestStates(batchID string) ([]StateCount, error) {
-	rows, err := s.db.Query(`SELECT state, outcome, COUNT(*) FROM requests WHERE batch_id=? GROUP BY state, outcome`, batchID)
+func (store *Store) BatchRequestStates(batchID string) ([]StateCount, error) {
+	rows, err := store.db.Query(`SELECT state, outcome, COUNT(*) FROM requests WHERE batch_id=? GROUP BY state, outcome`, batchID)
 	if err != nil {
 		return nil, fmt.Errorf("store: BatchRequestStates %s: %w", batchID, err)
 	}

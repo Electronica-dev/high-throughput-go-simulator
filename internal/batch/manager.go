@@ -6,8 +6,8 @@ package batch
 
 import (
 	"fmt"
-	"os"
 	"net/http"
+	"os"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -58,23 +58,23 @@ func New(st *store.Store, eng *engine.Engine, cfg config.CallbackConfig) *Manage
 	if len(cfg.InitialBackoffs) == 0 {
 		cfg.InitialBackoffs = []time.Duration{500 * time.Millisecond, time.Second, 2 * time.Second}
 	}
-	m := &Manager{
+	manager := &Manager{
 		st:      st,
 		eng:     eng,
 		cfg:     cfg,
 		batches: make(map[string]*batchState),
 		client:  &http.Client{Timeout: cfg.HTTPTimeout},
 	}
-	eng.OnTerminal = m.onTerminal
-	return m
+	eng.OnTerminal = manager.onTerminal
+	return manager
 }
 
 // Submit registers a batch, persists every request row in one bulk
 // transaction, and hands the requests to the engine. Returns as soon as
 // everything is accepted (well under 1s even for 10K requests).
-func (m *Manager) Submit(model string, tokens, count int64, callbackURL string) (string, error) {
+func (manager *Manager) Submit(model string, tokens, count int64, callbackURL string) (string, error) {
 	id := uuid.NewString()
-	if err := m.st.CreateBatch(store.Batch{
+	if err := manager.st.CreateBatch(store.Batch{
 		ID:          id,
 		Status:      "processing",
 		CallbackURL: callbackURL,
@@ -98,17 +98,17 @@ func (m *Manager) Submit(model string, tokens, count int64, callbackURL string) 
 			BornNS:         now.UnixNano(),
 		}
 	}
-	if err := m.st.BulkInsertRequests(rows); err != nil {
-		_ = m.st.SetBatchStatus(id, "failed")
+	if err := manager.st.BulkInsertRequests(rows); err != nil {
+		_ = manager.st.SetBatchStatus(id, "failed")
 		return "", fmt.Errorf("batch: persist %s: %w", id, err)
 	}
 
-	m.mu.Lock()
-	m.batches[id] = &batchState{id: id, total: count, callbackURL: callbackURL}
-	m.mu.Unlock()
+	manager.mu.Lock()
+	manager.batches[id] = &batchState{id: id, total: count, callbackURL: callbackURL}
+	manager.mu.Unlock()
 
 	for _, r := range reqs {
-		m.eng.SubmitUntracked(r)
+		manager.eng.SubmitUntracked(r)
 	}
 	return id, nil
 }
@@ -122,22 +122,25 @@ func (m *Manager) Submit(model string, tokens, count int64, callbackURL string) 
 //
 // (a) stale persisted counters → reconciled from rows before registering;
 // (b) all rows terminal, status write lost → batch completed here (+ callback
-//     dispatched — Resume() only scans completed batches, so this is where
-//     the delivery promise is kept);
+//
+//	dispatched — Resume() only scans completed batches, so this is where
+//	the delivery promise is kept);
+//
 // (c) batch row persisted but request rows never bulk-inserted → marked
-//     failed (it can never progress).
-func (m *Manager) Restore() error {
-	rows, err := m.st.ProcessingBatches()
+//
+//	failed (it can never progress).
+func (manager *Manager) Restore() error {
+	rows, err := manager.st.ProcessingBatches()
 	if err != nil {
 		return err
 	}
-	m.mu.Lock()
-	defer m.mu.Unlock()
+	manager.mu.Lock()
+	defer manager.mu.Unlock()
 	for _, b := range rows {
-		if _, ok := m.batches[b.ID]; ok {
+		if _, ok := manager.batches[b.ID]; ok {
 			continue
 		}
-		scs, err := m.st.BatchRequestStates(b.ID)
+		scs, err := manager.st.BatchRequestStates(b.ID)
 		if err != nil {
 			return err
 		}
@@ -171,17 +174,17 @@ func (m *Manager) Restore() error {
 		switch {
 		case rowCount == 0 && b.Counts.Total > 0:
 			// window (c): rows never persisted; the batch can never progress
-			_ = m.st.SetBatchStatus(b.ID, "failed")
+			_ = manager.st.SetBatchStatus(b.ID, "failed")
 			if b.CallbackURL != "" {
-				go m.deliver(b.ID, b.CallbackURL)
+				go manager.deliver(b.ID, b.CallbackURL)
 			}
 			continue
 		case terminal >= b.Counts.Total:
 			// window (b): every request terminal but the status write was lost
-			_ = m.st.UpdateBatchCounts(b.ID, counts)
-			_ = m.st.SetBatchStatus(b.ID, "completed")
+			_ = manager.st.UpdateBatchCounts(b.ID, counts)
+			_ = manager.st.SetBatchStatus(b.ID, "completed")
 			if b.CallbackURL != "" {
-				go m.deliver(b.ID, b.CallbackURL)
+				go manager.deliver(b.ID, b.CallbackURL)
 			}
 			continue
 		}
@@ -198,7 +201,7 @@ func (m *Manager) Restore() error {
 		bs.failed.Store(failed)
 		bs.expired.Store(expired)
 		bs.rejected.Store(rejected)
-		m.batches[b.ID] = bs
+		manager.batches[b.ID] = bs
 	}
 	return nil
 }
@@ -206,10 +209,10 @@ func (m *Manager) Restore() error {
 // onTerminal is the engine's terminal hook: counts the outcome, persists the
 // running batch breakdown, and completes + dispatches the callback when the
 // last request lands.
-func (m *Manager) onTerminal(r *ledger.Request, outcome string, tokens int64) {
-	m.mu.Lock()
-	bs := m.batches[r.BatchExtID]
-	m.mu.Unlock()
+func (manager *Manager) onTerminal(r *ledger.Request, outcome string, tokens int64) {
+	manager.mu.Lock()
+	bs := manager.batches[r.BatchExtID]
+	manager.mu.Unlock()
 	if bs == nil {
 		if os.Getenv("CONSUMA_DEBUG_BATCH") != "" {
 			fmt.Println("DBG onTerminal: no batchState for", r.BatchExtID, "outcome", outcome)
@@ -233,21 +236,21 @@ func (m *Manager) onTerminal(r *ledger.Request, outcome string, tokens int64) {
 		Expired:    bs.expired.Load(),
 		Rejected:   bs.rejected.Load(),
 	}
-	_ = m.st.UpdateBatchCounts(bs.id, counts)
+	_ = manager.st.UpdateBatchCounts(bs.id, counts)
 	// >= not ==: a restored batch's carried-forward counts can drift by the
 	// crash-window lag; the batch must complete when the LAST request lands,
 	// never hang because an event was double- or under-counted
 	if bs.terminal.Add(1) >= bs.total {
-		_ = m.st.SetBatchStatus(bs.id, "completed")
+		_ = manager.st.SetBatchStatus(bs.id, "completed")
 		if bs.callbackURL != "" {
-			go m.deliver(bs.id, bs.callbackURL)
+			go manager.deliver(bs.id, bs.callbackURL)
 		}
 	}
 }
 
 // Status returns a batch's persisted record.
-func (m *Manager) Status(id string) (store.Batch, bool) {
-	b, ok, err := m.st.GetBatch(id)
+func (manager *Manager) Status(id string) (store.Batch, bool) {
+	b, ok, err := manager.st.GetBatch(id)
 	if err != nil || !ok {
 		return store.Batch{}, false
 	}
@@ -263,11 +266,11 @@ type ResultRow struct {
 }
 
 // Results lists a batch's per-request outcomes.
-func (m *Manager) Results(id string) ([]ResultRow, bool) {
-	if _, ok, _ := m.st.GetBatch(id); !ok {
+func (manager *Manager) Results(id string) ([]ResultRow, bool) {
+	if _, ok, _ := manager.st.GetBatch(id); !ok {
 		return nil, false
 	}
-	rows, err := m.st.RequestsByBatch(id)
+	rows, err := manager.st.RequestsByBatch(id)
 	if err != nil {
 		return nil, false
 	}
@@ -281,17 +284,17 @@ func (m *Manager) Results(id string) ([]ResultRow, bool) {
 // Resume re-dispatches callbacks for every completed batch whose delivery
 // never succeeded (crash between completion and delivery — the client only
 // sees extra latency, nothing is lost).
-func (m *Manager) Resume() error {
-	ids, err := m.st.UndeliveredBatches()
+func (manager *Manager) Resume() error {
+	ids, err := manager.st.UndeliveredBatches()
 	if err != nil {
 		return err
 	}
 	for _, id := range ids {
-		b, ok, _ := m.st.GetBatch(id)
+		b, ok, _ := manager.st.GetBatch(id)
 		if !ok || b.CallbackURL == "" {
 			continue
 		}
-		go m.deliver(id, b.CallbackURL)
+		go manager.deliver(id, b.CallbackURL)
 	}
 	return nil
 }

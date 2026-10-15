@@ -33,12 +33,12 @@ type slot struct {
 }
 
 // reset adopts the slot for a new second (call with slot.mu held).
-func (s *slot) reset(sec int64) {
-	if s.sec != sec {
-		s.sec = sec
-		s.rpm = 0
-		s.tpm = 0
-		s.actual = 0
+func (slot *slot) reset(sec int64) {
+	if slot.sec != sec {
+		slot.sec = sec
+		slot.rpm = 0
+		slot.tpm = 0
+		slot.actual = 0
 	}
 }
 
@@ -67,10 +67,10 @@ type Limiter struct {
 
 // New builds a limiter from a model config.
 func New(m *config.ModelConfig) *Limiter {
-	l := &Limiter{}
-	l.rpmLimit.Store(m.RPM)
-	l.tpmLimit.Store(m.TPM)
-	return l
+	limiter := &Limiter{}
+	limiter.rpmLimit.Store(m.RPM)
+	limiter.tpmLimit.Store(m.TPM)
+	return limiter
 }
 
 // roll advances the ring's window base so that the window ending at sec
@@ -80,53 +80,53 @@ func New(m *config.ModelConfig) *Limiter {
 // and permanently starve the limiter under sustained load). Call with
 // usedMu held. Back-dated seconds (sec < wheelBase) are inside the live
 // window: no eviction.
-func (l *Limiter) roll(sec int64) {
-	if l.wheelBase == 0 {
-		l.wheelBase = sec // first use: window starts empty here
+func (limiter *Limiter) roll(sec int64) {
+	if limiter.wheelBase == 0 {
+		limiter.wheelBase = sec // first use: window starts empty here
 		return
 	}
-	for l.wheelBase < sec-59 {
+	for limiter.wheelBase < sec-59 {
 		// evict second wheelBase: it just left the 60s window
-		s := l.slotFor(l.wheelBase)
-		s.mu.Lock()
-		if s.sec == l.wheelBase {
-			l.rpmUsed -= s.rpm
-			l.tpmUsed -= s.tpm
-			s.rpm, s.tpm, s.actual = 0, 0, 0
+		slot := limiter.slotFor(limiter.wheelBase)
+		slot.mu.Lock()
+		if slot.sec == limiter.wheelBase {
+			limiter.rpmUsed -= slot.rpm
+			limiter.tpmUsed -= slot.tpm
+			slot.rpm, slot.tpm, slot.actual = 0, 0, 0
 		}
-		s.mu.Unlock()
-		l.wheelBase++
+		slot.mu.Unlock()
+		limiter.wheelBase++
 	}
 }
 
-func (l *Limiter) slotFor(sec int64) *slot {
-	return &l.slots[sec%60]
+func (limiter *Limiter) slotFor(sec int64) *slot {
+	return &limiter.slots[sec%60]
 }
 
 // TryAdmit checks the rolling 60s RPM/TPM usage and reserves tokens.
-func (l *Limiter) TryAdmit(tokens int64, now time.Time) AdmissionResult {
-	rpmLimit := l.rpmLimit.Load()
-	tpmLimit := l.tpmLimit.Load()
+func (limiter *Limiter) TryAdmit(tokens int64, now time.Time) AdmissionResult {
+	rpmLimit := limiter.rpmLimit.Load()
+	tpmLimit := limiter.tpmLimit.Load()
 	if tokens > tpmLimit {
 		return AdmissionResult{OK: false, OverTPMBudget: true}
 	}
 	sec := now.Unix()
-	l.usedMu.Lock()
-	l.roll(sec)
-	if l.rpmUsed+1 > rpmLimit || l.tpmUsed+tokens > tpmLimit {
-		l.usedMu.Unlock()
+	limiter.usedMu.Lock()
+	limiter.roll(sec)
+	if limiter.rpmUsed+1 > rpmLimit || limiter.tpmUsed+tokens > tpmLimit {
+		limiter.usedMu.Unlock()
 		return AdmissionResult{OK: false, OverRate: true}
 	}
-	s := l.slotFor(sec)
-	s.mu.Lock()
-	s.reset(sec)
-	s.rpm++
-	s.tpm += tokens
-	s.mu.Unlock()
-	l.rpmUsed++
-	l.tpmUsed += tokens
-	l.usedMu.Unlock()
-	l.admittedTPM.Add(tokens)
+	slot := limiter.slotFor(sec)
+	slot.mu.Lock()
+	slot.reset(sec)
+	slot.rpm++
+	slot.tpm += tokens
+	slot.mu.Unlock()
+	limiter.rpmUsed++
+	limiter.tpmUsed += tokens
+	limiter.usedMu.Unlock()
+	limiter.admittedTPM.Add(tokens)
 	return AdmissionResult{OK: true}
 }
 
@@ -137,80 +137,80 @@ func (l *Limiter) TryAdmit(tokens int64, now time.Time) AdmissionResult {
 // only if the reservation's admission second is still inside the rolling
 // window (admittedSec >= wheelBase): a refund for an already-evicted
 // reservation must not mint headroom. Net is clamped at zero.
-func (l *Limiter) Reconcile(reserved, actual, admittedSec int64, now time.Time) {
+func (limiter *Limiter) Reconcile(reserved, actual, admittedSec int64, now time.Time) {
 	sec := now.Unix()
 	refund := reserved - actual
 	if refund < 0 {
 		refund = 0 // provider charged more than reserved; no phantom budget
 	}
-	l.usedMu.Lock()
-	l.roll(sec)
-	if admittedSec >= l.wheelBase && refund > 0 {
-		l.tpmUsed -= refund
-		if l.tpmUsed < 0 {
-			l.tpmUsed = 0 // defensive: never let refunds mint headroom
+	limiter.usedMu.Lock()
+	limiter.roll(sec)
+	if admittedSec >= limiter.wheelBase && refund > 0 {
+		limiter.tpmUsed -= refund
+		if limiter.tpmUsed < 0 {
+			limiter.tpmUsed = 0 // defensive: never let refunds mint headroom
 		}
 	}
-	l.usedMu.Unlock()
-	s := l.slotFor(sec)
-	s.mu.Lock()
-	s.reset(sec)
-	s.actual += actual
-	s.mu.Unlock()
-	l.actualMu.Lock()
-	l.actualUsed += actual
-	l.actualMu.Unlock()
+	limiter.usedMu.Unlock()
+	slot := limiter.slotFor(sec)
+	slot.mu.Lock()
+	slot.reset(sec)
+	slot.actual += actual
+	slot.mu.Unlock()
+	limiter.actualMu.Lock()
+	limiter.actualUsed += actual
+	limiter.actualMu.Unlock()
 }
 
 // ChargeRetry counts one retry attempt against the rolling RPM window (and
 // its estimated tokens against TPM) like a fresh admission, without passing
 // through the queue/overflow path.
-func (l *Limiter) ChargeRetry(now time.Time) bool {
-	return l.TryAdmit(0, now).OK
+func (limiter *Limiter) ChargeRetry(now time.Time) bool {
+	return limiter.TryAdmit(0, now).OK
 }
 
 // SetLimits swaps the configured limits live (no restart). Enforcement
 // applies to new admissions immediately.
-func (l *Limiter) SetLimits(rpm, tpm int64) {
-	l.rpmLimit.Store(rpm)
-	l.tpmLimit.Store(tpm)
+func (limiter *Limiter) SetLimits(rpm, tpm int64) {
+	limiter.rpmLimit.Store(rpm)
+	limiter.tpmLimit.Store(tpm)
 }
 
 // Limits returns the currently configured limits.
-func (l *Limiter) Limits() (int64, int64) {
-	return l.rpmLimit.Load(), l.tpmLimit.Load()
+func (limiter *Limiter) Limits() (int64, int64) {
+	return limiter.rpmLimit.Load(), limiter.tpmLimit.Load()
 }
 
 // ObservedRPM returns the rolling 60s admitted count - by construction
 // capped at the configured limit while enforcement is active.
-func (l *Limiter) ObservedRPM(now time.Time) int64 {
+func (limiter *Limiter) ObservedRPM(now time.Time) int64 {
 	sec := now.Unix()
-	l.usedMu.Lock()
-	defer l.usedMu.Unlock()
-	l.roll(sec)
-	return l.rpmUsed
+	limiter.usedMu.Lock()
+	defer limiter.usedMu.Unlock()
+	limiter.roll(sec)
+	return limiter.rpmUsed
 }
 
 // ObservedTPM returns the rolling 60s outstanding reserved tokens, net of
 // reconciled refunds. Before reconciliation this equals the reservation
 // (conservative upper bound); refunds lower it toward the actual charge.
-func (l *Limiter) ObservedTPM(now time.Time) int64 {
+func (limiter *Limiter) ObservedTPM(now time.Time) int64 {
 	sec := now.Unix()
-	l.usedMu.Lock()
-	defer l.usedMu.Unlock()
-	l.roll(sec)
-	if l.tpmUsed < 0 {
+	limiter.usedMu.Lock()
+	defer limiter.usedMu.Unlock()
+	limiter.roll(sec)
+	if limiter.tpmUsed < 0 {
 		return 0
 	}
-	return l.tpmUsed
+	return limiter.tpmUsed
 }
 
 // ActualTPM returns the rolling 60s actually-charged tokens (post-reconcile).
-func (l *Limiter) ActualTPM(now time.Time) int64 {
-	l.actualMu.Lock()
-	defer l.actualMu.Unlock()
-	return l.actualUsed
+func (limiter *Limiter) ActualTPM(now time.Time) int64 {
+	limiter.actualMu.Lock()
+	defer limiter.actualMu.Unlock()
+	return limiter.actualUsed
 }
 
 // AdmittedTPM returns cumulative tokens reserved at admission.
-func (l *Limiter) AdmittedTPM() int64 { return l.admittedTPM.Load() }
+func (limiter *Limiter) AdmittedTPM() int64 { return limiter.admittedTPM.Load() }

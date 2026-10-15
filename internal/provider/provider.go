@@ -58,53 +58,53 @@ type Provider struct {
 
 // New builds a provider for a model.
 func New(m *config.ModelConfig) *Provider {
-	p := &Provider{model: m}
-	p.rpm.Store(m.RPM)
-	p.tpm.Store(m.TPM)
-	return p
+	provider := &Provider{model: m}
+	provider.rpm.Store(m.RPM)
+	provider.tpm.Store(m.TPM)
+	return provider
 }
 
 // SetLimits changes the provider-side limits live.
-func (p *Provider) SetLimits(rpm, tpm int64) {
-	p.rpm.Store(rpm)
-	p.tpm.Store(tpm)
+func (provider *Provider) SetLimits(rpm, tpm int64) {
+	provider.rpm.Store(rpm)
+	provider.tpm.Store(tpm)
 }
 
-func (p *Provider) slotFor(sec int64) *providerSlot {
-	return &p.slots[sec%60]
+func (provider *Provider) slotFor(sec int64) *providerSlot {
+	return &provider.slots[sec%60]
 }
 
 // roll advances the rolling window base (call with usedMu held). wheelBase
 // is always the oldest live second and is never snapped to the current
 // second (a snap would skip evictions and starve the backstop).
-func (p *Provider) roll(sec int64) {
-	if p.wheelBase == 0 {
-		p.wheelBase = sec
+func (provider *Provider) roll(sec int64) {
+	if provider.wheelBase == 0 {
+		provider.wheelBase = sec
 		return
 	}
-	for p.wheelBase < sec-59 {
-		s := p.slotFor(p.wheelBase)
+	for provider.wheelBase < sec-59 {
+		s := provider.slotFor(provider.wheelBase)
 		s.mu.Lock()
-		if s.sec == p.wheelBase {
-			p.rpmUsed -= s.rpm
-			p.tpmUsed -= s.tpm
+		if s.sec == provider.wheelBase {
+			provider.rpmUsed -= s.rpm
+			provider.tpmUsed -= s.tpm
 			s.rpm, s.tpm = 0, 0
 		}
 		s.mu.Unlock()
-		p.wheelBase++
+		provider.wheelBase++
 	}
 }
 
 // Call simulates one provider call at time now.
-func (p *Provider) Call(r *ledger.Request, rng *rand.Rand, now time.Time) CallResult {
+func (provider *Provider) Call(r *ledger.Request, rng *rand.Rand, now time.Time) CallResult {
 	sec := now.Unix()
-	p.usedMu.Lock()
-	p.roll(sec)
-	if p.rpmUsed+1 > p.rpm.Load() || p.tpmUsed+r.EstimateTokens > p.tpm.Load() {
-		p.usedMu.Unlock()
+	provider.usedMu.Lock()
+	provider.roll(sec)
+	if provider.rpmUsed+1 > provider.rpm.Load() || provider.tpmUsed+r.EstimateTokens > provider.tpm.Load() {
+		provider.usedMu.Unlock()
 		return CallResult{Outcome: ProviderRejected}
 	}
-	s := p.slotFor(sec)
+	s := provider.slotFor(sec)
 	s.mu.Lock()
 	if s.sec != sec {
 		s.sec = sec
@@ -114,19 +114,19 @@ func (p *Provider) Call(r *ledger.Request, rng *rand.Rand, now time.Time) CallRe
 	s.rpm++
 	s.tpm += r.EstimateTokens
 	s.mu.Unlock()
-	p.rpmUsed++
-	p.tpmUsed += r.EstimateTokens
-	p.usedMu.Unlock()
+	provider.rpmUsed++
+	provider.tpmUsed += r.EstimateTokens
+	provider.usedMu.Unlock()
 
-	latency := p.model.Latency.Draw(rng)
-	outcome := p.drawOutcome(rng)
-	actual := p.drawTokens(rng)
+	latency := provider.model.Latency.Draw(rng)
+	outcome := provider.drawOutcome(rng)
+	actual := provider.drawTokens(rng)
 	return CallResult{Latency: latency, Outcome: outcome, ActualTokens: actual}
 }
 
-func (p *Provider) drawOutcome(rng *rand.Rand) Outcome {
+func (provider *Provider) drawOutcome(rng *rand.Rand) Outcome {
 	roll := rng.Float64() * 100
-	o := p.model.Outcome
+	o := provider.model.Outcome
 	switch {
 	case roll < o.SuccessPct:
 		return Success
@@ -137,10 +137,10 @@ func (p *Provider) drawOutcome(rng *rand.Rand) Outcome {
 	}
 }
 
-func (p *Provider) drawTokens(rng *rand.Rand) int64 {
-	mean := p.model.ActualTokenMean
+func (provider *Provider) drawTokens(rng *rand.Rand) int64 {
+	mean := provider.model.ActualTokenMean
 	if mean <= 0 {
-		mean = float64(p.model.EstimateTokens)
+		mean = float64(provider.model.EstimateTokens)
 	}
 	// +-20% normal noise around the mean, clamped to [1, 2*mean].
 	t := mean + rng.NormFloat64()*0.2*mean
@@ -154,19 +154,19 @@ func (p *Provider) drawTokens(rng *rand.Rand) int64 {
 }
 
 // ObservedRPM reports provider-side rolling 60s request usage.
-func (p *Provider) ObservedRPM(now time.Time) int64 {
+func (provider *Provider) ObservedRPM(now time.Time) int64 {
 	sec := now.Unix()
-	p.usedMu.Lock()
-	defer p.usedMu.Unlock()
-	p.roll(sec)
-	return p.rpmUsed
+	provider.usedMu.Lock()
+	defer provider.usedMu.Unlock()
+	provider.roll(sec)
+	return provider.rpmUsed
 }
 
 // ObservedTPM reports provider-side rolling 60s token usage.
-func (p *Provider) ObservedTPM(now time.Time) int64 {
+func (provider *Provider) ObservedTPM(now time.Time) int64 {
 	sec := now.Unix()
-	p.usedMu.Lock()
-	defer p.usedMu.Unlock()
-	p.roll(sec)
-	return p.tpmUsed
+	provider.usedMu.Lock()
+	defer provider.usedMu.Unlock()
+	provider.roll(sec)
+	return provider.tpmUsed
 }

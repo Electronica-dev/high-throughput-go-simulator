@@ -18,36 +18,36 @@ type fakeTarget struct {
 	steadySet bool
 }
 
-func (f *fakeTarget) SubmitBatch(reqs []*ledger.Request) {
-	f.mu.Lock()
-	defer f.mu.Unlock()
-	f.chunks = append(f.chunks, reqs)
+func (target *fakeTarget) SubmitBatch(reqs []*ledger.Request) {
+	target.mu.Lock()
+	defer target.mu.Unlock()
+	target.chunks = append(target.chunks, reqs)
 }
 
-func (f *fakeTarget) Submit(r *ledger.Request) { f.SubmitBatch([]*ledger.Request{r}) }
+func (target *fakeTarget) Submit(r *ledger.Request) { target.SubmitBatch([]*ledger.Request{r}) }
 
-func (f *fakeTarget) MarkSteady(startNS, endNS int64) {
-	f.mu.Lock()
-	defer f.mu.Unlock()
-	f.steadySet = true
-	f.startNS = startNS
+func (target *fakeTarget) MarkSteady(startNS, endNS int64) {
+	target.mu.Lock()
+	defer target.mu.Unlock()
+	target.steadySet = true
+	target.startNS = startNS
 }
 
-func (f *fakeTarget) count() int {
-	f.mu.Lock()
-	defer f.mu.Unlock()
+func (target *fakeTarget) count() int {
+	target.mu.Lock()
+	defer target.mu.Unlock()
 	n := 0
-	for _, c := range f.chunks {
+	for _, c := range target.chunks {
 		n += len(c)
 	}
 	return n
 }
 
-func (f *fakeTarget) countAtOrBefore(cutoffNS int64) int {
-	f.mu.Lock()
-	defer f.mu.Unlock()
+func (target *fakeTarget) countAtOrBefore(cutoffNS int64) int {
+	target.mu.Lock()
+	defer target.mu.Unlock()
 	n := 0
-	for _, c := range f.chunks {
+	for _, c := range target.chunks {
 		for _, r := range c {
 			if r.BornNS <= cutoffNS {
 				n++

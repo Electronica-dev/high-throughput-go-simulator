@@ -24,7 +24,7 @@ type fakeAPI struct {
 	posts     atomic.Int32
 }
 
-func (f *fakeAPI) handler() http.Handler {
+func (target *fakeAPI) handler() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /batches", func(w http.ResponseWriter, r *http.Request) {
 		var in struct {
@@ -36,12 +36,12 @@ func (f *fakeAPI) handler() http.Handler {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		id := fmt.Sprintf("b-%d", f.nextID.Add(1))
-		f.mu.Lock()
-		f.batches[id] = in.Count
-		f.mu.Unlock()
-		f.totalReqs.Add(in.Count)
-		f.posts.Add(1)
+		id := fmt.Sprintf("b-%d", target.nextID.Add(1))
+		target.mu.Lock()
+		target.batches[id] = in.Count
+		target.mu.Unlock()
+		target.totalReqs.Add(in.Count)
+		target.posts.Add(1)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusAccepted)
 		json.NewEncoder(w).Encode(map[string]any{"batch_id": id, "count": in.Count})
@@ -68,7 +68,7 @@ func TestHTTPTargetSubmitsBatchesAndConservesCount(t *testing.T) {
 	}
 	lc := &LoadConfig{
 		RatePerSec: 500, Duration: 200 * time.Millisecond,
-		ModelMix: map[string]float64{"model-a": 1.0},
+		ModelMix:  map[string]float64{"model-a": 1.0},
 		BatchSize: 10, EstimateTokens: 100, RNGSeed: 42,
 	}
 	tgt := NewHTTPTarget(srv.URL, nil)
@@ -107,7 +107,7 @@ func TestHTTPTargetMixedModelsGroupPerModel(t *testing.T) {
 	}
 	lc := &LoadConfig{
 		RatePerSec: 500, Duration: 200 * time.Millisecond,
-		ModelMix: map[string]float64{"model-a": 0.5, "model-b": 0.5},
+		ModelMix:  map[string]float64{"model-a": 0.5, "model-b": 0.5},
 		BatchSize: 10, EstimateTokens: 100, RNGSeed: 7,
 	}
 	tgt := NewHTTPTarget(srv.URL, nil)
@@ -132,7 +132,7 @@ func TestHTTPTargetAwaitCompletions(t *testing.T) {
 	}
 	lc := &LoadConfig{
 		RatePerSec: 500, Duration: 100 * time.Millisecond,
-		ModelMix: map[string]float64{"model-a": 1.0},
+		ModelMix:  map[string]float64{"model-a": 1.0},
 		BatchSize: 10, EstimateTokens: 100, RNGSeed: 1,
 	}
 	tgt := NewHTTPTarget(srv.URL, nil)

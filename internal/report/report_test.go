@@ -16,10 +16,10 @@ func sampleReport(t *testing.T) *Report {
 	cfg := &config.Config{
 		MaxWaitMS: 50, QueueDepth: 16, WheelShards: 2, WheelBuckets: 256, WheelTickMS: 1, MaxRetries: 3,
 		Models: []config.ModelConfig{{
-		Name: "model-a", RPM: 30000, TPM: 60000000, EstimateTokens: 100, ActualTokenMean: 100,
-		Latency: config.LatencyConfig{Kind: "fixed", MeanMS: 1},
-		Outcome: config.OutcomeConfig{SuccessPct: 100},
-	}}}
+			Name: "model-a", RPM: 30000, TPM: 60000000, EstimateTokens: 100, ActualTokenMean: 100,
+			Latency: config.LatencyConfig{Kind: "fixed", MeanMS: 1},
+			Outcome: config.OutcomeConfig{SuccessPct: 100},
+		}}}
 	eng, err := engine.New(cfg)
 	if err != nil {
 		t.Fatalf("engine.New: %v", err)
@@ -33,9 +33,9 @@ func sampleReport(t *testing.T) *Report {
 }
 
 func TestJSONStructure(t *testing.T) {
-	r := sampleReport(t)
+	report := sampleReport(t)
 	var buf bytes.Buffer
-	if err := WriteJSON(&buf, r); err != nil {
+	if err := WriteJSON(&buf, report); err != nil {
 		t.Fatalf("WriteJSON: %v", err)
 	}
 	var out map[string]any
@@ -57,9 +57,9 @@ func TestJSONStructure(t *testing.T) {
 }
 
 func TestTextSeparatesSections(t *testing.T) {
-	r := sampleReport(t)
+	report := sampleReport(t)
 	var buf bytes.Buffer
-	if err := WriteText(&buf, r); err != nil {
+	if err := WriteText(&buf, report); err != nil {
 		t.Fatalf("WriteText: %v", err)
 	}
 	out := buf.String()
@@ -69,10 +69,10 @@ func TestTextSeparatesSections(t *testing.T) {
 }
 
 func TestPercentilesPresent(t *testing.T) {
-	r := sampleReport(t)
-	l, ok := r.Measured.Latency["model-a"]
+	report := sampleReport(t)
+	l, ok := report.Measured.Latency["model-a"]
 	if !ok {
-		t.Fatalf("no latency entry for model-a: %v", r.Measured.Latency)
+		t.Fatalf("no latency entry for model-a: %v", report.Measured.Latency)
 	}
 	if l.P50MS <= 0 || l.P95MS <= 0 || l.P99MS <= 0 {
 		t.Fatalf("want populated p50/p95/p99, got %+v", l)

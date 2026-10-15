@@ -26,18 +26,18 @@ type systemDeps struct {
 	mgr *batch.Manager
 }
 
-func (s *systemDeps) SubmitAndWait(r *ledger.Request, timeout time.Duration) (string, int64, error) {
-	return s.eng.SubmitAndWait(r, timeout)
+func (deps *systemDeps) SubmitAndWait(r *ledger.Request, timeout time.Duration) (string, int64, error) {
+	return deps.eng.SubmitAndWait(r, timeout)
 }
 
-func (s *systemDeps) Submit(r *ledger.Request) { s.eng.Submit(r) }
+func (deps *systemDeps) Submit(r *ledger.Request) { deps.eng.Submit(r) }
 
-func (s *systemDeps) SetLimit(model string, rpm, tpm int64) error {
-	return s.eng.SetLimit(model, rpm, tpm)
+func (deps *systemDeps) SetLimit(model string, rpm, tpm int64) error {
+	return deps.eng.SetLimit(model, rpm, tpm)
 }
 
-func (s *systemDeps) Limits(model string) (int64, int64, error) {
-	l := s.eng.Limiter(model)
+func (deps *systemDeps) Limits(model string) (int64, int64, error) {
+	l := deps.eng.Limiter(model)
 	if l == nil {
 		return 0, 0, fmt.Errorf("unknown model %q", model)
 	}
@@ -45,12 +45,12 @@ func (s *systemDeps) Limits(model string) (int64, int64, error) {
 	return rpm, tpm, nil
 }
 
-func (s *systemDeps) CreateBatch(model string, tokens, count int64, callbackURL string) (string, error) {
-	return s.mgr.Submit(model, tokens, count, callbackURL)
+func (deps *systemDeps) CreateBatch(model string, tokens, count int64, callbackURL string) (string, error) {
+	return deps.mgr.Submit(model, tokens, count, callbackURL)
 }
 
-func (s *systemDeps) ObservedWindows(model string) (api.WindowSample, error) {
-	l := s.eng.Limiter(model)
+func (deps *systemDeps) ObservedWindows(model string) (api.WindowSample, error) {
+	l := deps.eng.Limiter(model)
 	if l == nil {
 		return api.WindowSample{}, fmt.Errorf("unknown model %q", model)
 	}
@@ -64,8 +64,8 @@ func (s *systemDeps) ObservedWindows(model string) (api.WindowSample, error) {
 	}, nil
 }
 
-func (s *systemDeps) BatchStatus(id string) (api.BatchStatus, bool) {
-	b, ok := s.mgr.Status(id)
+func (deps *systemDeps) BatchStatus(id string) (api.BatchStatus, bool) {
+	b, ok := deps.mgr.Status(id)
 	if !ok {
 		return api.BatchStatus{}, false
 	}
@@ -76,8 +76,8 @@ func (s *systemDeps) BatchStatus(id string) (api.BatchStatus, bool) {
 	}, true
 }
 
-func (s *systemDeps) BatchResults(id string) ([]api.ResultRow, bool) {
-	rows, ok := s.mgr.Results(id)
+func (deps *systemDeps) BatchResults(id string) ([]api.ResultRow, bool) {
+	rows, ok := deps.mgr.Results(id)
 	if !ok {
 		return nil, false
 	}

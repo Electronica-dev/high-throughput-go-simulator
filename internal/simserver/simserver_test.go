@@ -35,10 +35,10 @@ func newServer(t *testing.T, cfg *config.Config) (*Server, *httptest.Server) {
 		t.Fatalf("store: %v", err)
 	}
 	t.Cleanup(func() { st.Close() })
-	s := New(cfg, st)
-	srv := httptest.NewServer(s.Handler())
+	server := New(cfg, st)
+	srv := httptest.NewServer(server.Handler())
 	t.Cleanup(srv.Close)
-	return s, srv
+	return server, srv
 }
 
 func call(t *testing.T, url, id string) (int, map[string]any) {
@@ -84,7 +84,7 @@ func TestLimitBreachReturns429(t *testing.T) {
 }
 
 func TestSeenKeyDeduplicates(t *testing.T) {
-	s, srv := newServer(t, testConfig())
+	server, srv := newServer(t, testConfig())
 	_, out1 := call(t, srv.URL, "r-dup")
 	code, out2 := call(t, srv.URL, "r-dup")
 	if code != 200 {
@@ -93,8 +93,8 @@ func TestSeenKeyDeduplicates(t *testing.T) {
 	if out1["outcome"] != out2["outcome"] {
 		t.Fatalf("dedup must return the original outcome: %v vs %v", out1, out2)
 	}
-	if s.executed.Load() != 1 {
-		t.Fatalf("provider should execute once, executed %d", s.executed.Load())
+	if server.executed.Load() != 1 {
+		t.Fatalf("provider should execute once, executed %d", server.executed.Load())
 	}
 }
 
@@ -147,7 +147,7 @@ func TestRequestBodyValidation(t *testing.T) {
 func TestSeenKeyDoesNotMemoizeFailures(t *testing.T) {
 	cfg := testConfig()
 	cfg.Models[0].Outcome = config.OutcomeConfig{TransientPct: 100} // every execution fails
-	s, srv := newServerT(t, cfg)
+	server, srv := newServerT(t, cfg)
 	_, out1 := call(t, srv.URL, "r-retry")
 	code, out2 := call(t, srv.URL, "r-retry")
 	if code != 200 {
@@ -156,7 +156,7 @@ func TestSeenKeyDoesNotMemoizeFailures(t *testing.T) {
 	if out1["outcome"] != "transient_failure" || out2["outcome"] != "transient_failure" {
 		t.Fatalf("outcomes: %v %v", out1["outcome"], out2["outcome"])
 	}
-	if s.executed.Load() != 2 {
-		t.Fatalf("transient failure must re-execute on retry, executed %d", s.executed.Load())
+	if server.executed.Load() != 2 {
+		t.Fatalf("transient failure must re-execute on retry, executed %d", server.executed.Load())
 	}
 }

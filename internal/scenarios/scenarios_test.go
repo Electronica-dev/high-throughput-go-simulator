@@ -80,17 +80,17 @@ type fakeSystem struct {
 	nextID     int
 }
 
-func (f *fakeSystem) handler() http.Handler {
+func (sys *fakeSystem) handler() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /batches", func(w http.ResponseWriter, r *http.Request) {
 		var in struct {
 			Count int64 `json:"count"`
 		}
 		_ = json.NewDecoder(r.Body).Decode(&in)
-		f.batches[itoa(f.nextID)] = in.Count
-		f.nextID++
+		sys.batches[itoa(sys.nextID)] = in.Count
+		sys.nextID++
 		w.WriteHeader(202)
-		json.NewEncoder(w).Encode(map[string]any{"batch_id": itoa(f.nextID - 1)})
+		json.NewEncoder(w).Encode(map[string]any{"batch_id": itoa(sys.nextID - 1)})
 	})
 	mux.HandleFunc("GET /batches/{id}", func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]any{
@@ -111,7 +111,7 @@ func (f *fakeSystem) handler() http.Handler {
 			TPM int64 `json:"tpm"`
 		}
 		_ = json.NewDecoder(r.Body).Decode(&in)
-		f.limitPosts = append(f.limitPosts, in.RPM)
+		sys.limitPosts = append(sys.limitPosts, in.RPM)
 		w.WriteHeader(200)
 	})
 	mux.HandleFunc("GET /metrics/{model}", func(w http.ResponseWriter, r *http.Request) {

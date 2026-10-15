@@ -49,7 +49,6 @@ func TestCLIRunsValidateArgs(t *testing.T) {
 	}
 }
 
-
 func TestConfigFileWatchAppliesLimits(t *testing.T) {
 	dir := t.TempDir()
 	path := writeConfig(t, dir, 1000000)
@@ -89,7 +88,7 @@ func TestConfigFileWatchAppliesLimits(t *testing.T) {
 func TestBenchmarkEndToEnd(t *testing.T) {
 	dir := t.TempDir()
 	path := writeConfig(t, dir, 1000000)
-	s, err := runBenchmark(runArgs{
+	summary, err := runBenchmark(runArgs{
 		Rate:     1000,
 		Duration: 200 * time.Millisecond,
 		Config:   path,
@@ -100,10 +99,10 @@ func TestBenchmarkEndToEnd(t *testing.T) {
 	if err != nil {
 		t.Fatalf("runBenchmark: %v", err)
 	}
-	if s.Submitted == 0 {
+	if summary.Submitted == 0 {
 		t.Fatal("no requests submitted")
 	}
-	if s.Submitted != s.Completed+s.Expired+s.Rejected {
-		t.Fatalf("unbalanced: %+v", s)
+	if summary.Submitted != summary.Completed+summary.Expired+summary.Rejected {
+		t.Fatalf("unbalanced: %+v", summary)
 	}
 }

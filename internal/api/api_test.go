@@ -29,39 +29,39 @@ type fakeDeps struct {
 	lastReq   *ledger.Request
 }
 
-func (f *fakeDeps) SubmitAndWait(r *ledger.Request, timeout time.Duration) (string, int64, error) {
-	f.mu.Lock()
-	f.submitted++
-	f.lastReq = r
-	f.mu.Unlock()
-	return f.waitRes, f.waitTok, f.waitErr
+func (deps *fakeDeps) SubmitAndWait(r *ledger.Request, timeout time.Duration) (string, int64, error) {
+	deps.mu.Lock()
+	deps.submitted++
+	deps.lastReq = r
+	deps.mu.Unlock()
+	return deps.waitRes, deps.waitTok, deps.waitErr
 }
 
-func (f *fakeDeps) Submit(r *ledger.Request) {}
+func (deps *fakeDeps) Submit(r *ledger.Request) {}
 
-func (f *fakeDeps) SetLimit(model string, rpm, tpm int64) error { return f.setErr }
+func (deps *fakeDeps) SetLimit(model string, rpm, tpm int64) error { return deps.setErr }
 
-func (f *fakeDeps) Limits(model string) (int64, int64, error) {
-	if !f.known[model] {
+func (deps *fakeDeps) Limits(model string) (int64, int64, error) {
+	if !deps.known[model] {
 		return 0, 0, errUnknownModel
 	}
-	return f.limitsRPM, f.limitsTPM, nil
+	return deps.limitsRPM, deps.limitsTPM, nil
 }
 
-func (f *fakeDeps) CreateBatch(model string, tokens, count int64, callbackURL string) (string, error) {
-	if !f.known[model] {
+func (deps *fakeDeps) CreateBatch(model string, tokens, count int64, callbackURL string) (string, error) {
+	if !deps.known[model] {
 		return "", errUnknownModel
 	}
-	if f.batchErr != nil {
-		return "", f.batchErr
+	if deps.batchErr != nil {
+		return "", deps.batchErr
 	}
-	return f.batchID, nil
+	return deps.batchID, nil
 }
 
 func apiSrv(t *testing.T, d *fakeDeps) *httptest.Server {
 	t.Helper()
-	s := New(d, []string{"model-a"})
-	srv := httptest.NewServer(s.Handler())
+	server := New(d, []string{"model-a"})
+	srv := httptest.NewServer(server.Handler())
 	t.Cleanup(srv.Close)
 	return srv
 }
@@ -188,26 +188,24 @@ func TestBatchUnknownModel(t *testing.T) {
 	}
 }
 
-
-
 // ---------- T9: observed-window metrics + batch results endpoints ----------
 
-func (f *fakeDeps) ObservedWindows(model string) (WindowSample, error) {
-	if !f.known[model] {
+func (deps *fakeDeps) ObservedWindows(model string) (WindowSample, error) {
+	if !deps.known[model] {
 		return WindowSample{}, errUnknownModel
 	}
-	return f.sample, nil
+	return deps.sample, nil
 }
 
-func (f *fakeDeps) BatchStatus(id string) (BatchStatus, bool) {
-	if id != f.batchID {
+func (deps *fakeDeps) BatchStatus(id string) (BatchStatus, bool) {
+	if id != deps.batchID {
 		return BatchStatus{}, false
 	}
 	return BatchStatus{ID: id, Status: "completed", Successful: 7, Failed: 1, Expired: 1, Rejected: 1, Total: 10}, true
 }
 
-func (f *fakeDeps) BatchResults(id string) ([]ResultRow, bool) {
-	if id != f.batchID {
+func (deps *fakeDeps) BatchResults(id string) ([]ResultRow, bool) {
+	if id != deps.batchID {
 		return nil, false
 	}
 	return []ResultRow{

@@ -114,9 +114,9 @@ func TestCallbackOnlyAfterAllTerminal(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer eng.Stop()
-	m := New(st, eng, fastCallbackCfg())
+	manager := New(st, eng, fastCallbackCfg())
 
-	id, err := m.Submit("model-a", 1000, 2, srv.URL)
+	id, err := manager.Submit("model-a", 1000, 2, srv.URL)
 	if err != nil {
 		t.Fatalf("Submit: %v", err)
 	}
@@ -136,7 +136,7 @@ func TestCallbackOnlyAfterAllTerminal(t *testing.T) {
 		t.Fatal("callback never fired after all requests completed")
 	}
 
-	b, ok := m.Status(id)
+	b, ok := manager.Status(id)
 	if !ok || b.Status != "completed" {
 		t.Fatalf("batch status: ok=%v %+v", ok, b)
 	}
@@ -154,10 +154,10 @@ func TestBatchAckUnderLoad(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer eng.Stop()
-	m := New(st, eng, fastCallbackCfg())
+	manager := New(st, eng, fastCallbackCfg())
 
 	start := time.Now()
-	id, err := m.Submit("model-a", 1000, 10000, "") // no callback
+	id, err := manager.Submit("model-a", 1000, 10000, "") // no callback
 	if err != nil {
 		t.Fatalf("Submit: %v", err)
 	}
@@ -180,9 +180,9 @@ func TestCallbackRetriesUntilSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer eng.Stop()
-	m := New(st, eng, fastCallbackCfg())
+	manager := New(st, eng, fastCallbackCfg())
 
-	id, err := m.Submit("model-a", 1000, 1, srv.URL)
+	id, err := manager.Submit("model-a", 1000, 1, srv.URL)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -296,21 +296,21 @@ func TestResultsListedOncePerID(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer eng.Stop()
-	m := New(st, eng, fastCallbackCfg())
+	manager := New(st, eng, fastCallbackCfg())
 
-	id, err := m.Submit("model-a", 1000, 7, "")
+	id, err := manager.Submit("model-a", 1000, 7, "")
 	if err != nil {
 		t.Fatal(err)
 	}
 	// wait for all terminal
 	deadline := time.Now().Add(3 * time.Second)
 	for time.Now().Before(deadline) {
-		if b, ok := m.Status(id); ok && b.Status == "completed" {
+		if b, ok := manager.Status(id); ok && b.Status == "completed" {
 			break
 		}
 		time.Sleep(10 * time.Millisecond)
 	}
-	rows, ok := m.Results(id)
+	rows, ok := manager.Results(id)
 	if !ok {
 		t.Fatal("results not found for a completed batch")
 	}
@@ -327,7 +327,7 @@ func TestResultsListedOncePerID(t *testing.T) {
 			t.Fatalf("row %s mismatch: %+v", r.ID, r)
 		}
 	}
-	if b, _ := m.Status(id); b.Counts.Successful != 7 {
+	if b, _ := manager.Status(id); b.Counts.Successful != 7 {
 		t.Fatalf("batch counts: %+v", b.Counts)
 	}
 }
@@ -367,8 +367,8 @@ func TestRestoreContinuesInterruptedBatches(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer eng.Stop()
-	m := New(st, eng, fastCallbackCfg())
-	if err := m.Restore(); err != nil {
+	manager := New(st, eng, fastCallbackCfg())
+	if err := manager.Restore(); err != nil {
 		t.Fatalf("Restore: %v", err)
 	}
 	if n, err := eng.Recover(); err != nil || n != 8 {
@@ -377,7 +377,7 @@ func TestRestoreContinuesInterruptedBatches(t *testing.T) {
 
 	deadline := time.Now().Add(10 * time.Second)
 	for time.Now().Before(deadline) {
-		if b, ok := m.Status("b-crash"); ok && b.Status == "completed" {
+		if b, ok := manager.Status("b-crash"); ok && b.Status == "completed" {
 			if b.Counts.Total != 10 {
 				t.Fatalf("total want 10, got %d", b.Counts.Total)
 			}
@@ -388,7 +388,7 @@ func TestRestoreContinuesInterruptedBatches(t *testing.T) {
 		}
 		time.Sleep(20 * time.Millisecond)
 	}
-	b, _ := m.Status("b-crash")
+	b, _ := manager.Status("b-crash")
 	t.Fatalf("batch never completed after restore: status=%q counts=%+v", b.Status, b.Counts)
 }
 
@@ -423,12 +423,12 @@ func TestRestoreCompletesFullyTerminalBatch(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer eng.Stop()
-	m := New(st, eng, fastCallbackCfg())
-	if err := m.Restore(); err != nil {
+	manager := New(st, eng, fastCallbackCfg())
+	if err := manager.Restore(); err != nil {
 		t.Fatalf("Restore: %v", err)
 	}
 
-	b, ok := m.Status("b-window-b")
+	b, ok := manager.Status("b-window-b")
 	if !ok || b.Status != "completed" {
 		t.Fatalf("batch must be completed by Restore, got status=%q", b.Status)
 	}
@@ -468,8 +468,8 @@ func TestRestoreReconcilesStaleCounters(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer eng.Stop()
-	m := New(st, eng, fastCallbackCfg())
-	if err := m.Restore(); err != nil {
+	manager := New(st, eng, fastCallbackCfg())
+	if err := manager.Restore(); err != nil {
 		t.Fatalf("Restore: %v", err)
 	}
 	if n, err := eng.Recover(); err != nil || n != 1 {
@@ -478,7 +478,7 @@ func TestRestoreReconcilesStaleCounters(t *testing.T) {
 
 	deadline := time.Now().Add(10 * time.Second)
 	for time.Now().Before(deadline) {
-		if b, ok := m.Status("b-window-a"); ok && b.Status == "completed" {
+		if b, ok := manager.Status("b-window-a"); ok && b.Status == "completed" {
 			if b.Counts.Successful != 2 || b.Counts.Total != 2 {
 				t.Fatalf("counts must land on exactly 2/2, got %+v", b.Counts)
 			}
@@ -486,7 +486,7 @@ func TestRestoreReconcilesStaleCounters(t *testing.T) {
 		}
 		time.Sleep(20 * time.Millisecond)
 	}
-	b, _ := m.Status("b-window-a")
+	b, _ := manager.Status("b-window-a")
 	t.Fatalf("batch never completed: status=%q counts=%+v", b.Status, b.Counts)
 }
 
@@ -507,12 +507,12 @@ func TestRestoreFailsEmptyProcessingBatch(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer eng.Stop()
-	m := New(st, eng, fastCallbackCfg())
-	if err := m.Restore(); err != nil {
+	manager := New(st, eng, fastCallbackCfg())
+	if err := manager.Restore(); err != nil {
 		t.Fatalf("Restore: %v", err)
 	}
 
-	b, ok := m.Status("b-window-c")
+	b, ok := manager.Status("b-window-c")
 	if !ok || b.Status != "failed" {
 		t.Fatalf("empty processing batch must be failed by Restore, got status=%q ok=%v", b.Status, ok)
 	}

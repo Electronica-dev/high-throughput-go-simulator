@@ -11,7 +11,6 @@ import (
 	"fmt"
 	"net/http"
 	"time"
-
 )
 
 // RunScenario3 submits the durable batches and asserts the delivery

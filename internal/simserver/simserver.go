@@ -34,31 +34,31 @@ type modelState struct {
 	usedMu    sync.Mutex
 }
 
-func (m *modelState) slotFor(sec int64) *simSlot { return &m.slots[sec%60] }
+func (model *modelState) slotFor(sec int64) *simSlot { return &model.slots[sec%60] }
 
 // roll evicts seconds that left the 60s rolling window (call with usedMu).
-func (m *modelState) roll(sec int64) {
-	if m.wheelBase == 0 {
-		m.wheelBase = sec
+func (model *modelState) roll(sec int64) {
+	if model.wheelBase == 0 {
+		model.wheelBase = sec
 		return
 	}
-	for m.wheelBase < sec-59 {
-		s := m.slotFor(m.wheelBase)
-		s.mu.Lock()
-		if s.sec == m.wheelBase {
-			m.rpmUsed -= s.rpm
-			m.tpmUsed -= s.tpm
-			s.rpm, s.tpm = 0, 0
+	for model.wheelBase < sec-59 {
+		server := model.slotFor(model.wheelBase)
+		server.mu.Lock()
+		if server.sec == model.wheelBase {
+			model.rpmUsed -= server.rpm
+			model.tpmUsed -= server.tpm
+			server.rpm, server.tpm = 0, 0
 		}
-		s.mu.Unlock()
-		m.wheelBase++
+		server.mu.Unlock()
+		model.wheelBase++
 	}
 }
 
 type callRequest struct {
-	RequestID      string `json:"request_id"`
-	Model          string `json:"model"`
-	EstimatedTokens int64 `json:"estimated_tokens"`
+	RequestID       string `json:"request_id"`
+	Model           string `json:"model"`
+	EstimatedTokens int64  `json:"estimated_tokens"`
 }
 
 type callResponse struct {
@@ -79,28 +79,28 @@ type Server struct {
 
 // New builds a simulator server from config.
 func New(cfg *config.Config, st *store.Store) *Server {
-	s := &Server{cfg: cfg, store: st, models: make(map[string]*modelState), rng: rand.New(rand.NewSource(time.Now().UnixNano()))}
+	server := &Server{cfg: cfg, store: st, models: make(map[string]*modelState), rng: rand.New(rand.NewSource(time.Now().UnixNano()))}
 	for i := range cfg.Models {
-		m := &cfg.Models[i]
-		s.models[m.Name] = &modelState{cfg: m}
+		model := &cfg.Models[i]
+		server.models[model.Name] = &modelState{cfg: model}
 	}
-	return s
+	return server
 }
 
 // Handler returns the service's HTTP handler.
-func (s *Server) Handler() http.Handler {
+func (server *Server) Handler() http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("POST /call", s.handleCall)
+	mux.HandleFunc("POST /call", server.handleCall)
 	return mux
 }
 
-func (s *Server) handleCall(w http.ResponseWriter, r *http.Request) {
+func (server *Server) handleCall(w http.ResponseWriter, r *http.Request) {
 	var cr callRequest
 	if err := json.NewDecoder(r.Body).Decode(&cr); err != nil || cr.RequestID == "" || cr.Model == "" {
 		http.Error(w, `{"error":"invalid body"}`, http.StatusBadRequest)
 		return
 	}
-	m, ok := s.models[cr.Model]
+	model, ok := server.models[cr.Model]
 	if !ok {
 		http.Error(w, `{"error":"unknown model"}`, http.StatusBadRequest)
 		return
@@ -108,21 +108,21 @@ func (s *Server) handleCall(w http.ResponseWriter, r *http.Request) {
 
 	// idempotency: a re-issued call returns the original outcome without
 	// re-executing (crash recovery is at-least-once with dedup)
-	if res, ok, _ := s.store.SeenKey(cr.RequestID); ok {
+	if res, ok, _ := server.store.SeenKey(cr.RequestID); ok {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(res))
 		return
 	}
 
 	sec := time.Now().Unix()
-	m.usedMu.Lock()
-	m.roll(sec)
-	if m.rpmUsed+1 > m.cfg.RPM || m.tpmUsed+cr.EstimatedTokens > m.cfg.TPM {
-		m.usedMu.Unlock()
+	model.usedMu.Lock()
+	model.roll(sec)
+	if model.rpmUsed+1 > model.cfg.RPM || model.tpmUsed+cr.EstimatedTokens > model.cfg.TPM {
+		model.usedMu.Unlock()
 		w.WriteHeader(http.StatusTooManyRequests)
 		return
 	}
-	slot := m.slotFor(sec)
+	slot := model.slotFor(sec)
 	slot.mu.Lock()
 	if slot.sec != sec {
 		slot.sec = sec
@@ -132,15 +132,15 @@ func (s *Server) handleCall(w http.ResponseWriter, r *http.Request) {
 	slot.rpm++
 	slot.tpm += cr.EstimatedTokens
 	slot.mu.Unlock()
-	m.rpmUsed++
-	m.tpmUsed += cr.EstimatedTokens
-	m.usedMu.Unlock()
+	model.rpmUsed++
+	model.tpmUsed += cr.EstimatedTokens
+	model.usedMu.Unlock()
 
-	s.rngMu.Lock()
-	latency := m.cfg.Latency.Draw(s.rng)
-	s.rngMu.Unlock()
-	outcome := s.drawOutcome(m)
-	tokens := s.drawTokens(m)
+	server.rngMu.Lock()
+	latency := model.cfg.Latency.Draw(server.rng)
+	server.rngMu.Unlock()
+	outcome := server.drawOutcome(model)
+	tokens := server.drawTokens(model)
 
 	time.Sleep(latency) // the response delay IS the simulated provider latency
 
@@ -156,19 +156,18 @@ func (s *Server) handleCall(w http.ResponseWriter, r *http.Request) {
 	// permanent failure did no provider work — a retry must re-execute with
 	// a fresh draw, not replay the failure forever.
 	if outcome.SuccessPct == 100 {
-		_ = s.store.PutSeenKey(cr.RequestID, string(body))
+		_ = server.store.PutSeenKey(cr.RequestID, string(body))
 	}
-	s.executed.Add(1)
+	server.executed.Add(1)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(body)
 }
 
-
-func (s *Server) drawOutcome(m *modelState) config.OutcomeConfig {
-	s.rngMu.Lock()
-	roll := s.rng.Float64() * 100
-	s.rngMu.Unlock()
-	o := m.cfg.Outcome
+func (server *Server) drawOutcome(model *modelState) config.OutcomeConfig {
+	server.rngMu.Lock()
+	roll := server.rng.Float64() * 100
+	server.rngMu.Unlock()
+	o := model.cfg.Outcome
 	switch {
 	case roll < o.SuccessPct:
 		return config.OutcomeConfig{SuccessPct: 100}
@@ -179,14 +178,14 @@ func (s *Server) drawOutcome(m *modelState) config.OutcomeConfig {
 	}
 }
 
-func (s *Server) drawTokens(m *modelState) int64 {
-	mean := m.cfg.ActualTokenMean
+func (server *Server) drawTokens(model *modelState) int64 {
+	mean := model.cfg.ActualTokenMean
 	if mean <= 0 {
-		mean = float64(m.cfg.EstimateTokens)
+		mean = float64(model.cfg.EstimateTokens)
 	}
-	s.rngMu.Lock()
-	t := mean + s.rng.NormFloat64()*0.2*mean
-	s.rngMu.Unlock()
+	server.rngMu.Lock()
+	t := mean + server.rng.NormFloat64()*0.2*mean
+	server.rngMu.Unlock()
 	if t < 1 {
 		t = 1
 	}
@@ -206,4 +205,3 @@ func outcomeName(o config.OutcomeConfig) string {
 		return "permanent_failure"
 	}
 }
-

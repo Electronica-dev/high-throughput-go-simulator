@@ -51,10 +51,10 @@ type measured struct {
 		WholeRunAvgPerSec float64 `json:"whole_run_avg_per_sec"`
 		DrainSec          float64 `json:"drain_sec"`
 	} `json:"rates"`
-	Latency map[string]Latency  `json:"latency_ms"`
-	Limits  []LimitsRow         `json:"limits"`
-	Extra   map[string]int64    `json:"extra_counters,omitempty"`
-	summary *engine.Summary     `json:"-"`
+	Latency map[string]Latency `json:"latency_ms"`
+	Limits  []LimitsRow        `json:"limits"`
+	Extra   map[string]int64   `json:"extra_counters,omitempty"`
+	summary *engine.Summary    `json:"-"`
 }
 
 // Report is the full report: measured + labeled projections.
@@ -65,19 +65,19 @@ type Report struct {
 
 // Build assembles a Report from a drained engine.
 func Build(s engine.Summary, eng *engine.Engine, cfg *config.Config) *Report {
-	r := &Report{}
-	r.Measured.Run.Duration = 0 // caller may set via WithRun
-	r.Measured.Counts.Submitted = s.Submitted
-	r.Measured.Counts.Completed = s.Completed
-	r.Measured.Counts.OK = s.OK
-	r.Measured.Counts.Failed = s.Failed
-	r.Measured.Counts.Expired = s.Expired
-	r.Measured.Counts.Rejected = s.Rejected
-	r.Measured.Rates.SteadyStatePerSec = s.SteadyStatePerSec
-	r.Measured.Rates.WholeRunAvgPerSec = s.WholeRunAvgPerSec
-	r.Measured.Rates.DrainSec = s.DrainSec
+	report := &Report{}
+	report.Measured.Run.Duration = 0 // caller may set via WithRun
+	report.Measured.Counts.Submitted = s.Submitted
+	report.Measured.Counts.Completed = s.Completed
+	report.Measured.Counts.OK = s.OK
+	report.Measured.Counts.Failed = s.Failed
+	report.Measured.Counts.Expired = s.Expired
+	report.Measured.Counts.Rejected = s.Rejected
+	report.Measured.Rates.SteadyStatePerSec = s.SteadyStatePerSec
+	report.Measured.Rates.WholeRunAvgPerSec = s.WholeRunAvgPerSec
+	report.Measured.Rates.DrainSec = s.DrainSec
 
-	r.Measured.Latency = map[string]Latency{}
+	report.Measured.Latency = map[string]Latency{}
 	now := time.Now()
 	for i := range cfg.Models {
 		m := &cfg.Models[i]
@@ -97,31 +97,31 @@ func Build(s engine.Summary, eng *engine.Engine, cfg *config.Config) *Report {
 				P95MS: s.Percentiles[m.Name+"/p95"],
 				P99MS: s.Percentiles[m.Name+"/p99"],
 			}
-			r.Measured.Latency[m.Name] = row.Latency
+			report.Measured.Latency[m.Name] = row.Latency
 		}
-		r.Measured.Limits = append(r.Measured.Limits, row)
+		report.Measured.Limits = append(report.Measured.Limits, row)
 	}
-	r.Measured.Extra = eng.Metrics().Snapshot()
+	report.Measured.Extra = eng.Metrics().Snapshot()
 	if eng.E2EMaxNS() > 0 {
-		r.Measured.Extra["e2e_max_ns"] = eng.E2EMaxNS()
+		report.Measured.Extra["e2e_max_ns"] = eng.E2EMaxNS()
 	}
 
 	// Projections and assumptions are LABELLED separately from measurements.
 	// The first projection is always the scope caveat (spec requirement).
-	r.Projections = append(r.Projections,
+	report.Projections = append(report.Projections,
 		"assumption: benchmark numbers are achieved with the in-process pipeline; "+
 			"a per-request hop over localhost HTTP caps throughput at roughly 100-200K req/sec "+
 			"(tuned round-trip cost ~5-10us CPU per side plus queuing), below the required 300K/sec bar regardless of language")
-	r.Projections = append(r.Projections,
+	report.Projections = append(report.Projections,
 		"assumption: provider responses are simulated on a timer wheel (configurable latency/outcome mix), not real LLM calls")
-	return r
+	return report
 }
 
 // WithRun records the requested load parameters.
-func (r *Report) WithRun(rate int64, d time.Duration) *Report {
-	r.Measured.Run.Rate = rate
-	r.Measured.Run.Duration = d
-	return r
+func (report *Report) WithRun(rate int64, d time.Duration) *Report {
+	report.Measured.Run.Rate = rate
+	report.Measured.Run.Duration = d
+	return report
 }
 
 // WriteJSON renders the report as JSON with measured/projections separation.

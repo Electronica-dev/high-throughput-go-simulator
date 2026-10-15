@@ -36,7 +36,7 @@ func NewHTTPTarget(url string, client *http.Client) *HTTPTarget {
 }
 
 // SubmitBatch groups the chunk by model and posts one batch per group.
-func (h *HTTPTarget) SubmitBatch(reqs []*ledger.Request) {
+func (target *HTTPTarget) SubmitBatch(reqs []*ledger.Request) {
 	if len(reqs) == 0 {
 		return
 	}
@@ -50,70 +50,70 @@ func (h *HTTPTarget) SubmitBatch(reqs []*ledger.Request) {
 		counts[r.Model]++
 	}
 	for _, model := range order {
-		h.post(model, reqs[0].EstimateTokens, counts[model])
+		target.post(model, reqs[0].EstimateTokens, counts[model])
 	}
 }
 
-func (h *HTTPTarget) post(model string, tokens, count int64) {
+func (target *HTTPTarget) post(model string, tokens, count int64) {
 	body, _ := json.Marshal(map[string]any{
 		"model":            model,
 		"estimated_tokens": tokens,
 		"count":            count,
 	})
-	resp, err := h.client.Post(h.url+"/batches", "application/json", bytes.NewReader(body))
+	resp, err := target.client.Post(target.url+"/batches", "application/json", bytes.NewReader(body))
 	if err != nil {
-		h.mu.Lock()
-		h.errs = append(h.errs, fmt.Errorf("POST /batches: %w", err))
-		h.mu.Unlock()
+		target.mu.Lock()
+		target.errs = append(target.errs, fmt.Errorf("POST /batches: %w", err))
+		target.mu.Unlock()
 		return
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusAccepted {
-		h.mu.Lock()
-		h.errs = append(h.errs, fmt.Errorf("POST /batches: status %d", resp.StatusCode))
-		h.mu.Unlock()
+		target.mu.Lock()
+		target.errs = append(target.errs, fmt.Errorf("POST /batches: status %d", resp.StatusCode))
+		target.mu.Unlock()
 		return
 	}
 	var out struct {
 		BatchID string `json:"batch_id"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&out); err != nil || out.BatchID == "" {
-		h.mu.Lock()
-		h.errs = append(h.errs, fmt.Errorf("POST /batches: bad 202 body"))
-		h.mu.Unlock()
+		target.mu.Lock()
+		target.errs = append(target.errs, fmt.Errorf("POST /batches: bad 202 body"))
+		target.mu.Unlock()
 		return
 	}
-	h.mu.Lock()
-	h.ids = append(h.ids, out.BatchID)
-	h.mu.Unlock()
+	target.mu.Lock()
+	target.ids = append(target.ids, out.BatchID)
+	target.mu.Unlock()
 }
 
 // MarkSteady is a no-op in real mode (client-side pacing).
-func (h *HTTPTarget) MarkSteady(startNS, endNS int64) {}
+func (target *HTTPTarget) MarkSteady(startNS, endNS int64) {}
 
 // BatchIDs returns the recorded 202 batch ids, in submission order.
-func (h *HTTPTarget) BatchIDs() []string {
-	h.mu.Lock()
-	defer h.mu.Unlock()
-	out := make([]string, len(h.ids))
-	copy(out, h.ids)
+func (target *HTTPTarget) BatchIDs() []string {
+	target.mu.Lock()
+	defer target.mu.Unlock()
+	out := make([]string, len(target.ids))
+	copy(out, target.ids)
 	return out
 }
 
 // Errors returns submission errors seen so far.
-func (h *HTTPTarget) Errors() []error {
-	h.mu.Lock()
-	defer h.mu.Unlock()
-	out := make([]error, len(h.errs))
-	copy(out, h.errs)
+func (target *HTTPTarget) Errors() []error {
+	target.mu.Lock()
+	defer target.mu.Unlock()
+	out := make([]error, len(target.errs))
+	copy(out, target.errs)
 	return out
 }
 
 // AwaitCompletions polls every recorded batch until its status reads
 // completed (or the timeout expires) — the batch-completion evidence for the
 // run report. Returns the number of batches observed completed.
-func (h *HTTPTarget) AwaitCompletions(timeout, pollEvery time.Duration) (int, error) {
-	ids := h.BatchIDs()
+func (target *HTTPTarget) AwaitCompletions(timeout, pollEvery time.Duration) (int, error) {
+	ids := target.BatchIDs()
 	if len(ids) == 0 {
 		return 0, nil
 	}
@@ -124,7 +124,7 @@ func (h *HTTPTarget) AwaitCompletions(timeout, pollEvery time.Duration) (int, er
 			if completed[id] {
 				continue
 			}
-			done, status, err := h.status(id)
+			done, status, err := target.status(id)
 			if err != nil {
 				return len(completed), fmt.Errorf("poll %s: %w", id, err)
 			}
@@ -141,8 +141,8 @@ func (h *HTTPTarget) AwaitCompletions(timeout, pollEvery time.Duration) (int, er
 }
 
 // status fetches one batch's status; done=true when the HTTP fetch succeeded.
-func (h *HTTPTarget) status(id string) (bool, string, error) {
-	resp, err := h.client.Get(h.url + "/batches/" + id)
+func (target *HTTPTarget) status(id string) (bool, string, error) {
+	resp, err := target.client.Get(target.url + "/batches/" + id)
 	if err != nil {
 		return false, "", err
 	}

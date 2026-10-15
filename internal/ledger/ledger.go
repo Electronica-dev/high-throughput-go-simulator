@@ -30,7 +30,7 @@ var legal = map[State][]State{
 	// InFlight -> Queued is the retry-deferral path: the rolling window is
 	// full, so the retry goes back to the wait queue instead of bypassing
 	// RPM enforcement.
-	InFlight: {Completed, Admitted, Queued},
+	InFlight:  {Completed, Admitted, Queued},
 	Completed: {},
 	Expired:   {},
 	Rejected:  {},
@@ -65,16 +65,16 @@ type Ledger struct {
 func New() *Ledger { return &Ledger{} }
 
 // Submit records a newly submitted request (state starts at Submitted).
-func (l *Ledger) Submit(r *Request) {
+func (ledger *Ledger) Submit(r *Request) {
 	r.State.Store(uint32(Submitted))
-	l.submitted.Add(1)
-	l.counts[Submitted].Add(1)
+	ledger.submitted.Add(1)
+	ledger.counts[Submitted].Add(1)
 }
 
 // Transition moves r to `to` if the current state allows it; otherwise it
 // returns an error and changes nothing. Exactly-once terminals follow from
 // the compare-and-swap: only one goroutine can win any given transition.
-func (l *Ledger) Transition(r *Request, to State) error {
+func (ledger *Ledger) Transition(r *Request, to State) error {
 	from := State(r.State.Load())
 	allowed := false
 	for _, s := range legal[from] {
@@ -89,22 +89,22 @@ func (l *Ledger) Transition(r *Request, to State) error {
 	if !r.State.CompareAndSwap(uint32(from), uint32(to)) {
 		return fmt.Errorf("ledger: lost race on transition %d -> %d for request %d", from, to, r.ID)
 	}
-	l.counts[from].Add(-1)
-	l.counts[to].Add(1)
+	ledger.counts[from].Add(-1)
+	ledger.counts[to].Add(1)
 	if isTerminal(to) {
-		l.terminated.Add(1)
+		ledger.terminated.Add(1)
 	}
 	return nil
 }
 
 // Count returns the number of requests currently in state s.
-func (l *Ledger) Count(s State) int64 { return l.counts[s].Load() }
+func (ledger *Ledger) Count(s State) int64 { return ledger.counts[s].Load() }
 
 // Submitted returns the total number of submitted requests.
-func (l *Ledger) Submitted() int64 { return l.submitted.Load() }
+func (ledger *Ledger) Submitted() int64 { return ledger.submitted.Load() }
 
 // TerminalBalance reports whether every submitted request has reached a
 // terminal state (submitted == completed + expired + rejected).
-func (l *Ledger) TerminalBalance() bool {
-	return l.submitted.Load() == l.terminated.Load()
+func (ledger *Ledger) TerminalBalance() bool {
+	return ledger.submitted.Load() == ledger.terminated.Load()
 }

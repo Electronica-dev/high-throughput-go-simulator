@@ -16,19 +16,19 @@ func mkReq(id uint64) *ledger.Request {
 func newWheel(t *testing.T, shards, buckets int) (*Wheel, chan []*Entry) {
 	t.Helper()
 	ch := make(chan []*Entry, 4096)
-	w := New(shards, buckets, time.Millisecond, func(batch []*Entry) {
+	wheel := New(shards, buckets, time.Millisecond, func(batch []*Entry) {
 		ch <- batch
 	})
-	w.Start()
-	t.Cleanup(w.Stop)
-	return w, ch
+	wheel.Start()
+	t.Cleanup(wheel.Stop)
+	return wheel, ch
 }
 
 func TestFiresWithinTolerance(t *testing.T) {
-	w, ch := newWheel(t, 2, 256)
+	wheel, ch := newWheel(t, 2, 256)
 	now := time.Now().UnixNano()
 	r := mkReq(1)
-	w.Schedule(now+10*int64(time.Millisecond), &Entry{Req: r, FireNS: now + 10*int64(time.Millisecond)})
+	wheel.Schedule(now+10*int64(time.Millisecond), &Entry{Req: r, FireNS: now + 10*int64(time.Millisecond)})
 
 	select {
 	case batch := <-ch:
@@ -44,11 +44,11 @@ func TestFiresWithinTolerance(t *testing.T) {
 }
 
 func TestBatchDrain(t *testing.T) {
-	w, ch := newWheel(t, 2, 256)
+	wheel, ch := newWheel(t, 2, 256)
 	now := time.Now().UnixNano()
 	deadline := now + 10*int64(time.Millisecond)
 	for i := 0; i < 100; i++ {
-		w.Schedule(deadline, &Entry{Req: mkReq(uint64(i + 1)), FireNS: deadline})
+		wheel.Schedule(deadline, &Entry{Req: mkReq(uint64(i + 1)), FireNS: deadline})
 	}
 	select {
 	case batch := <-ch:
@@ -67,9 +67,9 @@ func TestBatchDrain(t *testing.T) {
 }
 
 func TestNoEarlyFire(t *testing.T) {
-	w, ch := newWheel(t, 2, 256)
+	wheel, ch := newWheel(t, 2, 256)
 	now := time.Now().UnixNano()
-	w.Schedule(now+50*int64(time.Millisecond), &Entry{Req: mkReq(1), FireNS: now + 50*int64(time.Millisecond)})
+	wheel.Schedule(now+50*int64(time.Millisecond), &Entry{Req: mkReq(1), FireNS: now + 50*int64(time.Millisecond)})
 	select {
 	case b := <-ch:
 		t.Fatalf("fired early: %d entries", len(b))
@@ -78,14 +78,14 @@ func TestNoEarlyFire(t *testing.T) {
 }
 
 func TestShardDistribution(t *testing.T) {
-	w, _ := newWheel(t, 4, 256)
+	wheel, _ := newWheel(t, 4, 256)
 	now := time.Now().UnixNano()
 	for i := 0; i < 1000; i++ {
 		// spread deadlines so multiple shards receive entries
 		deadline := now + int64(i%50)*int64(time.Millisecond)
-		w.Schedule(deadline, &Entry{Req: mkReq(uint64(i)), FireNS: deadline})
+		wheel.Schedule(deadline, &Entry{Req: mkReq(uint64(i)), FireNS: deadline})
 	}
-	if got := w.Pending(); got != 1000 {
+	if got := wheel.Pending(); got != 1000 {
 		t.Fatalf("Pending want 1000, got %d", got)
 	}
 }
@@ -93,20 +93,20 @@ func TestShardDistribution(t *testing.T) {
 func TestStopQuiesces(t *testing.T) {
 	ch := make(chan []*Entry, 16)
 	var fired atomic.Int64
-	w := New(1, 64, time.Millisecond, func(batch []*Entry) {
+	wheel := New(1, 64, time.Millisecond, func(batch []*Entry) {
 		fired.Add(int64(len(batch)))
 		ch <- batch
 	})
-	w.Start()
+	wheel.Start()
 	now := time.Now().UnixNano()
 	deadline := now + 5*int64(time.Millisecond)
-	w.Schedule(deadline, &Entry{Req: mkReq(1), FireNS: deadline})
+	wheel.Schedule(deadline, &Entry{Req: mkReq(1), FireNS: deadline})
 	select {
 	case <-ch:
 	case <-time.After(1 * time.Second):
 		t.Fatal("entry never fired")
 	}
-	w.Stop()
+	wheel.Stop()
 	n := fired.Load()
 	time.Sleep(20 * time.Millisecond)
 	if fired.Load() != n {

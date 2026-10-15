@@ -45,8 +45,8 @@ func WriteTimelineSVG(path, title, yLabel string, series []ChartSeries) error {
 
 	xmin, xmax := infPos, -infPos
 	ymin, ymax := 0.0, -infPos
-	for _, s := range series {
-		for _, p := range s.Points {
+	for _, sink := range series {
+		for _, p := range sink.Points {
 			if p.X < xmin {
 				xmin = p.X
 			}
@@ -99,26 +99,26 @@ func WriteTimelineSVG(path, title, yLabel string, series []ChartSeries) error {
 
 	// series polylines + legend
 	legendY := 44.0
-	for _, s := range series {
-		if len(s.Points) == 0 {
+	for _, sink := range series {
+		if len(sink.Points) == 0 {
 			continue
 		}
 		var pts strings.Builder
-		for i, p := range s.Points {
+		for i, p := range sink.Points {
 			if i > 0 {
 				pts.WriteByte(' ')
 			}
 			fmt.Fprintf(&pts, "%0.f,%0.f", mapX(p.X), mapY(p.Y))
 		}
 		dash := ""
-		if s.Dashed {
+		if sink.Dashed {
 			dash = " stroke-dasharray=\"6 4\""
 		}
-		fmt.Fprintf(&b, "  <polyline points=\"%s\" fill=\"none\" stroke=\"%s\" stroke-width=\"2\"%s/>\n", pts.String(), s.Color, dash)
+		fmt.Fprintf(&b, "  <polyline points=\"%s\" fill=\"none\" stroke=\"%s\" stroke-width=\"2\"%s/>\n", pts.String(), sink.Color, dash)
 
 		lx := marginL + plotW - 240
-		fmt.Fprintf(&b, "  <line x1=\"%0.f\" y1=\"%0.f\" x2=\"%0.f\" y2=\"%0.f\" stroke=\"%s\" stroke-width=\"2\"%s/>\n", lx, legendY, lx+26, legendY, s.Color, dash)
-		fmt.Fprintf(&b, "  <text x=\"%0.f\" y=\"%0.f\" fill=\"#374151\">%s</text>\n", lx+32, legendY+4, esc(s.Label))
+		fmt.Fprintf(&b, "  <line x1=\"%0.f\" y1=\"%0.f\" x2=\"%0.f\" y2=\"%0.f\" stroke=\"%s\" stroke-width=\"2\"%s/>\n", lx, legendY, lx+26, legendY, sink.Color, dash)
+		fmt.Fprintf(&b, "  <text x=\"%0.f\" y=\"%0.f\" fill=\"#374151\">%s</text>\n", lx+32, legendY+4, esc(sink.Label))
 		legendY += 20
 	}
 

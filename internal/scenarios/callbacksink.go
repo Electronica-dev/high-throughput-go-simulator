@@ -38,40 +38,40 @@ type callbackPayload struct {
 
 // NewCallbackSink starts the sink on 127.0.0.1:0.
 func NewCallbackSink(failFirst int) *CallbackSink {
-	s := &CallbackSink{failFirst: failFirst, deliveredCh: make(chan struct{}, 1), payloads: make(map[string]callbackPayload)}
+	sink := &CallbackSink{failFirst: failFirst, deliveredCh: make(chan struct{}, 1), payloads: make(map[string]callbackPayload)}
 	mux := http.NewServeMux()
-	mux.HandleFunc("POST /callback", s.handle)
+	mux.HandleFunc("POST /callback", sink.handle)
 	ln, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
-		return s // URL empty; runner reports the failure
+		return sink // URL empty; runner reports the failure
 	}
-	s.url = "http://" + ln.Addr().String() + "/callback"
-	s.srv = &http.Server{Handler: mux}
-	go func() { _ = s.srv.Serve(ln) }()
-	return s
+	sink.url = "http://" + ln.Addr().String() + "/callback"
+	sink.srv = &http.Server{Handler: mux}
+	go func() { _ = sink.srv.Serve(ln) }()
+	return sink
 }
 
-func (s *CallbackSink) handle(w http.ResponseWriter, r *http.Request) {
+func (sink *CallbackSink) handle(w http.ResponseWriter, r *http.Request) {
 	var p callbackPayload
 	_ = json.NewDecoder(r.Body).Decode(&p)
-	s.mu.Lock()
-	s.hits++
-	hit := s.hits
-	s.payload = p
-	if s.payloads == nil {
-		s.payloads = make(map[string]callbackPayload)
+	sink.mu.Lock()
+	sink.hits++
+	hit := sink.hits
+	sink.payload = p
+	if sink.payloads == nil {
+		sink.payloads = make(map[string]callbackPayload)
 	}
 	if p.BatchID != "" {
-		s.payloads[p.BatchID] = p
+		sink.payloads[p.BatchID] = p
 	}
-	s.mu.Unlock()
-	accepted := hit > s.failFirst
+	sink.mu.Unlock()
+	accepted := hit > sink.failFirst
 	fmt.Printf("[s3 sink] delivery attempt %d for batch %s -> %s (HTTP %d)\n",
-		hit, p.BatchID, map[bool]string{true: "accepted", false: "rejected"}[accepted], statusFor(hit, s.failFirst))
+		hit, p.BatchID, map[bool]string{true: "accepted", false: "rejected"}[accepted], statusFor(hit, sink.failFirst))
 	if accepted {
 		w.WriteHeader(http.StatusOK)
 		select {
-		case s.deliveredCh <- struct{}{}:
+		case sink.deliveredCh <- struct{}{}:
 		default:
 		}
 		return
@@ -88,12 +88,12 @@ func statusFor(hit, failFirst int) int {
 }
 
 // URL returns the sink's callback URL (empty if the listener failed).
-func (s *CallbackSink) URL() string { return s.url }
+func (sink *CallbackSink) URL() string { return sink.url }
 
 // AwaitDelivery waits for the first accepted (2xx) delivery.
-func (s *CallbackSink) AwaitDelivery(timeout time.Duration) bool {
+func (sink *CallbackSink) AwaitDelivery(timeout time.Duration) bool {
 	select {
-	case <-s.deliveredCh:
+	case <-sink.deliveredCh:
 		return true
 	case <-time.After(timeout):
 		return false
@@ -101,32 +101,32 @@ func (s *CallbackSink) AwaitDelivery(timeout time.Duration) bool {
 }
 
 // Hits returns the delivery attempts seen so far.
-func (s *CallbackSink) Hits() int {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	return s.hits
+func (sink *CallbackSink) Hits() int {
+	sink.mu.Lock()
+	defer sink.mu.Unlock()
+	return sink.hits
 }
 
 // LastPayload returns the most recent callback payload (the summary the API
 // must agree with).
-func (s *CallbackSink) LastPayload() callbackPayload {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	return s.payload
+func (sink *CallbackSink) LastPayload() callbackPayload {
+	sink.mu.Lock()
+	defer sink.mu.Unlock()
+	return sink.payload
 }
 
 // PayloadFor returns the most recent payload received for a batch id.
-func (s *CallbackSink) PayloadFor(batchID string) (callbackPayload, bool) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	p, ok := s.payloads[batchID]
+func (sink *CallbackSink) PayloadFor(batchID string) (callbackPayload, bool) {
+	sink.mu.Lock()
+	defer sink.mu.Unlock()
+	p, ok := sink.payloads[batchID]
 	return p, ok
 }
 
 // Close stops the sink.
-func (s *CallbackSink) Close() {
-	if s.srv != nil {
-		_ = s.srv.Close()
+func (sink *CallbackSink) Close() {
+	if sink.srv != nil {
+		_ = sink.srv.Close()
 	}
 }
 
@@ -135,4 +135,3 @@ func (p callbackPayload) String() string {
 	return fmt.Sprintf("batch %s status=%s successful=%d failed=%d expired=%d rejected=%d",
 		p.BatchID, p.Status, p.Successful, p.Failed, p.Expired, p.Rejected)
 }
-

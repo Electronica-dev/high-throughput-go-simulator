@@ -46,11 +46,11 @@ func TestRealModeCompletesWithPersistedState(t *testing.T) {
 	fc := &fakeCaller{res: provider.CallResult{
 		Latency: 0, Outcome: provider.Success, ActualTokens: 900,
 	}}
-	e, err := NewReal(realConfig(), fc, st)
+	engine, err := NewReal(realConfig(), fc, st)
 	if err != nil {
 		t.Fatalf("NewReal: %v", err)
 	}
-	defer e.Stop()
+	defer engine.Stop()
 
 	const n = 5
 	var wg sync.WaitGroup
@@ -59,7 +59,7 @@ func TestRealModeCompletesWithPersistedState(t *testing.T) {
 		go func(i int) {
 			defer wg.Done()
 			r := extReq(i)
-			outcome, tokens, err := e.SubmitAndWait(r, 2*time.Second)
+			outcome, tokens, err := engine.SubmitAndWait(r, 2*time.Second)
 			if err != nil {
 				t.Errorf("SubmitAndWait %d: %v", i, err)
 				return
@@ -71,7 +71,7 @@ func TestRealModeCompletesWithPersistedState(t *testing.T) {
 	}
 	wg.Wait()
 
-	if got := e.WheelPending(); got != 0 {
+	if got := engine.WheelPending(); got != 0 {
 		t.Fatalf("real mode must not use the wheel, pending=%d", got)
 	}
 	if fc.calls.Load() != n {
@@ -94,11 +94,11 @@ func TestRealModeCompletesWithPersistedState(t *testing.T) {
 func TestRecoveryReenqueuesAndCompletes(t *testing.T) {
 	st := openStore(t)
 	fc := &fakeCaller{res: provider.CallResult{Outcome: provider.Success, ActualTokens: 800}}
-	e, err := NewReal(realConfig(), fc, st)
+	engine, err := NewReal(realConfig(), fc, st)
 	if err != nil {
 		t.Fatalf("NewReal: %v", err)
 	}
-	defer e.Stop()
+	defer engine.Stop()
 
 	// simulate crash aftermath: 2 rows needing recovery, 1 already terminal
 	mustInsert := func(id, state string) {
@@ -110,14 +110,14 @@ func TestRecoveryReenqueuesAndCompletes(t *testing.T) {
 	mustInsert("ext-102", "in_flight")
 	mustInsert("ext-103", "completed")
 
-	n, err := e.Recover()
+	n, err := engine.Recover()
 	if err != nil {
 		t.Fatalf("Recover: %v", err)
 	}
 	if n != 2 {
 		t.Fatalf("Recover want 2, got %d", n)
 	}
-	if n2, _ := e.Recover(); n2 != 0 {
+	if n2, _ := engine.Recover(); n2 != 0 {
 		t.Fatalf("Recover must be idempotent, second run got %d", n2)
 	}
 
@@ -139,14 +139,14 @@ func TestRecoveryReenqueuesAndCompletes(t *testing.T) {
 func TestOnTerminalFiresPerRequest(t *testing.T) {
 	st := openStore(t)
 	fc := &fakeCaller{res: provider.CallResult{Outcome: provider.Success, ActualTokens: 100}}
-	e, err := NewReal(realConfig(), fc, st)
+	engine, err := NewReal(realConfig(), fc, st)
 	if err != nil {
 		t.Fatalf("NewReal: %v", err)
 	}
-	defer e.Stop()
+	defer engine.Stop()
 
 	var fired atomic.Int32
-	e.OnTerminal = func(r *ledger.Request, outcome string, tokens int64) {
+	engine.OnTerminal = func(r *ledger.Request, outcome string, tokens int64) {
 		fired.Add(1)
 	}
 	var wg sync.WaitGroup
@@ -154,7 +154,7 @@ func TestOnTerminalFiresPerRequest(t *testing.T) {
 		wg.Add(1)
 		go func(i int) {
 			defer wg.Done()
-			_, _, _ = e.SubmitAndWait(extReq(i), 2*time.Second)
+			_, _, _ = engine.SubmitAndWait(extReq(i), 2*time.Second)
 		}(i)
 	}
 	wg.Wait()
@@ -173,14 +173,14 @@ func TestRealModeRetryTerminatesWithBoundedAttempts(t *testing.T) {
 	fc := &fakeCaller{res: provider.CallResult{Outcome: provider.TransientFailure, ActualTokens: 0}}
 	cfg := realConfig()
 	cfg.MaxRetries = 3
-	e, err := NewReal(cfg, fc, st)
+	engine, err := NewReal(cfg, fc, st)
 	if err != nil {
 		t.Fatalf("NewReal: %v", err)
 	}
-	defer e.Stop()
+	defer engine.Stop()
 
 	r := &ledger.Request{ExternalID: "ext-retry", Model: "model-a", EstimateTokens: 1000}
-	outcome, _, err := e.SubmitAndWait(r, 5*time.Second)
+	outcome, _, err := engine.SubmitAndWait(r, 5*time.Second)
 	if err != nil {
 		t.Fatalf("SubmitAndWait: %v", err)
 	}
@@ -194,7 +194,7 @@ func TestRealModeRetryTerminatesWithBoundedAttempts(t *testing.T) {
 		t.Fatalf("provider calls want 3, got %d", calls)
 	}
 	// bounded RPM: 1 admission + 2 ChargeRetry = 3 reservations, never a flood
-	l := e.Limiter("model-a")
+	l := engine.Limiter("model-a")
 	if rpm := l.ObservedRPM(time.Now()); rpm > 10 {
 		t.Fatalf("RPM reservations want <= 10, got %d (retry loop is unbounded)", rpm)
 	}
@@ -210,11 +210,11 @@ func TestRecoveryNeverExpiresRecoveredRequests(t *testing.T) {
 	cfg := realConfig()
 	cfg.MaxWaitMS = 50 // aggressive expiry: an unfixed sweep would kill the backlog
 	cfg.Models[0].RPM = 6000
-	e, err := NewReal(cfg, fc, st)
+	engine, err := NewReal(cfg, fc, st)
 	if err != nil {
 		t.Fatalf("NewReal: %v", err)
 	}
-	defer e.Stop()
+	defer engine.Stop()
 
 	// 100 recovered requests vs a 100/s admission rate and a 50ms queue TTL
 	for i := 0; i < 100; i++ {
@@ -224,7 +224,7 @@ func TestRecoveryNeverExpiresRecoveredRequests(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	if n, err := e.Recover(); err != nil || n != 100 {
+	if n, err := engine.Recover(); err != nil || n != 100 {
 		t.Fatalf("Recover: %d %v", n, err)
 	}
 	deadline := time.Now().Add(10 * time.Second)
@@ -251,9 +251,9 @@ func TestRecoveryNeverExpiresRecoveredRequests(t *testing.T) {
 
 // scriptedCaller returns pre-scripted results in order.
 type scriptedCaller struct {
-	mu   sync.Mutex
-	res  []provider.CallResult
-	i    int
+	mu    sync.Mutex
+	res   []provider.CallResult
+	i     int
 	calls atomic.Int32
 }
 
@@ -284,20 +284,20 @@ func TestRecoveredRequestRetryDeferralNeverExpires(t *testing.T) {
 	}}
 	cfg := realConfig()
 	cfg.MaxWaitMS = 50
-	cfg.Models[0].RPM = 1         // window full after the first admission → ChargeRetry fails → deferral
+	cfg.Models[0].RPM = 1 // window full after the first admission → ChargeRetry fails → deferral
 	cfg.Models[0].TPM = 1 << 40
-	e, err := NewReal(cfg, fc, st)
+	engine, err := NewReal(cfg, fc, st)
 	if err != nil {
 		t.Fatalf("NewReal: %v", err)
 	}
-	defer e.Stop()
+	defer engine.Stop()
 
 	if err := st.InsertRequest(store.RequestRow{
 		ID: "ext-rec-def", BatchID: "b-rec", Model: "model-a", State: "in_flight", Tokens: 1000,
 	}); err != nil {
 		t.Fatal(err)
 	}
-	if n, err := e.Recover(); err != nil || n != 1 {
+	if n, err := engine.Recover(); err != nil || n != 1 {
 		t.Fatalf("Recover: %d %v", n, err)
 	}
 

@@ -22,7 +22,7 @@ func (f *fakeCaller) Call(r *ledger.Request, now time.Time) provider.CallResult 
 
 func TestFakeCallerDrivesRequestToCompletion(t *testing.T) {
 	cfg := testConfig(nil)
-	e, err := NewWithCaller(cfg, &fakeCaller{res: provider.CallResult{
+	engine, err := NewWithCaller(cfg, &fakeCaller{res: provider.CallResult{
 		Latency:      1 * time.Millisecond,
 		Outcome:      provider.Success,
 		ActualTokens: 900,
@@ -30,10 +30,10 @@ func TestFakeCallerDrivesRequestToCompletion(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewWithCaller: %v", err)
 	}
-	defer e.Stop()
+	defer engine.Stop()
 
-	rs := submitN(e, 1)
-	s := e.Drain()
+	rs := submitN(engine, 1)
+	s := engine.Drain()
 	if s.OK != 1 || s.Failed != 0 {
 		t.Fatalf("fake caller should drive Success, got %+v", s)
 	}
@@ -48,15 +48,15 @@ func TestFakeCallerDrivesRequestToCompletion(t *testing.T) {
 // test; here we pin the routing directly.
 func TestInProcessCallerDelegatesToProvider(t *testing.T) {
 	cfg := testConfig(nil)
-	e, err := New(cfg)
+	engine, err := New(cfg)
 	if err != nil {
 		t.Fatalf("New: %v", err)
 	}
-	defer e.Stop()
+	defer engine.Stop()
 
 	r := &ledger.Request{ID: 1, Model: "model-a", EstimateTokens: 1000}
 	now := time.Now()
-	res := e.caller.Call(r, now)
+	res := engine.caller.Call(r, now)
 	if res.Latency <= 0 {
 		t.Fatalf("in-process caller should draw positive latency, got %v", res.Latency)
 	}
@@ -74,15 +74,15 @@ func TestInProcessCallerDelegatesToProvider(t *testing.T) {
 // testConfig), proving the caller honors model config rather than a default.
 func TestCallerHonorsModelLatency(t *testing.T) {
 	cfg := testConfig(nil)
-	e, err := New(cfg)
+	engine, err := New(cfg)
 	if err != nil {
 		t.Fatalf("New: %v", err)
 	}
-	defer e.Stop()
+	defer engine.Stop()
 	_ = cfg
 	start := time.Now()
 	r := &ledger.Request{ID: 1, Model: "model-a", EstimateTokens: 1000}
-	res := e.caller.Call(r, start)
+	res := engine.caller.Call(r, start)
 	if res.Latency != 1*time.Millisecond {
 		t.Fatalf("fixed-latency model should draw exactly 1ms, got %v", res.Latency)
 	}

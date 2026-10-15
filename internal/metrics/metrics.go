@@ -40,37 +40,37 @@ func NewHistogram() *Histogram {
 }
 
 // Record adds one latency sample in nanoseconds.
-func (h *Histogram) Record(ns int64) {
+func (histogram *Histogram) Record(ns int64) {
 	i := 0
 	if ns > 1_000 {
-		i = int(math.Log(float64(ns)/1_000) * h.logInv) + 1
-		if i >= len(h.counts) {
-			i = len(h.counts) - 1
+		i = int(math.Log(float64(ns)/1_000)*histogram.logInv) + 1
+		if i >= len(histogram.counts) {
+			i = len(histogram.counts) - 1
 		}
 	}
-	h.counts[i].Add(1)
-	h.total.Add(1)
+	histogram.counts[i].Add(1)
+	histogram.total.Add(1)
 }
 
 // Count returns the number of recorded samples.
-func (h *Histogram) Count() int64 { return h.total.Load() }
+func (histogram *Histogram) Count() int64 { return histogram.total.Load() }
 
 // Percentile returns the interpolated p-value (0..1) estimate in ns.
-func (h *Histogram) Percentile(p float64) float64 {
-	total := h.total.Load()
+func (histogram *Histogram) Percentile(p float64) float64 {
+	total := histogram.total.Load()
 	if total == 0 {
 		return 0
 	}
 	target := p * float64(total)
 	var before float64
-	for i := range h.counts {
-		cnt := float64(h.counts[i].Load())
+	for i := range histogram.counts {
+		cnt := float64(histogram.counts[i].Load())
 		if before+cnt >= target && cnt > 0 {
 			lower := float64(0)
 			if i > 0 {
-				lower = float64(h.bounds[i-1])
+				lower = float64(histogram.bounds[i-1])
 			}
-			upper := float64(h.bounds[i])
+			upper := float64(histogram.bounds[i])
 			frac := (target - before) / cnt
 			return lower + frac*(upper-lower)
 		}
@@ -87,16 +87,16 @@ type Counter struct {
 }
 
 // Add adds v, round-robining across shards.
-func (c *Counter) Add(v int64) {
-	i := int(mathrand.Int64N(int64(len(c.slots))))
-	c.slots[i].Add(v)
+func (counter *Counter) Add(v int64) {
+	i := int(mathrand.Int64N(int64(len(counter.slots))))
+	counter.slots[i].Add(v)
 }
 
 // Sum returns the counter total across shards.
-func (c *Counter) Sum() int64 {
+func (counter *Counter) Sum() int64 {
 	var s int64
-	for i := range c.slots {
-		s += c.slots[i].Load()
+	for i := range counter.slots {
+		s += counter.slots[i].Load()
 	}
 	return s
 }
@@ -118,49 +118,49 @@ func New(shards int) *Registry {
 
 // Register returns the named counter, creating it on first use. Call once at
 // setup; keep the *Counter for lock-free Add on hot paths.
-func (r *Registry) Register(name string) *Counter {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	if c, ok := r.counts[name]; ok {
-		return c
+func (registry *Registry) Register(name string) *Counter {
+	registry.mu.Lock()
+	defer registry.mu.Unlock()
+	if existing, ok := registry.counts[name]; ok {
+		return existing
 	}
-	c := &Counter{slots: make([]atomic.Int64, r.shards)}
-	r.counts[name] = c
-	return c
+	counter := &Counter{slots: make([]atomic.Int64, registry.shards)}
+	registry.counts[name] = counter
+	return counter
 }
 
 // Incr adds 1 to the named counter (lookup path; prefer a registered *Counter
 // on hot paths).
-func (r *Registry) Incr(name string) { r.Add(name, 1) }
+func (registry *Registry) Incr(name string) { registry.Add(name, 1) }
 
 // Add adds v to the named counter (lookup path; creates the counter on
 // first use — hot paths should Register once and use the *Counter directly).
-func (r *Registry) Add(name string, v int64) {
-	r.Register(name).Add(v)
+func (registry *Registry) Add(name string, v int64) {
+	registry.Register(name).Add(v)
 }
 
-func (r *Registry) lookup(name string) *Counter {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-	return r.counts[name]
+func (registry *Registry) lookup(name string) *Counter {
+	registry.mu.RLock()
+	defer registry.mu.RUnlock()
+	return registry.counts[name]
 }
 
 // Get sums the named counter across shards.
-func (r *Registry) Get(name string) int64 {
-	c := r.lookup(name)
-	if c == nil {
+func (registry *Registry) Get(name string) int64 {
+	counter := registry.lookup(name)
+	if counter == nil {
 		return 0
 	}
-	return c.Sum()
+	return counter.Sum()
 }
 
 // Snapshot returns a copy of all counter totals.
-func (r *Registry) Snapshot() map[string]int64 {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-	out := make(map[string]int64, len(r.counts))
-	for name, c := range r.counts {
-		out[name] = c.Sum()
+func (registry *Registry) Snapshot() map[string]int64 {
+	registry.mu.RLock()
+	defer registry.mu.RUnlock()
+	out := make(map[string]int64, len(registry.counts))
+	for name, counter := range registry.counts {
+		out[name] = counter.Sum()
 	}
 	return out
 }

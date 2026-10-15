@@ -21,32 +21,32 @@ type LatencyConfig struct {
 }
 
 // Draw returns a latency sample for one simulated provider call.
-func (l LatencyConfig) Draw(rng *rand.Rand) time.Duration {
+func (latency LatencyConfig) Draw(rng *rand.Rand) time.Duration {
 	var ms float64
-	switch l.Kind {
+	switch latency.Kind {
 	case "fixed":
-		ms = l.MeanMS
+		ms = latency.MeanMS
 	case "uniform":
-		ms = l.MinMS + rng.Float64()*(l.MaxMS-l.MinMS)
+		ms = latency.MinMS + rng.Float64()*(latency.MaxMS-latency.MinMS)
 	case "lognormal":
 		// Sigma is the sigma of the underlying normal; MeanMS is the median.
-		ms = math.Exp(math.Log(l.MeanMS) + rng.NormFloat64()*l.Sigma)
+		ms = math.Exp(math.Log(latency.MeanMS) + rng.NormFloat64()*latency.Sigma)
 	default:
-		ms = l.MeanMS
+		ms = latency.MeanMS
 	}
 	return time.Duration(ms * float64(time.Millisecond))
 }
 
 // MaxMS returns the largest latency this config can plausibly draw (used for
 // horizon validation; lognormal capped at 6 sigma above the median).
-func (l LatencyConfig) maxMS() float64 {
-	switch l.Kind {
+func (latency LatencyConfig) maxMS() float64 {
+	switch latency.Kind {
 	case "fixed":
-		return l.MeanMS
+		return latency.MeanMS
 	case "uniform":
-		return l.MaxMS
+		return latency.MaxMS
 	case "lognormal":
-		return math.Exp(math.Log(l.MeanMS) + 6*l.Sigma)
+		return math.Exp(math.Log(latency.MeanMS) + 6*latency.Sigma)
 	default:
 		return math.Inf(1)
 	}
@@ -54,9 +54,9 @@ func (l LatencyConfig) maxMS() float64 {
 
 // OutcomeConfig is the per-call outcome mix; percentages must sum to 100.
 type OutcomeConfig struct {
-	SuccessPct    float64 `yaml:"success_pct"`
-	TransientPct  float64 `yaml:"transient_pct"`
-	PermanentPct  float64 `yaml:"permanent_pct"`
+	SuccessPct   float64 `yaml:"success_pct"`
+	TransientPct float64 `yaml:"transient_pct"`
+	PermanentPct float64 `yaml:"permanent_pct"`
 }
 
 // ModelConfig is one simulated model and its limits.
@@ -84,12 +84,12 @@ type Config struct {
 	Models       []ModelConfig  `yaml:"models"`
 	Callbacks    CallbackConfig `yaml:"callbacks"`
 	MaxWaitMS    int64          `yaml:"max_wait_ms"`
-	QueueDepth   int           `yaml:"queue_depth"`
-	WheelShards  int           `yaml:"wheel_shards"`
-	WheelBuckets int           `yaml:"wheel_buckets"`
-	WheelTickMS  int64         `yaml:"wheel_tick_ms"`
-	MaxRetries   int           `yaml:"max_retries"`
-	Workers      int           `yaml:"workers"`
+	QueueDepth   int            `yaml:"queue_depth"`
+	WheelShards  int            `yaml:"wheel_shards"`
+	WheelBuckets int            `yaml:"wheel_buckets"`
+	WheelTickMS  int64          `yaml:"wheel_tick_ms"`
+	MaxRetries   int            `yaml:"max_retries"`
+	Workers      int            `yaml:"workers"`
 }
 
 // Load reads and unmarshals a YAML config file.
@@ -114,13 +114,13 @@ func Load(path string) (*Config, error) {
 
 // Validate checks limits, outcome mixes, latency kinds, and that no model's
 // worst-case latency exceeds the wheel horizon.
-func (c *Config) Validate(horizon time.Duration) error {
-	if len(c.Models) == 0 {
+func (config *Config) Validate(horizon time.Duration) error {
+	if len(config.Models) == 0 {
 		return fmt.Errorf("config: no models defined")
 	}
 	seen := map[string]bool{}
-	for i := range c.Models {
-		m := &c.Models[i]
+	for i := range config.Models {
+		m := &config.Models[i]
 		if m.Name == "" {
 			return fmt.Errorf("config: model %d has no name", i)
 		}

@@ -81,19 +81,19 @@ func New(d Deps, models []string) *Server {
 }
 
 // Handler returns the API's HTTP handler.
-func (s *Server) Handler() http.Handler {
+func (server *Server) Handler() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{"status":"ok"}`))
 	})
-	mux.HandleFunc("POST /requests", s.handleRequest)
-	mux.HandleFunc("POST /batches", s.handleBatch)
-	mux.HandleFunc("GET /batches/{id}", s.handleBatchStatus)
-	mux.HandleFunc("GET /batches/{id}/results", s.handleBatchResults)
-	mux.HandleFunc("GET /limits/{model}", s.handleGetLimits)
-	mux.HandleFunc("POST /limits/{model}", s.handleSetLimits)
-	mux.HandleFunc("GET /metrics/{model}", s.handleMetrics)
+	mux.HandleFunc("POST /requests", server.handleRequest)
+	mux.HandleFunc("POST /batches", server.handleBatch)
+	mux.HandleFunc("GET /batches/{id}", server.handleBatchStatus)
+	mux.HandleFunc("GET /batches/{id}/results", server.handleBatchResults)
+	mux.HandleFunc("GET /limits/{model}", server.handleGetLimits)
+	mux.HandleFunc("POST /limits/{model}", server.handleSetLimits)
+	mux.HandleFunc("GET /metrics/{model}", server.handleMetrics)
 	return mux
 }
 
@@ -110,13 +110,13 @@ type requestIn struct {
 
 // handleRequest runs one synchronous request: the response carries the
 // provider's ACTUAL charge (not the estimate) and the final outcome.
-func (s *Server) handleRequest(w http.ResponseWriter, r *http.Request) {
+func (server *Server) handleRequest(w http.ResponseWriter, r *http.Request) {
 	var in requestIn
 	if err := json.NewDecoder(r.Body).Decode(&in); err != nil || in.Model == "" || in.EstimatedTokens <= 0 {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid body: need model and positive estimated_tokens"})
 		return
 	}
-	if !s.known[in.Model] {
+	if !server.known[in.Model] {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": fmt.Sprintf("unknown model %q", in.Model)})
 		return
 	}
@@ -126,14 +126,14 @@ func (s *Server) handleRequest(w http.ResponseWriter, r *http.Request) {
 		EstimateTokens: in.EstimatedTokens,
 		BornNS:         time.Now().UnixNano(),
 	}
-	outcome, tokens, err := s.d.SubmitAndWait(req, s.syncTO)
+	outcome, tokens, err := server.d.SubmitAndWait(req, server.syncTO)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
 	}
 	writeJSON(w, http.StatusOK, map[string]any{
-		"request_id":    req.ExternalID,
-		"outcome":       outcome,
+		"request_id":     req.ExternalID,
+		"outcome":        outcome,
 		"tokens_charged": tokens,
 	})
 }
@@ -147,17 +147,17 @@ type batchIn struct {
 
 // handleBatch acknowledges an async batch: 202 + server-generated UUID; the
 // client later fetches status or receives the callback.
-func (s *Server) handleBatch(w http.ResponseWriter, r *http.Request) {
+func (server *Server) handleBatch(w http.ResponseWriter, r *http.Request) {
 	var in batchIn
 	if err := json.NewDecoder(r.Body).Decode(&in); err != nil || in.Model == "" || in.EstimatedTokens <= 0 || in.Count <= 0 {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid body: need model, positive estimated_tokens and count"})
 		return
 	}
-	if !s.known[in.Model] {
+	if !server.known[in.Model] {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": fmt.Sprintf("unknown model %q", in.Model)})
 		return
 	}
-	id, err := s.d.CreateBatch(in.Model, in.EstimatedTokens, in.Count, in.CallbackURL)
+	id, err := server.d.CreateBatch(in.Model, in.EstimatedTokens, in.Count, in.CallbackURL)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
@@ -168,9 +168,9 @@ func (s *Server) handleBatch(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (s *Server) handleGetLimits(w http.ResponseWriter, r *http.Request) {
+func (server *Server) handleGetLimits(w http.ResponseWriter, r *http.Request) {
 	model := r.PathValue("model")
-	rpm, tpm, err := s.d.Limits(model)
+	rpm, tpm, err := server.d.Limits(model)
 	if err != nil {
 		writeJSON(w, http.StatusNotFound, map[string]string{"error": err.Error()})
 		return
@@ -178,9 +178,9 @@ func (s *Server) handleGetLimits(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"model": model, "rpm": rpm, "tpm": tpm})
 }
 
-func (s *Server) handleSetLimits(w http.ResponseWriter, r *http.Request) {
+func (server *Server) handleSetLimits(w http.ResponseWriter, r *http.Request) {
 	model := r.PathValue("model")
-	if !s.known[model] {
+	if !server.known[model] {
 		writeJSON(w, http.StatusNotFound, map[string]string{"error": "unknown model"})
 		return
 	}
@@ -192,7 +192,7 @@ func (s *Server) handleSetLimits(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid body: need positive rpm and tpm"})
 		return
 	}
-	if err := s.d.SetLimit(model, in.RPM, in.TPM); err != nil {
+	if err := server.d.SetLimit(model, in.RPM, in.TPM); err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
 	}
@@ -201,9 +201,9 @@ func (s *Server) handleSetLimits(w http.ResponseWriter, r *http.Request) {
 
 // handleMetrics snapshots a model's rolling windows (scenario runners sample
 // this over time for the configured-vs-observed evidence).
-func (s *Server) handleMetrics(w http.ResponseWriter, r *http.Request) {
+func (server *Server) handleMetrics(w http.ResponseWriter, r *http.Request) {
 	model := r.PathValue("model")
-	sample, err := s.d.ObservedWindows(model)
+	sample, err := server.d.ObservedWindows(model)
 	if err != nil {
 		writeJSON(w, http.StatusNotFound, map[string]string{"error": err.Error()})
 		return
@@ -212,9 +212,9 @@ func (s *Server) handleMetrics(w http.ResponseWriter, r *http.Request) {
 }
 
 // handleBatchResults lists a batch's per-request outcomes.
-func (s *Server) handleBatchResults(w http.ResponseWriter, r *http.Request) {
+func (server *Server) handleBatchResults(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
-	rows, ok := s.d.BatchResults(id)
+	rows, ok := server.d.BatchResults(id)
 	if !ok {
 		writeJSON(w, http.StatusNotFound, map[string]string{"error": "unknown batch"})
 		return
@@ -224,9 +224,9 @@ func (s *Server) handleBatchResults(w http.ResponseWriter, r *http.Request) {
 
 // handleBatchStatus reports a batch's persisted completion record (the load
 // generator and scenario runners poll this for completion evidence).
-func (s *Server) handleBatchStatus(w http.ResponseWriter, r *http.Request) {
+func (server *Server) handleBatchStatus(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
-	bs, ok := s.d.BatchStatus(id)
+	bs, ok := server.d.BatchStatus(id)
 	if !ok {
 		writeJSON(w, http.StatusNotFound, map[string]string{"error": "unknown batch"})
 		return

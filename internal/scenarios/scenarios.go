@@ -48,11 +48,11 @@ func MeanUtilization(samples []WindowSample) Utilization {
 		return Utilization{}
 	}
 	var obsRPM, cfgRPM, obsTPM, cfgTPM int64
-	for _, s := range samples {
-		obsRPM += s.ObservedRPM
-		cfgRPM += s.ConfiguredRPM
-		obsTPM += s.ObservedTPM
-		cfgTPM += s.ConfiguredTPM
+	for _, sink := range samples {
+		obsRPM += sink.ObservedRPM
+		cfgRPM += sink.ConfiguredRPM
+		obsTPM += sink.ObservedTPM
+		cfgTPM += sink.ConfiguredTPM
 	}
 	n := int64(len(samples))
 	u := Utilization{}
@@ -72,12 +72,12 @@ func MeanUtilization(samples []WindowSample) Utilization {
 // tolerance still passes).
 func OverLimit(samples []WindowSample, tolerance float64) []int {
 	var over []int
-	for i, s := range samples {
-		if s.ConfiguredRPM > 0 && float64(s.ObservedRPM) > float64(s.ConfiguredRPM)*(1+tolerance) {
+	for i, sink := range samples {
+		if sink.ConfiguredRPM > 0 && float64(sink.ObservedRPM) > float64(sink.ConfiguredRPM)*(1+tolerance) {
 			over = append(over, i)
 			continue
 		}
-		if s.ConfiguredTPM > 0 && float64(s.ObservedTPM) > float64(s.ConfiguredTPM)*(1+tolerance) {
+		if sink.ConfiguredTPM > 0 && float64(sink.ObservedTPM) > float64(sink.ConfiguredTPM)*(1+tolerance) {
 			over = append(over, i)
 		}
 	}
@@ -98,23 +98,23 @@ func IDsUnique(rows []ResultRow) bool {
 
 // Config is one scenario run's parameters (from configs/scenarioN.yaml).
 type Config struct {
-	RatePerSec     int64         `yaml:"rate_per_sec"`
-	DurationSec    int           `yaml:"duration_sec"`
-	BatchSize      int           `yaml:"batch_size"`
-	Tokens         int64         `yaml:"tokens"`
-	Model          string        `yaml:"model"`
-	SecondModel    string        `yaml:"second_model"`
-	WarmupSec      int           `yaml:"warmup_sec"`
-	SampleEverySec int           `yaml:"sample_every_sec"`
-	Headroom       float64       `yaml:"headroom"` // simulator limits = system × headroom
-	MinUtilPct     float64       `yaml:"min_util_pct"`
-	Phase1RPM      int64         `yaml:"phase1_rpm"`
-	Phase2RPM      int64         `yaml:"phase2_rpm"`
-	Phase1Sec      int           `yaml:"phase1_sec"`
-	Phase2Sec      int           `yaml:"phase2_sec"`
-	Phase3Sec      int           `yaml:"phase3_sec"`
-	BatchCount     int64         `yaml:"batch_count"`
-	CallbackFails  int           `yaml:"callback_fails"`
+	RatePerSec     int64   `yaml:"rate_per_sec"`
+	DurationSec    int     `yaml:"duration_sec"`
+	BatchSize      int     `yaml:"batch_size"`
+	Tokens         int64   `yaml:"tokens"`
+	Model          string  `yaml:"model"`
+	SecondModel    string  `yaml:"second_model"`
+	WarmupSec      int     `yaml:"warmup_sec"`
+	SampleEverySec int     `yaml:"sample_every_sec"`
+	Headroom       float64 `yaml:"headroom"` // simulator limits = system × headroom
+	MinUtilPct     float64 `yaml:"min_util_pct"`
+	Phase1RPM      int64   `yaml:"phase1_rpm"`
+	Phase2RPM      int64   `yaml:"phase2_rpm"`
+	Phase1Sec      int     `yaml:"phase1_sec"`
+	Phase2Sec      int     `yaml:"phase2_sec"`
+	Phase3Sec      int     `yaml:"phase3_sec"`
+	BatchCount     int64   `yaml:"batch_count"`
+	CallbackFails  int     `yaml:"callback_fails"`
 }
 
 // Result is one scenario's pass/fail evidence.

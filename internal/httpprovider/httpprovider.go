@@ -5,8 +5,8 @@ package httpprovider
 
 import (
 	"bytes"
-	"fmt"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -42,28 +42,28 @@ func New(url string, client *http.Client) *HTTPProvider {
 type CallResult = provider.CallResult
 
 type callResponse struct {
-	Outcome     string `json:"outcome"`
-	ActualTokens int64 `json:"actual_tokens"`
-	LatencyMS   int64  `json:"latency_ms"`
+	Outcome      string `json:"outcome"`
+	ActualTokens int64  `json:"actual_tokens"`
+	LatencyMS    int64  `json:"latency_ms"`
 }
 
 // Call performs one provider call. The request ID is the idempotency key
 // (body field + Idempotency-Key header). Mapping: 200 → parsed outcome;
 // 429 → ProviderRejected; 5xx/timeout/network error → TransientFailure.
-func (h *HTTPProvider) Call(r *ledger.Request, now time.Time) provider.CallResult {
+func (httpProvider *HTTPProvider) Call(r *ledger.Request, now time.Time) provider.CallResult {
 	body, _ := json.Marshal(map[string]any{
-		"request_id":      r.ExternalID,
-		"model":           r.Model,
+		"request_id":       r.ExternalID,
+		"model":            r.Model,
 		"estimated_tokens": r.EstimateTokens,
 	})
-	req, err := http.NewRequest(http.MethodPost, h.url+"/call", bytes.NewReader(body))
+	req, err := http.NewRequest(http.MethodPost, httpProvider.url+"/call", bytes.NewReader(body))
 	if err != nil {
 		return provider.CallResult{Outcome: provider.TransientFailure}
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Idempotency-Key", r.ExternalID)
 
-	resp, err := h.client.Do(req)
+	resp, err := httpProvider.client.Do(req)
 	if err != nil {
 		return provider.CallResult{Outcome: provider.TransientFailure}
 	}

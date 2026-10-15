@@ -1,7 +1,5 @@
-# Consuma benchmark report
+# Benchmark report
 
-The deliverable report required by the assignment: test environment,
-configuration, achieved throughput, latency, failures, and bottlenecks.
 Measured **2026-10-15**; raw run reports (`run-300k-final.json`,
 `run-1m-final.json`) sit next to this file, and every number below is copied
 from them. Projections are labeled as such and kept in their own section.
@@ -28,7 +26,7 @@ raising the simulated limits for the high-throughput benchmarks):
 | `rpm` / `tpm` | 500,000,000 / 10T | deliberately far above traffic, so the system's own limiter is what paces |
 | `estimate_tokens` | 1,000 | reservation taken at admission |
 | `actual_token_mean` | 1,050 | what the provider actually charges (±20% draw) |
-| `latency` | lognormal, mean 50ms, σ 0.3 | per-call provider latency |
+| `latency` | lognormal, mean 50ms | per-call provider latency |
 | `outcome` | 93% success / 5% transient / 2% permanent | failure mix |
 
 **System tuning** (`max_wait_ms: 5000`, `queue_depth: 65536`,
@@ -58,8 +56,6 @@ goroutines, one per ~50K/sec, each with a nanosecond carry accumulator.
   +0 rejected). Nothing unaccounted.
 - "Completed" means the simulated provider call reached a final success or
   failure state — API acceptance does not count (per the assignment).
-- Post-stall drain is 0.35s: the wheel empties essentially immediately.
-- Reproduce with the two commands above (see README §1 for the build).
 
 ## Latency
 
@@ -100,8 +96,7 @@ End-to-end per request (submission → final provider state), per model:
 ## Bottlenecks
 
 **What the number is.** The simulation benchmarks run in one process
-(in-memory queues + timer wheel). This is the assignment's "simulation
-benchmark" definition — a request must complete on the simulated provider,
+(in-memory queues + timer wheel) — a request must complete on the simulated provider,
 and at these rates no HTTP hop is possible: a per-request localhost
 round-trip costs ~5–10µs CPU per side plus queuing, capping **any**
 implementation near 100–200K requests/second on this hardware. That HTTP
@@ -112,30 +107,28 @@ callbacks, and crash recovery — its rates are HTTP-bound by design.
 
 **What was the bottleneck during development (measured, then fixed):**
 
-1. **Reconcile at 12% of CPU** (pprof): per-request token reconciliation
-   contended on shared state. Fixed with a lock-free counter design and an
-   RNG refund pool; part of how 278K/sec became 300K/sec.
-2. **Timer-wheel drain after a stall took 8.3s** for ~1M due entries:
-   metered replay let every entry fire uniformly late. Fixed with
-   sequence-based draining and clock re-anchoring → 0.34s (also the source
-   of the flat 0.35s drains above).
-3. **~1% of submissions were silently lost at pacing boundaries**:
-   per-tick budget truncation. Fixed with a nanosecond carry accumulator
-   plus an end-of-run flush — conservation is now exact, which is what makes
-   the headline defensible.
-4. **GC pressure from request tracking** (~1GB at 17M requests): per-request
-   tracking is behind a debug flag; production counters are pre-registered
-   and lock-free.
+1. **The token bookkeeping was eating 12% of the CPU.** Every finished
+   request had to settle its token refund through the same shared counters,
+   so hot requests kept stepping on each other. We reworked that accounting
+   so requests no longer queue behind each other — a big part of how 278K
+   became 300K/sec.
+2. **After a stall, the timer wheel needed 8.3 seconds to catch up** on
+   roughly a million requests that were already due — it replayed them
+   gently, so everything fired late. It now catches up in one pass: 0.34s
+   (which is also why the runs above drain in a flat 0.35s).
+3. **About 1% of submissions were silently lost.** The load pacer counted
+   its budget in whole time slices and threw away the leftover fraction
+   each time. It now carries the exact remainder over and pays off whatever
+   is owed at the end of the run — every submitted request is accounted
+   for, which is what makes the headline number trustworthy.
 
 **What limits the current number:** the pacer (one goroutine saturates near
 280K submissions/sec, hence the worker split), the 1ms wheel tick, and the
-default GC target (`CONSUMA_GOGC=400` was measured to have no significant
-effect). At 1M/sec the latency distribution is unchanged from 300K/sec, so
+default GC target. At 1M/sec the latency distribution is unchanged from 300K/sec, so
 the completion path has headroom left; the pacer, not the engine, is the
 next wall.
 
-**Simulation assumptions** (per the assignment, "state the simulation
-assumptions"): provider latency is drawn from the configured lognormal
+**Simulation assumptions**: provider latency is drawn from the configured lognormal
 distribution rather than real network calls; actual token charge is drawn
 around the configured mean (±20%); outcomes follow the configured 93/5/2
 mix; the provider's execution is a scheduled final state on the wheel, not

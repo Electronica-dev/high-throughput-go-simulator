@@ -90,6 +90,16 @@ fix trail.
     headline was below the bar — was nonetheless correct, via a different
     mechanism (pacer boundary loss, ruling 12). Rejected theories get
     recorded too.
+18. **Scenario load is paced at 94% of the limit's capacity** (RPM/60 ×
+    0.94). Submitting at exactly 100% leaves no headroom for retry
+    re-admissions: transient failures (~5%) re-enter through the same
+    rolling window, pin it at the limit, and the retry deferral path
+    degenerates into expiries. At 94% the window stays saturated but
+    unpinned — S1 observes 96.9% utilization including retry re-admissions,
+    zero over-limit samples, zero unexpected expiries. This is a scenario
+    parameter (headroom for the retry design), not a limiter limitation.
+    Why the graph still reads below 100%: see docs/gotchas.md
+    ("the throughput graph always reads a little low").
 
 ## Deferred minors (known, accepted, unfixed)
 

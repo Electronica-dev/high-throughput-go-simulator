@@ -178,13 +178,23 @@ func NewWithCaller(cfg *config.Config, c Caller) (*Engine, error) {
 	return e, nil
 }
 
-// Submit routes one request into the pipeline.
+// Submit routes one request into the pipeline, persisting its row (real mode).
 func (e *Engine) Submit(r *ledger.Request) {
+	e.submit(r, true)
+}
+
+// SubmitUntracked routes one request whose row the caller already persisted
+// (the batch manager's single bulk transaction). Real mode only.
+func (e *Engine) SubmitUntracked(r *ledger.Request) {
+	e.submit(r, false)
+}
+
+func (e *Engine) submit(r *ledger.Request, persist bool) {
 	if !e.accepting.Load() {
 		return // draining; loadgen stops submitting before Drain
 	}
 	e.ld.Submit(r)
-	if e.mode == modeReal && e.st != nil && r.ExternalID != "" {
+	if persist && e.mode == modeReal && e.st != nil && r.ExternalID != "" {
 		_ = e.st.InsertRequest(store.RequestRow{
 			ID: r.ExternalID, BatchID: r.BatchExtID, Model: r.Model,
 			State: "submitted", Tokens: r.EstimateTokens, AdmittedSec: 0,

@@ -253,6 +253,55 @@ func (s *Store) SetRequestFinal(id, state, outcome string, tokens int64) error {
 	return nil
 }
 
+// RequestsByBatch lists a batch's request rows (batch results endpoint).
+func (s *Store) RequestsByBatch(batchID string) ([]RequestRow, error) {
+	rows, err := s.db.Query(`SELECT id, batch_id, model, state, outcome, tokens, admitted_sec
+		FROM requests WHERE batch_id=?`, batchID)
+	if err != nil {
+		return nil, fmt.Errorf("store: RequestsByBatch %s: %w", batchID, err)
+	}
+	defer rows.Close()
+	var out []RequestRow
+	for rows.Next() {
+		var r RequestRow
+		if err := rows.Scan(&r.ID, &r.BatchID, &r.Model, &r.State, &r.Outcome, &r.Tokens, &r.AdmittedSec); err != nil {
+			return nil, fmt.Errorf("store: RequestsByBatch scan: %w", err)
+		}
+		out = append(out, r)
+	}
+	return out, rows.Err()
+}
+
+// BulkInsertRequests persists many request rows in one transaction (the
+// batch manager's submit path must ack in well under a second for large
+// batches; per-row transactions would need ~10s for 10K rows).
+func (s *Store) BulkInsertRequests(rows []RequestRow) error {
+	if len(rows) == 0 {
+		return nil
+	}
+	tx, err := s.db.Begin()
+	if err != nil {
+		return fmt.Errorf("store: BulkInsertRequests begin: %w", err)
+	}
+	stmt, err := tx.Prepare(`INSERT INTO requests (id, batch_id, model, state, outcome, tokens, admitted_sec)
+		VALUES (?, ?, ?, ?, ?, ?, ?)`)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("store: BulkInsertRequests prepare: %w", err)
+	}
+	defer stmt.Close()
+	for _, r := range rows {
+		if _, err := stmt.Exec(r.ID, r.BatchID, r.Model, r.State, r.Outcome, r.Tokens, r.AdmittedSec); err != nil {
+			tx.Rollback()
+			return fmt.Errorf("store: BulkInsertRequests %s: %w", r.ID, err)
+		}
+	}
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("store: BulkInsertRequests commit: %w", err)
+	}
+	return nil
+}
+
 // RecordCallbackAttempt appends one delivery attempt.
 func (s *Store) RecordCallbackAttempt(batchID string, at time.Time, statusCode int, outcome string) error {
 	_, err := s.db.Exec(`INSERT INTO callback_attempts (batch_id, at, status_code, outcome) VALUES (?, ?, ?, ?)`,

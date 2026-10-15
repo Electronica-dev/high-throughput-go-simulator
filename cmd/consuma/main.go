@@ -25,6 +25,8 @@ func main() {
 		cmdLimits(os.Args[2:])
 	case "simulator":
 		cmdSimulator(os.Args[2:])
+	case "serve":
+		cmdServe(os.Args[2:])
 	default:
 		usage()
 		os.Exit(2)

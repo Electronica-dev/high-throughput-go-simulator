@@ -1,0 +1,24 @@
+# Standalone simulator service configuration (consuma simulator).
+# Limits are a separate fixed entity — the system's limits (configs/system.yaml)
+# times a scenario's headroom parameter (default 10x) so the simulator never
+# throttles a scenario that is testing system-side admission.
+models:
+  - name: model-a
+    rpm: 300000
+    tpm: 5000000
+    estimate_tokens: 100
+    actual_token_mean: 100
+    latency:
+      kind: lognormal
+      mean_ms: 50
+      sigma: 0.3
+    outcome:
+      success_pct: 93
+      transient_pct: 5
+      permanent_pct: 2
+max_wait_ms: 2000
+queue_depth: 64000
+wheel_shards: 2
+wheel_buckets: 256
+wheel_tick_ms: 1
+max_retries: 3

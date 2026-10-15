@@ -70,10 +70,20 @@ type ModelConfig struct {
 	Outcome         OutcomeConfig `yaml:"outcome"`
 }
 
+// CallbackConfig is the batch-callback delivery schedule (all knobs live in
+// configs/system.yaml per the owner decision).
+type CallbackConfig struct {
+	InitialBackoffs  []time.Duration `yaml:"initial_backoffs"`  // 500ms/1s/2s
+	PeriodicInterval time.Duration   `yaml:"periodic_interval"` // 5s after the initial run
+	DeliveryTTL      time.Duration   `yaml:"delivery_ttl"`      // give up after 5m
+	HTTPTimeout      time.Duration   `yaml:"http_timeout"`      // per-attempt client timeout
+}
+
 // Config is the top-level simulation configuration.
 type Config struct {
-	Models       []ModelConfig `yaml:"models"`
-	MaxWaitMS    int64         `yaml:"max_wait_ms"`
+	Models       []ModelConfig  `yaml:"models"`
+	Callbacks    CallbackConfig `yaml:"callbacks"`
+	MaxWaitMS    int64          `yaml:"max_wait_ms"`
 	QueueDepth   int           `yaml:"queue_depth"`
 	WheelShards  int           `yaml:"wheel_shards"`
 	WheelBuckets int           `yaml:"wheel_buckets"`

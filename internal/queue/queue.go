@@ -14,6 +14,7 @@ import (
 type queued struct {
 	req      *ledger.Request
 	pushedNS int64
+	recovered bool // crash-recovery re-enqueue: exempt from max_wait expiry
 }
 
 // WaitQueue is a FIFO bounded queue with per-request max wait.
@@ -66,6 +67,19 @@ func (q *WaitQueue) PushQueued(r *ledger.Request, now time.Time) bool {
 		return false
 	}
 	q.items = append(q.items, queued{req: r, pushedNS: now.UnixNano()})
+	return true
+}
+
+// PushRecovered enqueues a crash-recovered request: same FIFO as PushQueued
+// but exempt from max_wait expiry — recovery resumes work with extra
+// latency (the owner decision), it does not expire it.
+func (q *WaitQueue) PushRecovered(r *ledger.Request, now time.Time) bool {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+	if len(q.items)-q.head >= q.depth {
+		return false
+	}
+	q.items = append(q.items, queued{req: r, pushedNS: now.UnixNano(), recovered: true})
 	return true
 }
 
@@ -145,6 +159,10 @@ func (q *WaitQueue) SweepExpired(now time.Time) []*ledger.Request {
 	q.head = 0
 	q.items = q.items[:0]
 	for _, it := range kept {
+		if it.recovered {
+			q.items = append(q.items, it) // recovery resumes, never expires
+			continue
+		}
 		if it.pushedNS <= cutoff {
 			expired = append(expired, it.req)
 			q.ld.Transition(it.req, ledger.Expired)

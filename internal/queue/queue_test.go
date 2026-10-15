@@ -179,3 +179,35 @@ func TestPopRespectsCapacity(t *testing.T) {
 		t.Fatal("push after pop should succeed")
 	}
 }
+
+// TestRecoveredEntriesSurviveSweep: a recovered request resumes with extra
+// latency, not expiry — SweepExpired must skip recovered entries even past
+// max_wait, while normal entries expire on schedule.
+func TestRecoveredEntriesSurviveSweep(t *testing.T) {
+	q := New(100, 50*time.Millisecond, ledger.New())
+	now := time.Now()
+	for i := 0; i < 5; i++ {
+		r := &ledger.Request{ID: uint64(i), Model: "m", BornNS: now.UnixNano()}
+		if !q.Push(r, now) {
+			t.Fatal("push failed")
+		}
+	}
+	for i := 100; i < 105; i++ {
+		r := &ledger.Request{ID: uint64(i), Model: "m", BornNS: now.UnixNano()}
+		if !q.PushRecovered(r, now) {
+			t.Fatal("PushRecovered failed")
+		}
+	}
+	time.Sleep(60 * time.Millisecond) // past max_wait
+	expired := q.SweepExpired(time.Now())
+	if len(expired) != 5 {
+		t.Fatalf("normal entries must expire, got %d expired", len(expired))
+	}
+	// all 5 recovered entries still admitted afterwards
+	for i := 0; i < 5; i++ {
+		r := q.PopIfAdmissible(func(req *ledger.Request) bool { return true })
+		if r == nil {
+			t.Fatalf("recovered entry %d must survive the sweep and admit", i)
+		}
+	}
+}

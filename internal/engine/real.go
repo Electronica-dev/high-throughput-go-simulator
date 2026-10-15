@@ -206,7 +206,7 @@ func (e *Engine) Recover() (int, error) {
 		}
 		_ = e.st.MarkRequestQueued(row.ID)
 		p := e.pipes[row.Model]
-		for !p.q.PushQueued(r, time.Now()) {
+		for !p.q.PushRecovered(r, time.Now()) {
 			time.Sleep(2 * time.Millisecond) // queue full: wait for drain
 		}
 	}

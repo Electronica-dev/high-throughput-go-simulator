@@ -199,3 +199,52 @@ func TestRealModeRetryTerminatesWithBoundedAttempts(t *testing.T) {
 		t.Fatalf("RPM reservations want <= 10, got %d (retry loop is unbounded)", rpm)
 	}
 }
+
+// TestRecoveryNeverExpiresRecoveredRequests: recovered requests resume with
+// extra latency, not expiry — even when the admission rate is far slower
+// than the recovered backlog (the owner decision: the client never sees the
+// crash, only extra latency).
+func TestRecoveryNeverExpiresRecoveredRequests(t *testing.T) {
+	st := openStore(t)
+	fc := &fakeCaller{res: provider.CallResult{Outcome: provider.Success, ActualTokens: 900}}
+	cfg := realConfig()
+	cfg.MaxWaitMS = 50 // aggressive expiry: an unfixed sweep would kill the backlog
+	cfg.Models[0].RPM = 6000
+	e, err := NewReal(cfg, fc, st)
+	if err != nil {
+		t.Fatalf("NewReal: %v", err)
+	}
+	defer e.Stop()
+
+	// 100 recovered requests vs a 100/s admission rate and a 50ms queue TTL
+	for i := 0; i < 100; i++ {
+		if err := st.InsertRequest(store.RequestRow{
+			ID: fmt.Sprintf("ext-rec-%d", i), BatchID: "b-rec", Model: "model-a", State: "in_flight", Tokens: 1000,
+		}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if n, err := e.Recover(); err != nil || n != 100 {
+		t.Fatalf("Recover: %d %v", n, err)
+	}
+	deadline := time.Now().Add(10 * time.Second)
+	for time.Now().Before(deadline) {
+		done := 0
+		for i := 0; i < 100; i++ {
+			if row, ok, _ := st.GetRequest(fmt.Sprintf("ext-rec-%d", i)); ok && row.State == "completed" {
+				done++
+			}
+		}
+		if done == 100 {
+			return
+		}
+		time.Sleep(50 * time.Millisecond)
+	}
+	expired := 0
+	for i := 0; i < 100; i++ {
+		if row, ok, _ := st.GetRequest(fmt.Sprintf("ext-rec-%d", i)); ok && row.State == "expired" {
+			expired++
+		}
+	}
+	t.Fatalf("recovered requests expired: %d of 100 (recovery must not be subject to max_wait)", expired)
+}

@@ -6,9 +6,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"net/http"
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"consuma/internal/scenarios"
 )
@@ -77,8 +79,19 @@ func mixFromModel(model, second string, share float64) map[string]float64 {
 }
 
 func runScenarioN(n string, argv []string, run func(systemURL, callbackURL string, sc scenarios.Config, out string) (*scenarios.Result, error), defaults func(*scenarios.Config)) {
-	system, _, sc, out, callback, err := parseScenarioArgs(argv, "scenario"+n)
+	system, simulator, sc, out, callback, err := parseScenarioArgs(argv, "scenario"+n)
 	if err != nil {
+		os.Exit(2)
+	}
+	// pre-flight: a dead system used to run to completion and produce a
+	// misleading 0.0%-utilization FAIL report; fail fast with an actionable
+	// error instead. Any HTTP response (even 404) proves reachability.
+	if err := checkReachable(system, "system"); err != nil {
+		fmt.Fprintln(os.Stderr, "error:", err)
+		os.Exit(2)
+	}
+	if err := checkReachable(simulator, "simulator"); err != nil {
+		fmt.Fprintln(os.Stderr, "error:", err)
 		os.Exit(2)
 	}
 	defaults(&sc)
@@ -103,3 +116,16 @@ func runScenarioN(n string, argv []string, run func(systemURL, callbackURL strin
 // the other subcommands' flag style).
 var _ = strconv.Itoa
 var _ = strings.Split
+
+// checkReachable verifies a service answers before a scenario starts; any
+// HTTP response (even 404) proves reachability.
+func checkReachable(url, role string) error {
+	client := &http.Client{Timeout: 3 * time.Second}
+	resp, err := client.Get(url + "/health")
+	if err == nil {
+		resp.Body.Close()
+		return nil
+	}
+	return fmt.Errorf("%s not reachable at %s (%v) — start the services first: `bin/consuma.exe simulator -config configs/simulator.yaml -addr 127.0.0.1:9001` and `bin/consuma.exe serve -config configs/system.yaml -addr 127.0.0.1:9000 -simulator http://127.0.0.1:9001 -db consuma.db` (see README §1)",
+		role, url, err)
+}

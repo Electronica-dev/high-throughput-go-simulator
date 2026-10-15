@@ -115,7 +115,9 @@ commit history; this file is the "why did it do THAT" survival guide.
   a FAIL artifact, and a careless `git add -A` commits it. This bit us
   twice (scenario 3 and scenario 1). Rule: regenerate evidence immediately
   before committing it, and read the summary line — it must say PASS —
-  before staging.
+  before staging. (Since fixed: the scenario runners now fail fast with a
+  clear "system not reachable" error instead of running to completion, and
+  a run with zero samples writes no evidence at all.)
 - **All-green unit tests, broken system.** Five production bugs (the 400
   storm, the retry storm, failure memoization, connection churn, a missing
   status endpoint) were invisible to unit tests built on fakes — every

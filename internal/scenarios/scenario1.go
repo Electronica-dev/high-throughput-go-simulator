@@ -26,6 +26,15 @@ func RunScenario1(systemURL string, sc Config, outDir string) (*Result, error) {
 	if err != nil {
 		return nil, err
 	}
+	// a run against a dead system used to write a misleading 0.0%-utilization
+	// FAIL report; zero samples means the system was unreachable or died
+	// mid-run — fail loudly and write no evidence
+	mu.Lock()
+	sampled := len(series)
+	mu.Unlock()
+	if sampled == 0 {
+		return nil, fmt.Errorf("no window samples collected — the system was unreachable or died mid-run; no evidence written (start `serve` and `simulator` first, see README §1)")
+	}
 
 	sums, err := fetchSummaries(client, systemURL, ids)
 	if err != nil {

@@ -101,6 +101,19 @@ func RunScenario2(systemURL string, sc Config, outDir string) (*Result, error) {
 	}
 	close(stop)
 	close(stopB)
+	// zero samples means the system was unreachable or died mid-run — fail
+	// loudly and write no evidence (a 0.0%-utilization FAIL report is
+	// misleading); each model's sampler is checked separately
+	mu.Lock()
+	sampledA := len(series)
+	mu.Unlock()
+	muB.Lock()
+	sampledB := len(seriesB)
+	muB.Unlock()
+	if sampledA == 0 || sampledB == 0 {
+		return nil, fmt.Errorf("no window samples collected (model-a: %d, model-b: %d) — the system was unreachable or died mid-run; no evidence written (start `serve` and `simulator` first, see README §1)",
+			sampledA, sampledB)
+	}
 
 	res := &Result{Pass: true}
 	// per-phase configured-vs-observed for model A: phase windows must track

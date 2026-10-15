@@ -1,6 +1,7 @@
 package scenarios
 
 import (
+	"strings"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -237,5 +238,28 @@ func TestCallbackSinkRejectsThenAccepts(t *testing.T) {
 	}
 	if sink.Hits() != 3 {
 		t.Fatalf("hits want 3, got %d", sink.Hits())
+	}
+}
+
+// TestScenario1DeadSystemErrors: a run against a dead system used to write
+// a misleading 0.0%-utilization FAIL report; it must return an actionable
+// error and write NO evidence.
+func TestScenario1DeadSystemErrors(t *testing.T) {
+	dead := "http://127.0.0.1:1" // nothing listens here
+	sc := Config{
+		RatePerSec: 500, DurationSec: 1, BatchSize: 25, Tokens: 100,
+		Model: "model-a", WarmupSec: 0,
+		SampleEverySec: 1, Headroom: 10,
+	}
+	out := t.TempDir()
+	res, err := RunScenario1(dead, sc, out)
+	if err == nil {
+		t.Fatalf("dead system must return an error, got res=%+v", res)
+	}
+	if !strings.Contains(err.Error(), "no window samples") {
+		t.Fatalf("error should say why: %v", err)
+	}
+	if _, statErr := os.Stat(filepath.Join(out, "scenario-1.json")); !os.IsNotExist(statErr) {
+		t.Fatal("no evidence may be written for a dead-system run")
 	}
 }

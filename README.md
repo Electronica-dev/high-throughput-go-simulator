@@ -12,8 +12,10 @@ Headline numbers, measured on a 16-core laptop (Go 1.27, AC power):
 - **1,000,000 completed requests/second** — stretch benchmark (30s run, exact)
 - exact terminal accounting in both runs; validation scenarios 1–3 all PASS
 
-Full numbers: `docs/benchmark/2026-10-13-run-results.md`; scenario evidence:
-`docs/validation/`.
+Benchmark report (environment, configuration, throughput, latency,
+failures, bottlenecks): `docs/benchmark/2026-10-15-benchmark-report.md`.
+Full run history and method: `docs/benchmark/2026-10-13-run-results.md`;
+scenario evidence: `docs/validation/`.
 
 ---
 

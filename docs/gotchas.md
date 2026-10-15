@@ -4,16 +4,6 @@ Every non-obvious trap we ran into, in plain language, with the fix. The
 deep technical version of most of these lives in `docs/decisions.md` and the
 commit history; this file is the "why did it do THAT" survival guide.
 
-## Reading the spec
-
-- **The benchmarks are per second, the limits are per minute.** The PDF
-  words the provider limits in RPM/TPM (per minute — 50,000 RPM, 30,000
-  RPM...) but words both simulation benchmarks in requests per **second**
-  (300,000 required, 1,000,000 stretch), and the 10-billion planning target
-  goes back to per **minute**. Three different time bases across sections;
-  easy to blend into one. All Consuma benchmark targets are designed and
-  measured per second from day one.
-
 ## Counting and limits
 
 - **A per-second check would allow 60× the limit.** Checking "can I admit
@@ -55,7 +45,7 @@ commit history; this file is the "why did it do THAT" survival guide.
   request's numeric ID where the simulator expected a string, so the
   simulator rejected every single call — and the retry machinery dutifully
   retried them all. Fixed by sending the request's UUID.
-- **The retry counter was never incremented in real mode.** Result: an
+- **The retry counter was never incremented in real (HTTP) mode.** Result: an
   infinite retry storm (~7,000 retries/sec) that starved the entire system
   — the failure of one feature looked like total system collapse. Fixed by
   counting the attempt before making the call.
@@ -117,16 +107,3 @@ commit history; this file is the "why did it do THAT" survival guide.
   limit over the next minute. The scenario's pass logic skips that drain
   period — enforcement means "no NEW admissions beyond the limit", not
   "the window shrinks instantly".
-
-## Process lessons
-
-- **All-green unit tests, broken system.** Five production bugs (the 400
-  storm, the retry storm, failure memoization, connection churn, a missing
-  status endpoint) were invisible to unit tests built on fakes — every
-  package passed while the real end-to-end flow fell over. The end-to-end
-  scenario runs found them all; that's why the scenarios are run for real
-  before anything is called done.
-- **One test flakes when the whole suite runs in parallel.** The engine
-  package occasionally fails a timing-sensitive test under full-suite load
-  and passes on rerun. Known and accepted — it's test-load interference,
-  not product behavior.

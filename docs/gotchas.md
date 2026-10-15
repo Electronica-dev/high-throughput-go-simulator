@@ -107,3 +107,22 @@ commit history; this file is the "why did it do THAT" survival guide.
   limit over the next minute. The scenario's pass logic skips that drain
   period — enforcement means "no NEW admissions beyond the limit", not
   "the window shrinks instantly".
+
+## Process lessons
+
+- **Stale evidence files can sit in the output directory.** A scenario run
+  against a dead system silently overwrites yesterday's PASS evidence with
+  a FAIL artifact, and a careless `git add -A` commits it. This bit us
+  twice (scenario 3 and scenario 1). Rule: regenerate evidence immediately
+  before committing it, and read the summary line — it must say PASS —
+  before staging.
+- **All-green unit tests, broken system.** Five production bugs (the 400
+  storm, the retry storm, failure memoization, connection churn, a missing
+  status endpoint) were invisible to unit tests built on fakes — every
+  package passed while the real end-to-end flow fell over. The end-to-end
+  scenario runs found them all; that's why the scenarios are run for real
+  before anything is called done.
+- **One test flakes when the whole suite runs in parallel.** The engine
+  package occasionally fails a timing-sensitive test under full-suite load
+  and passes on rerun. Known and accepted — it's test-load interference,
+  not product behavior.

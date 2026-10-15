@@ -31,6 +31,7 @@ type runArgs struct {
 	Batch    int
 	Tokens   int64
 	Report   string
+	Target   string
 }
 
 // parseRunFlags builds runArgs from a flag set.
@@ -43,6 +44,7 @@ func parseRunFlags(fs *flag.FlagSet) *runArgs {
 	fs.IntVar(&ra.Batch, "batch", 1, "requests per submission batch")
 	fs.Int64Var(&ra.Tokens, "tokens", 1000, "approximate token size per request")
 	fs.StringVar(&ra.Report, "report", "", "write JSON report to this path")
+	fs.StringVar(&ra.Target, "target", "", "real mode: system URL (e.g. http://127.0.0.1:9000); in-process benchmark when empty")
 	return ra
 }
 
@@ -51,6 +53,13 @@ func cmdBenchmark(argv []string) {
 	ra := parseRunFlags(fs)
 	if err := fs.Parse(argv); err != nil {
 		os.Exit(2)
+	}
+	if ra.Target != "" {
+		if err := runRealBenchmark(*ra); err != nil {
+			fmt.Fprintln(os.Stderr, "error:", err)
+			os.Exit(1)
+		}
+		return
 	}
 	s, err := runBenchmark(*ra)
 	if err != nil {

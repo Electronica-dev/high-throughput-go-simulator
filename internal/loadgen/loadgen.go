@@ -175,7 +175,9 @@ func pace(ctx context.Context, lc *LoadConfig, perWorker int64, startNS, rampNS,
 				// the pacer must not silently undershoot its target at the
 				// boundary (the 0.004% headline miss the review caught)
 				if lc.RampUp == 0 {
-					promised := perWorker * int64(durNS/int64(time.Second))
+					// promise the full fractional-second budget (rate ×
+					// duration exact): a 500/sec × 200ms run owes exactly 100
+					promised := int64(float64(perWorker) * float64(durNS) / float64(time.Second))
 					remaining := promised - sentHold
 					for i := int64(0); i < remaining; i++ {
 						pending = append(pending, &ledger.Request{

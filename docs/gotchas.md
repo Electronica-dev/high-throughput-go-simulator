@@ -6,10 +6,13 @@ commit history; this file is the "why did it do THAT" survival guide.
 
 ## Reading the spec
 
-- **"1,000,000 RPM" doesn't mean per minute.** The PDF's stretch target is
-  worded as RPM but the surrounding context makes clear it means requests
-  per **second**. We caught this before building anything and designed for
-  per-second from day one.
+- **The benchmarks are per second, the limits are per minute.** The PDF
+  words the provider limits in RPM/TPM (per minute — 50,000 RPM, 30,000
+  RPM...) but words both simulation benchmarks in requests per **second**
+  (300,000 required, 1,000,000 stretch), and the 10-billion planning target
+  goes back to per **minute**. Three different time bases across sections;
+  easy to blend into one. All Consuma benchmark targets are designed and
+  measured per second from day one.
 
 ## Counting and limits
 

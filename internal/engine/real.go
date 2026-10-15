@@ -196,6 +196,7 @@ func (e *Engine) Recover() (int, error) {
 		r := &ledger.Request{
 			ID:             recoverIDSeq.Add(1),
 			ExternalID:     row.ID,
+			BatchExtID:     row.BatchID, // OnTerminal routes counts by this
 			Model:          row.Model,
 			EstimateTokens: row.Tokens,
 			BornNS:         time.Now().UnixNano(),

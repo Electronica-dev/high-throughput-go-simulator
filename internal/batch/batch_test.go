@@ -1,6 +1,7 @@
 package batch
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"sync"
@@ -329,4 +330,64 @@ func TestResultsListedOncePerID(t *testing.T) {
 	if b, _ := m.Status(id); b.Counts.Successful != 7 {
 		t.Fatalf("batch counts: %+v", b.Counts)
 	}
+}
+
+// TestRestoreContinuesInterruptedBatches: after a restart the manager must
+// re-register batches that were mid-flight (status=processing) so OnTerminal
+// keeps counting and the batch reaches completed with the full breakdown —
+// without this, post-restart terminal events find no batchState and the
+// batch freezes in processing forever.
+func TestRestoreContinuesInterruptedBatches(t *testing.T) {
+	st := openStore(t)
+
+	// simulate crash aftermath: batch mid-flight, 2 requests already terminal
+	if err := st.CreateBatch(store.Batch{
+		ID: "b-crash", Status: "processing", CallbackURL: "", CreatedAt: time.Now(),
+		Counts: store.Counts{Total: 10, Successful: 2},
+	}); err != nil {
+		t.Fatal(err)
+	}
+	for i := 0; i < 2; i++ {
+		if err := st.InsertRequest(store.RequestRow{
+			ID: fmt.Sprintf("ext-done-%d", i), BatchID: "b-crash", Model: "model-a", State: "completed", Outcome: "success", Tokens: 900,
+		}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for i := 0; i < 8; i++ {
+		if err := st.InsertRequest(store.RequestRow{
+			ID: fmt.Sprintf("ext-pend-%d", i), BatchID: "b-crash", Model: "model-a", State: "in_flight", Tokens: 1000,
+		}); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	eng, err := engine.NewReal(bigConfig(), &okCaller{}, st)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer eng.Stop()
+	m := New(st, eng, fastCallbackCfg())
+	if err := m.Restore(); err != nil {
+		t.Fatalf("Restore: %v", err)
+	}
+	if n, err := eng.Recover(); err != nil || n != 8 {
+		t.Fatalf("Recover: %d %v", n, err)
+	}
+
+	deadline := time.Now().Add(10 * time.Second)
+	for time.Now().Before(deadline) {
+		if b, ok := m.Status("b-crash"); ok && b.Status == "completed" {
+			if b.Counts.Total != 10 {
+				t.Fatalf("total want 10, got %d", b.Counts.Total)
+			}
+			if b.Counts.Successful+b.Counts.Failed+b.Counts.Expired+b.Counts.Rejected != 10 {
+				t.Fatalf("breakdown must account for all 10: %+v", b.Counts)
+			}
+			return
+		}
+		time.Sleep(20 * time.Millisecond)
+	}
+	b, _ := m.Status("b-crash")
+	t.Fatalf("batch never completed after restore: status=%q counts=%+v", b.Status, b.Counts)
 }

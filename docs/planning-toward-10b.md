@@ -37,7 +37,15 @@ The core abstractions carry over as-is per process:
    sums counters and merges per-model latency histograms (bucket-compatible
    by construction) into one global report. Percentiles remain honest
    because histograms merge exactly.
-5. **Where the HTTP boundary stays.** HTTP remains the low-rate control and
+5. **Durability becomes the per-shard WAL, not a single SQLite file.** The
+   current phase-2 design persists to one SQLite database (WAL) for real
+   mode (single requests, batches, callbacks). At 167M req/sec a single
+   SQLite file cannot keep up — the durable log must be sharded too:
+   one WAL per engine shard (or a log-structured store like RocksDB per
+   shard), batched group-commits, and asynchronous fsync batches. The
+   recovery sweep then runs per shard over its own log; the at-least-once
+   + idempotency-key contract carries over unchanged.
+6. **Where the HTTP boundary stays.** HTTP remains the low-rate control and
    client surface (single requests, batch submission, callbacks, limit
    changes). The benchmark hot path stays in-process per shard — the same
    scope caveat as the single-machine results applies at every scale.

@@ -26,7 +26,10 @@ requests/second** (tuned round-trip ~5–10µs CPU per side plus queuing), below
 the required 300K/sec bar regardless of language. That HTTP ceiling is a
 projection, not a measurement; the in-process numbers above are measurements.
 The HTTP API surface (single + batch requests, callbacks, live limit changes)
-is the next phase and is out of scope for the benchmark claims.
+is the next phase and is out of scope for the benchmark claims. A **real-mode
+system** (HTTP API, standalone simulator over the network, SQLite durability,
+crash recovery) is available under `serve` / `simulator` — see "Real mode"
+below; its rates are bounded by the HTTP stack, not the simulation logic.
 
 ## Layout
 
@@ -42,6 +45,12 @@ internal/engine/    connects the packages above; retries with exp. backoff
 internal/loadgen/   paced load generation (ramp/hold, model mix, batching)
 internal/metrics/   lock-free counters + interpolated latency histograms
 internal/report/    measured-vs-projections report (JSON + text)
+internal/api/       system HTTP surface (requests, batches, limits, metrics)
+internal/batch/     batch manager + callback dispatcher (persisted delivery)
+internal/store/     SQLite durability (WAL): batches, requests, attempts
+internal/httpprovider/ real-mode provider client (idempotency keys)
+internal/simserver/ standalone simulator service (rolling limits, seen-keys)
+internal/scenarios/ validation runners 1-3 (sampling, assertions, evidence)
 ```
 
 ## Run
@@ -75,6 +84,78 @@ measurable effect at these rates; reported runs used defaults).
 | `-batch` | requests per submission batch |
 | `-tokens` | estimated tokens per request |
 | `-report` | write the JSON report to this path |
+| `-target` | real mode: drive a running system over HTTP instead of the in-process engine |
+
+## Real mode
+
+`serve` runs the system as a service; `simulator` runs the provider simulator
+as a separate process (its rolling limits and outcome mix are its own config —
+a scenario parameter, sized with headroom over the system's limits so the
+simulator never masks what the system enforces):
+
+```bash
+bin/consuma.exe simulator -config configs/scenario1.yaml -addr 127.0.0.1:9001 &
+bin/consuma.exe serve -config configs/system.yaml -addr 127.0.0.1:9000 \
+    -simulator http://127.0.0.1:9001 -db consuma.db
+```
+
+### HTTP API
+
+| Endpoint | Meaning |
+|---|---|
+| `POST /requests` | one request, synchronous — returns `outcome` and **`tokens_charged` = the provider's actual charge** (the admission reservation used the estimate; the difference is reconciled back at the terminal transition) |
+| `POST /batches` | async batch — `202 {batch_id}` immediately (bulk-persisted, well under 1s for 10K); process asynchronously |
+| `GET /batches/{id}` | status + per-outcome breakdown (`processing` → `completed` once every request is terminal) |
+| `GET /batches/{id}/results` | every request id exactly once, with state, outcome, and actual tokens |
+| `GET /limits/{model}` · `POST /limits/{model}` | read / change a model's RPM+TPM live — no restart; enforcement applies to new admissions immediately |
+| `GET /metrics/{model}` | observed vs configured rolling windows (what the scenario runners sample) |
+| `GET /health` | liveness |
+
+Request ids are **server-generated UUIDs** (`ExternalID`); the id is the
+idempotency key sent to the provider.
+
+### Durability and crash recovery
+
+Every accepted request and every batch row is persisted in SQLite (WAL) at
+acceptance; terminal outcomes are persisted as they happen. If `serve` dies:
+
+- restart against the same `-db` path — the startup recovery sweep re-enqueues
+  every non-terminal request (submitted/queued/in_flight); recovered requests
+  are **exempt from max-wait expiry** (recovery resumes work; it does not
+  expire it) and batches that were mid-flight continue to `completed`
+- **nothing is lost and nothing is double-counted**: the request UUID rides
+  to the provider as `Idempotency-Key`; the simulator memoizes successful
+  executions in its own seen-keys table and replays the original result for a
+  re-issued call, so a crash between "provider executed" and "system recorded"
+  cannot double-charge
+- the client never sees the crash — the batch stays `processing` and
+  completes; expired (max-wait overflow during downtime) remains a terminal
+  outcome and is accounted like any other
+
+Measured in `docs/validation/2026-10-15-scenarios.md`: 60K-request batch,
+`serve` killed ~8s in (34,395 accepted-but-unadmitted + 412 in-flight),
+restarted — "recovered 35205 in-flight requests", batch resumed and completed
+with exact accounting (40,126 ok / 856 failed / 19,018 expired / 0 rejected /
+60,000 total).
+
+### Callbacks
+
+A batch may carry a `callback_url`. When every request is terminal, the
+system POSTs the outcome breakdown to it: 3 attempts at 500ms/1s/2s, then
+every 5s until a 5-minute TTL (all configurable under `callbacks:` in
+`configs/system.yaml`). Each attempt is persisted; delivery that never
+succeeds is resumed on the next restart (`UndeliveredBatches`). The delivered
+summary equals the API's batch status.
+
+### Validation scenarios
+
+```bash
+bin/consuma.exe scenario1 -out docs/validation -duration 300   # sustained load at the limit: utilization, zero over-limit windows, full accounting
+bin/consuma.exe scenario2 -out docs/validation                  # live 30K→5K→30K RPM change, second model untouched, configured-vs-observed time series
+bin/consuma.exe scenario3 -out docs/validation                  # durable 10K batches, reject-first callback sink, delivery recovery, id uniqueness
+```
+
+All three PASS; evidence: `docs/validation/2026-10-15-scenarios.md`.
 
 ## Configure models / change limits
 

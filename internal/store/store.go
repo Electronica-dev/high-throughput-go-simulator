@@ -373,3 +373,26 @@ func (s *Store) PutSeenKey(k, result string) error {
 	}
 	return nil
 }
+
+// ProcessingBatches lists every batch still in the processing state (the
+// batch manager's crash-recovery restore set).
+func (s *Store) ProcessingBatches() ([]Batch, error) {
+	rows, err := s.db.Query(`SELECT id, status, callback_url, total, successful, failed, expired, rejected, created_at
+		FROM batches WHERE status='processing'`)
+	if err != nil {
+		return nil, fmt.Errorf("store: ProcessingBatches: %w", err)
+	}
+	defer rows.Close()
+	var out []Batch
+	for rows.Next() {
+		var b Batch
+		var created int64
+		if err := rows.Scan(&b.ID, &b.Status, &b.CallbackURL, &b.Counts.Total, &b.Counts.Successful,
+			&b.Counts.Failed, &b.Counts.Expired, &b.Counts.Rejected, &created); err != nil {
+			return nil, fmt.Errorf("store: ProcessingBatches scan: %w", err)
+		}
+		b.CreatedAt = time.Unix(created, 0)
+		out = append(out, b)
+	}
+	return out, rows.Err()
+}

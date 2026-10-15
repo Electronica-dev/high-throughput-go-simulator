@@ -6,6 +6,7 @@ package batch
 
 import (
 	"fmt"
+	"os"
 	"net/http"
 	"sync"
 	"sync/atomic"
@@ -112,6 +113,38 @@ func (m *Manager) Submit(model string, tokens, count int64, callbackURL string) 
 	return id, nil
 }
 
+// Restore re-registers batches that were mid-flight (status=processing)
+// when the previous process died: without their in-memory batchState, the
+// OnTerminal hook finds no batch, counts freeze at the crash-time values,
+// and the batch never completes. Carries the persisted counts forward so
+// the remaining terminal events finish the batch exactly.
+func (m *Manager) Restore() error {
+	rows, err := m.st.ProcessingBatches()
+	if err != nil {
+		return err
+	}
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	for _, b := range rows {
+		if _, ok := m.batches[b.ID]; ok {
+			continue
+		}
+		terminal := b.Counts.Successful + b.Counts.Failed + b.Counts.Expired + b.Counts.Rejected
+		bs := &batchState{
+			id:          b.ID,
+			total:       b.Counts.Total,
+			callbackURL: b.CallbackURL,
+		}
+		bs.terminal.Store(terminal)
+		bs.successful.Store(b.Counts.Successful)
+		bs.failed.Store(b.Counts.Failed)
+		bs.expired.Store(b.Counts.Expired)
+		bs.rejected.Store(b.Counts.Rejected)
+		m.batches[b.ID] = bs
+	}
+	return nil
+}
+
 // onTerminal is the engine's terminal hook: counts the outcome, persists the
 // running batch breakdown, and completes + dispatches the callback when the
 // last request lands.
@@ -120,6 +153,9 @@ func (m *Manager) onTerminal(r *ledger.Request, outcome string, tokens int64) {
 	bs := m.batches[r.BatchExtID]
 	m.mu.Unlock()
 	if bs == nil {
+		if os.Getenv("CONSUMA_DEBUG_BATCH") != "" {
+			fmt.Println("DBG onTerminal: no batchState for", r.BatchExtID, "outcome", outcome)
+		}
 		return // not a batch request (sync path has no BatchExtID)
 	}
 	switch outcome {
@@ -140,7 +176,10 @@ func (m *Manager) onTerminal(r *ledger.Request, outcome string, tokens int64) {
 		Rejected:   bs.rejected.Load(),
 	}
 	_ = m.st.UpdateBatchCounts(bs.id, counts)
-	if bs.terminal.Add(1) == bs.total {
+	// >= not ==: a restored batch's carried-forward counts can drift by the
+	// crash-window lag; the batch must complete when the LAST request lands,
+	// never hang because an event was double- or under-counted
+	if bs.terminal.Add(1) >= bs.total {
 		_ = m.st.SetBatchStatus(bs.id, "completed")
 		if bs.callbackURL != "" {
 			go m.deliver(bs.id, bs.callbackURL)

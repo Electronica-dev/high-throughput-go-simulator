@@ -122,7 +122,13 @@ func cmdServe(argv []string) {
 	apiSrv := startHTTP(*addr, api.New(deps, names).Handler())
 	fmt.Printf("consuma serve listening on %s (simulator %s, db %s)\n", *addr, *simURL, *dbPath)
 
-	// crash recovery: re-enqueue everything the last run left non-terminal
+	// crash recovery: re-register mid-flight batches FIRST (their batchState
+	// must exist before the recovered requests start completing — Recover
+	// re-enqueues while Restore is still reading the DB, and every terminal
+	// that lands before registration is a lost count), then re-enqueue.
+	if err := mgr.Restore(); err != nil {
+		fmt.Fprintln(os.Stderr, "batch restore error:", err)
+	}
 	n, err := eng.Recover()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "recovery error:", err)
